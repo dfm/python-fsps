@@ -1,4 +1,4 @@
-Work in progress...
+*This is a work in progress and it's probably broken. Use at your own risk.*
 
 See [FSPS](https://www.cfa.harvard.edu/~cconroy/FSPS.html) by Charlie Conroy.
 

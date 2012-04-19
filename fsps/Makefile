@@ -9,7 +9,7 @@ sps_setup.o pz_convol.o get_tuniv.o imf.o imf_weight.o add_dust.o getspec.o \
 add_bs.o mod_hb.o add_remnants.o getindx.o velbroad.o mod_gb.o \
 write_isochrone.o sfhstat.o linterp.o
 
-MODULE = pyfsps
+MODULE = fsps
 
 %.o : $(SRC_DIR)/%.f90
 	$(F90) $(F90FLAGS) -o $@ -c $<

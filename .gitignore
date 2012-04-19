@@ -1,6 +1,6 @@
 .DS_Store
 startup.sh
-pyfsps/fsps
+fsps/fsps
 *.o
 *.so
 *.mod

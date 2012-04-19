@@ -1,3 +1,7 @@
+__all__ = ["compute", "get_mag", "get_spec"]
+
+import os
+import numpy as np
 from _fsps import fsps
 
 # Because I don't know Fortran all that well, this is how I hack things to
@@ -15,6 +19,11 @@ bands = ["v", "u", "deep_b", "deep_r", "deep_i", "twomass_j", "twomass_h",
     "wfcam_j", "wfcam_h", "wfcam_k", "b", "r", "i", "b3", "wfpc2_f555w",
     "wfpc2_f814w", "wfc3_f275w"]
 
+# Load the wavelength values for the spectra.
+fn = os.path.join(os.environ["SPS_HOME"], "SPECTRA",
+                    "BaSeL3.1", "basel.lambda")
+wavelengths = np.array([l for l in open(fn)], dtype=float)
+
 def compute(imf_type=0, zmet=1, sfh=0):
     assert imf_type in range(6)
     assert zmet in range(1, 23)
@@ -24,4 +33,7 @@ def compute(imf_type=0, zmet=1, sfh=0):
 
 def get_mag(band):
     return fsps.mags[bands.index(band)]
+
+def get_spec():
+    return wavelengths, fsps.spec
 

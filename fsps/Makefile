@@ -17,11 +17,10 @@ MODULE = fsps
 %.o : $(SRC_DIR)/nr/%.f90
 	$(F90) $(F90FLAGS) -o $@ -c $<
 
-$(MODULE): $(MODULE).f95 $(COMMON)
+_$(MODULE): $(MODULE).f95 $(COMMON)
 	rm -f $(MODULE).so
-	f2py -c -m $(MODULE) --fcompiler=gnu95 $(MODULE).f95 $(COMMON)
+	f2py -c -m _$(MODULE) --fcompiler=gnu95 $(MODULE).f95 $(COMMON)
 
 clean:
 	rm -rf *.o *.mod *.so
 
-# --f90flags="-fopenmp -lm " --opt="-O3 --ffast-math" -lgomp --fcompiler=gnu95

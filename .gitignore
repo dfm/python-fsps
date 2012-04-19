@@ -1,0 +1,7 @@
+.DS_Store
+startup.sh
+pyfsps/fsps
+*.o
+*.so
+*.mod
+*.pyc

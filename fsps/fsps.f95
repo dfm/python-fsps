@@ -1,71 +1,121 @@
-MODULE fsps
+! This is a module that will be used in Python as an iterface to FSPS.
+! Rock on, eh?
 
-    USE sps_vars
-    ! USE sps_utils
+module driver
 
-    IMPLICIT NONE
+    use sps_vars; use nrtype; use sps_utils
+    implicit none
 
-    ! MAGIC: Make sure that these numbers stay the same as in `sps_vars.f90`.
-    INTEGER, PARAMETER :: nspec2=1963,ntfull2=188,nbands2=83
+    !f2py intent(hide) pset
+    type(PARAMS) :: pset
 
-    REAL, DIMENSION(ntfull2,nspec2) :: spec_ssp=0.
-    REAL, DIMENSION(ntfull2) :: mass_ssp=0., lbol_ssp=0.
-    REAL, DIMENSION(ntfull2) :: age=0.,mass_csp=0.,lbol_csp=0.,sfr=0.,mdust=0.
-    REAL, DIMENSION(nbands2,ntfull2) :: mags=0.
-    REAL, DIMENSION(nspec2,ntfull2) :: spec=0.
+    !f2py intent(hide) ocompsp
+    type(COMPSPOUT), dimension(ntfull) :: ocompsp
 
-    CONTAINS
+    contains
 
-    SUBROUTINE get_dims(ntf, ns, nb)
+    subroutine setup
 
-        !f2py intent(out) ntf
-        !f2py intent(out) ns
-        !f2py intent(out) nb
-        INTEGER :: ntf,ns,nb
+        ! Load all the data files/templates into memory.
+        call sps_setup(-1)
 
-        ntf = ntfull
-        ns  = nspec
-        nb  = nbands
+    end subroutine
 
-    END SUBROUTINE get_dims
+    subroutine ssps(imf,imf1,imf2,imf3,vdmc,mdave,dell,delt,sbss,fbhb,pagb)
 
-    SUBROUTINE compute(imf_type_in,zmet_in,sfh_in)
+        ! Calculate all of the SSPs in one go.
+        integer :: zi
 
-        INTEGER :: i
-        TYPE(PARAMS) :: pset
-        TYPE(COMPSPOUT), DIMENSION(ntfull) :: ocompsp
+        integer, intent(in) :: imf
+        real, intent(in) :: imf1, imf2, imf3, vdmc, mdave
+        real, intent(in) :: dell, delt, sbss, fbhb, pagb
 
-        !f2py intent(in) imf_type_in
-        !f2py intent(in) zmet_in
-        !f2py intent(in) sfh_in
-        INTEGER :: imf_type_in,zmet_in,sfh_in
+        imf_type   = imf
+        pset%imf1  = imf1
+        pset%imf2  = imf2
+        pset%imf3  = imf3
+        pset%vdmc  = vdmc
+        pset%mdave = mdave
+        pset%dell  = dell
+        pset%delt  = delt
+        pset%sbss  = sbss
+        pset%fbhb  = fbhb
+        pset%pagb  = pagb
 
-        imf_type   = imf_type_in
-        pset%zmet  = zmet_in
-        pset%sfh   = sfh_in
-        pset%zred  = 0.0   !redshift
-        pset%dust1 = 0.0   !dust parameter 1
-        pset%dust2 = 0.0   !dust parameter 2
-        pset%dell  = 0.0   !shift in log(L) for TP-AGB stars
-        pset%delt  = 0.0   !shift in log(Teff) for TP-AGB stars
-        pset%fbhb  = 0.0   !fraction of blue HB stars
-        pset%sbss  = 0.0   !specific frequency of BS stars
+        ! Loop over the metallicities and generate the SSPs.
+        do zi=1,nz
+            pset%zmet = zi
+            call ssp_gen(pset, mass_ssp_zz(zi,:),lbol_ssp_zz(zi,:),&
+                     spec_ssp_zz(zi,:,:))
+        enddo
 
-        CALL SPS_SETUP(pset%zmet)
-        CALL SSP_GEN(pset,mass_ssp,lbol_ssp,spec_ssp)
-        CALL COMPSP(0,1,'',mass_ssp,lbol_ssp,spec_ssp,pset,ocompsp)
+    end subroutine
 
-        DO i = 1, ntfull
+    subroutine compute(dust,zmet,sfh,tau,const,fburst,tburst,dust_tesc,dust1,&
+            dust2,dust_clumps,frac_no_dust,dust_index,mwr,wgp1,wgp2,wgp3,&
+            duste_gamma,duste_umin,duste_qpah,tage)
+
+        ! Compute the stellar population given a set of physical parameters.
+        integer, intent(in) :: dust, zmet, sfh
+        real, intent(in) :: tau,const,fburst,tburst,dust_tesc,dust1,dust2,&
+            dust_clumps,frac_no_dust,dust_index,mwr
+        integer, intent(in) :: wgp1,wgp2,wgp3
+        real, intent(in) :: duste_gamma,duste_umin,duste_qpah,tage
+
+        dust_type = dust
+        pset%zmet = zmet
+        pset%sfh = sfh
+        pset%tau = tau
+        pset%const = const
+        pset%tage = tage
+        pset%fburst = fburst
+        pset%tburst = tburst
+        pset%dust_tesc = dust_tesc
+        pset%dust1 = dust1
+        pset%dust2 = dust2
+        pset%dust_clumps = dust_clumps
+        pset%frac_nodust = frac_no_dust
+        pset%dust_index = dust_index
+        pset%mwr = mwr
+        pset%wgp1 = wgp1
+        pset%wgp2 = wgp2
+        pset%wgp3 = wgp3
+        pset%duste_gamma = duste_gamma
+        pset%duste_umin = duste_umin
+        pset%duste_qpah  = duste_qpah
+
+        call compsp(0,1,'',mass_ssp_zz(zmet,:),lbol_ssp_zz(zmet,:),&
+            spec_ssp_zz(zmet,:,:),pset,ocompsp)
+
+    end subroutine
+
+    subroutine get_ntfull(nt)
+
+        ! Get the total number of time steps (hard coded in sps_vars).
+        integer, intent(out) :: nt
+        nt = ntfull
+
+    end subroutine
+
+    subroutine get_stats(nt,age,mass_csp,lbol_csp,sfr,mdust)
+
+        ! Get some stats about the computed SP.
+        integer :: i
+        integer, intent(in) :: nt
+        real, dimension(nt), intent(out) :: age,mass_csp,lbol_csp,sfr,mdust
+
+        do i=1,nt
             age(i)      = ocompsp(i)%age
             mass_csp(i) = ocompsp(i)%mass_csp
             lbol_csp(i) = ocompsp(i)%lbol_csp
             sfr(i)      = ocompsp(i)%sfr
             mdust(i)    = ocompsp(i)%mdust
-            mags(:,i)   = ocompsp(i)%mags
-            spec(:,i)   = ocompsp(i)%spec
-        ENDDO
+        enddo
 
-    END SUBROUTINE compute
+        ! mags     = ocompsp(ti)%mags
+        ! spec     = ocompsp(ti)%spec
 
-END MODULE
+    end subroutine
+
+end module
 

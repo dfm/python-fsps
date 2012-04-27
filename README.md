@@ -14,11 +14,11 @@ Basic usage:
 import fsps
 fsps.ssps() # Compute all the SSPs
 fsps.compute(5) # Compute the CSP at metallicity=5
-lambda = fsps.get_lambda()
+lam = fsps.get_lambda()
 spec = fsps.get_spec()
 
 import numpy as np
 import matplotlib.pyplot as pl
-pl.plot(np.log10(lambda), spec)
+pl.plot(np.log10(lam), spec)
 ```
 

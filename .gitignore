@@ -5,3 +5,4 @@ fsps/fsps
 *.so
 *.mod
 *.pyc
+*.pyf

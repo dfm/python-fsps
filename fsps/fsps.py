@@ -23,6 +23,10 @@ driver.setup()
 # Get some of the parameters of the module.
 ntfull = driver.get_ntfull()
 nspec = driver.get_nspec()
+nbands = driver.get_nbands()
+
+# Get the wavelength bins.
+wavelengths = driver.get_lambda(nspec)
 
 
 def ssps(imf_type=0, imf1=1.3, imf2=2.3, imf3=2.3, vdmc=0.08, mdave=0.5,
@@ -60,14 +64,14 @@ def get_stats():
 
 
 def get_spec():
-    print driver.get_spec(nspec, ntfull)
-
-# def get_mag(band):
-#     return fsps.mags[bands.index(band)]
+    return wavelengths, driver.get_spec(nspec, ntfull)
 
 
-# def get_spec():
-#     return wavelengths, fsps.spec
+def get_isochrones(zmet):
+    assert zmet in range(1, 23)
+    n_age, n_mass = driver.get_isochrone_dimensions()
+    [driver.get_isochrone(zmet, t,
+        driver.get_nmass_isochrone(zmet, t), nbands) for t in range(n_age)]
 
 if __name__ == "__main__":
     import time
@@ -81,4 +85,4 @@ if __name__ == "__main__":
     print("Calculating the CSP took {0:.4f} seconds."
             .format(time.time() - strt))
 
-    get_spec()
+    get_isochrones(5)

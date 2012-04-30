@@ -78,16 +78,22 @@ module driver
             spec_ssp_zz(zmet,:,:),pset,ocompsp)
     end subroutine
 
-    subroutine get_ntfull(nt)
+    subroutine get_ntfull(n_age)
         ! Get the total number of time steps (hard coded in sps_vars).
-        integer, intent(out) :: nt
-        nt = ntfull
+        integer, intent(out) :: n_age
+        n_age = ntfull
     end subroutine
 
     subroutine get_nspec(ns)
         ! Get the number of wavelength bins in the spectra.
         integer, intent(out) :: ns
         ns = nspec
+    end subroutine
+
+    subroutine get_nbands(nb)
+        ! Get the number of wavebands calculated.
+        integer, intent(out) :: nb
+        nb = nbands
     end subroutine
 
     subroutine get_lambda(ns,lambda)
@@ -97,13 +103,27 @@ module driver
         lambda = spec_lambda
     end subroutine
 
-    subroutine get_stats(nt,age,mass_csp,lbol_csp,sfr,mdust)
+    subroutine get_isochrone_dimensions(n_age,n_mass)
+        ! Get the dimensions of the produced isochrones.
+        integer, intent(out) :: n_age,n_mass
+        n_age = nt
+        n_mass = n_mass
+    end subroutine
+
+    subroutine get_nmass_isochrone(zz, tt, nmass)
+        ! Get the number of masses included in a specific isochrone.
+        integer, intent(in) :: zz,tt
+        integer, intent(out) :: nmass
+        nmass = nmass_isoc(zz,tt)
+    end subroutine
+
+    subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust)
         ! Get some stats about the computed SP.
         integer :: i
-        integer, intent(in) :: nt
-        real, dimension(nt), intent(out) :: age,mass_csp,lbol_csp,sfr,mdust
+        integer, intent(in) :: n_age
+        real, dimension(n_age), intent(out) :: age,mass_csp,lbol_csp,sfr,mdust
 
-        do i=1,nt
+        do i=1,n_age
             age(i)      = ocompsp(i)%age
             mass_csp(i) = ocompsp(i)%mass_csp
             lbol_csp(i) = ocompsp(i)%lbol_csp
@@ -112,14 +132,54 @@ module driver
         enddo
     end subroutine
 
-    subroutine get_spec(ns,nt,spec_out)
+    subroutine get_spec(ns,n_age,spec_out)
         ! Get the set of spectra as a function of time.
         integer :: i
-        integer, intent(in) :: ns,nt
-        real, dimension(nt,ns), intent(out) :: spec_out
-        do i=1,nt
+        integer, intent(in) :: ns,n_age
+        real, dimension(n_age,ns), intent(out) :: spec_out
+        do i=1,n_age
             spec_out(i,:) = ocompsp(i)%spec
         enddo
+    end subroutine
+
+    subroutine get_isochrone(zz,tt,n_mass,n_mags,time_out,z_out,&
+            mass_init_out,logl_out,logt_out,logg_out,ffco_out,&
+            phase_out,wght_out,mags_out)
+        integer, intent(in) :: zz,tt,n_mass,n_mags
+        real, intent(out) :: time_out, z_out
+        real, dimension(n_mass), intent(out) :: mass_init_out
+        real, dimension(n_mass), intent(out) :: logl_out
+        real, dimension(n_mass), intent(out) :: logt_out
+        real, dimension(n_mass), intent(out) :: logg_out
+        real, dimension(n_mass), intent(out) :: ffco_out
+        real, dimension(n_mass), intent(out) :: phase_out
+        real, dimension(n_mass), intent(out) :: wght_out
+        real, dimension(n_mass, n_mags), intent(out) :: mags_out
+        integer :: i
+        real, dimension(nm) :: wght
+        real, dimension(nspec)  :: spec
+        real, dimension(nbands) :: mags
+
+        call imf_weight(mini_isoc(zz,tt,:), wght, nmass_isoc(zz,tt))
+        do i = 1, nmass_isoc(zz,tt)
+            ! Compute mags on isochrone at this mass
+            call getspec(zz, mini_isoc(zz,tt,i), mact_isoc(zz,tt,i), &
+                    logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), &
+                    phase_isoc(zz,tt,i), ffco_isoc(zz,tt,i), spec)
+            call getmags(0.0, spec, mags)
+            mass_init_out(i) = mini_isoc(zz,tt,i)
+            logl_out(i) = logl_isoc(zz,tt,i)
+            logt_out(i) = logt_isoc(zz,tt,i)
+            logg_out(i) = logg_isoc(zz,tt,i)
+            ffco_out(i) = ffco_isoc(zz,tt,i)
+            phase_out(i) = phase_isoc(zz,tt,i)
+            wght_out(i) = wght(i)
+            mags_out(i,:) = mags(:)
+        end do
+
+        ! Fill in time and metallicity of this isochrone
+        time_out = timestep_isoc(zz, tt)
+        z_out = log10(zlegend(zz) / 0.0190) ! log(Z/Zsolar)
     end subroutine
 
 end module

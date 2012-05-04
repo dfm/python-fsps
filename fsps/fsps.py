@@ -1,4 +1,4 @@
-__all__ = ["bands", "ntfull", "ssps", "compute", "get_stats"]
+__all__ = ["bands", "ntfull", "ssps", "compute", "get_stats", "get_spec"]
 
 import os
 import numpy as np

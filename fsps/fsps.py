@@ -1,4 +1,5 @@
-__all__ = ["bands", "ntfull", "ssps", "compute", "get_stats", "get_spec"]
+__all__ = ["bands", "ntfull", "nbands", "nspec", "wavelengths",
+           "ssps", "compute", "get_stats", "get_spec", "get_mags", "logz"]
 
 import os
 import numpy as np
@@ -11,6 +12,10 @@ bands = ["v", "u", "deep_b", "deep_r", "deep_i", "twomass_j", "twomass_h",
     "fors_v", "fors_r", "galex_nuv", "galex_fuv", "wfcam_z", "wfcam_y",
     "wfcam_j", "wfcam_h", "wfcam_k", "b", "r", "i", "b3", "wfpc2_f555w",
     "wfpc2_f814w", "wfc3_f275w"]
+
+logz = np.array([-1.98, -1.8, -1.68, -1.58, -1.5, -1.38, -1.28, -1.2, -1.07,
+                 -0.98, -0.89, -0.79, -0.69, -0.59, -0.49, -0.39, -0.3, -0.2,
+                 -0.1, 0, 0.1, 0.2])
 
 # Load the wavelength values for the spectra.
 _fn = os.path.join(os.environ["SPS_HOME"], "SPECTRA",
@@ -65,6 +70,12 @@ def get_stats():
 
 def get_spec():
     return wavelengths, driver.get_spec(nspec, ntfull)
+
+
+def get_mags(redshift=0):
+    dt = np.dtype([(b, float) for b in bands])
+    mags = driver.get_mags(ntfull, nbands, redshift)
+    return np.array([tuple(m[:len(bands)]) for m in mags], dtype=dt)
 
 
 def get_isochrones(zmet):

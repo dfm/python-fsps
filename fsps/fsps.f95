@@ -132,6 +132,18 @@ module driver
         enddo
     end subroutine
 
+    subroutine get_mags(n_age,n_bands,z_red,mags)
+        ! Get the photometric magnitudes.
+        integer :: i
+        integer, intent(in) :: n_age, n_bands
+        real, intent(in) :: z_red
+        real, dimension(n_age,n_bands), intent(out) :: mags
+
+        do i=1,n_age
+            call getmags(z_red,ocompsp(i)%spec,mags(i,:))
+        enddo
+    end subroutine
+
     subroutine get_spec(ns,n_age,spec_out)
         ! Get the set of spectra as a function of time.
         integer :: i

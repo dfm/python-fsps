@@ -2,12 +2,18 @@ import numpy as np
 import scipy.optimize as op
 import scipy.interpolate as interp
 import fsps
+import sys
+import h5py
+import emcee
+import matplotlib.pyplot as pl
+
 
 fsps.ssps()
 
 
 class ModelGalaxy(object):
     def __init__(self, redshift, logz, **kwargs):
+        self.redshift = redshift
         mets = fsps.logz
         mi1, mi2 = sorted(np.argsort(np.abs(mets - logz))[:2])
         self.met1, self.met2 = mets[mi1], mets[mi2]
@@ -41,8 +47,6 @@ class ModelGalaxy(object):
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as pl
-
     age = 9  # Gyr
     gal = ModelGalaxy(0.1, -0.09, sfh=1, const=0.4)
 
@@ -51,22 +55,55 @@ if __name__ == "__main__":
     data = np.array([gal.mag(b, age) for b in bands])
     data += error * np.random.randn(len(data))
 
-    def chi2(p):
-        print p
+    opfn = "opt.dat"
+
+    def chi2(p, opt):
         if p[1] < 0 or not -1.98 < p[0] < 0.2:
             return 1e10
         try:
             m = ModelGalaxy(0.1, p[0], sfh=1, const=0.4)
-        except Exception as e:
-            print e
+        except Exception:
             return 1e10
         try:
             diff = np.array([m.mag(b, p[1]) for b in bands]) - data
         except ValueError:
             return 1e10
         c2 = np.sum(diff / error) ** 2
+        if opt:
+            f = open(opfn, "a")
+            f.write("{0} {1} {2}\n".format(p[0], p[1], c2))
+            f.close()
         print c2
         return c2
 
-    p = op.fmin_bfgs(chi2, [-1, 8])
-    print p
+    def lnlike(p):
+        ll = - 0.5 * chi2(p, False)
+        return ll
+
+    truth = np.array([gal.zmet, age])
+    if "--mcmc" in sys.argv:
+        ndim, nwalkers = len(truth), 10
+        p0 = truth[None, :] \
+                + 0.01 * np.random.randn(nwalkers * ndim)\
+                .reshape((nwalkers, ndim))
+        sampler = emcee.EnsembleSampler(nwalkers, ndim, lnlike)
+
+        fn = "mcmc.h5"
+        f = h5py.File(fn, "w")
+        f.create_dataset("truth", data=truth)
+        f.close()
+        for i, (pos, lnprob, state) in \
+                                enumerate(sampler.sample(p0, iterations=10)):
+            f = h5py.File(fn, "a")
+            g = f.create_group(str(i))
+            g.create_dataset("pos", pos)
+            g.create_dataset("lnprob", lnprob)
+            f.close()
+    else:
+        f = open(opfn, "w")
+        f.write("# {0}\n".format(truth))
+        f.close()
+        p = op.fmin_bfgs(chi2, [-1, 8], args=(True,))
+        f = open(opfn, "a")
+        f.write("# optimal = {0}\n".format(p))
+        f.close()

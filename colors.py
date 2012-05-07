@@ -96,8 +96,8 @@ if __name__ == "__main__":
                                 enumerate(sampler.sample(p0, iterations=10)):
             f = h5py.File(fn, "a")
             g = f.create_group(str(i))
-            g.create_dataset("pos", pos)
-            g.create_dataset("lnprob", lnprob)
+            g.create_dataset("pos", data=pos)
+            g.create_dataset("lnprob", data=lnprob)
             f.close()
     else:
         f = open(opfn, "w")

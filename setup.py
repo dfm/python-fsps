@@ -45,7 +45,7 @@ class BuildFSPS(Command):
         subprocess.call(cmd, shell=True)
 
         # Compile the module.
-        cmd = "cd {0};f2py -c --fcompiler=gnu95 {0}.pyf {0}.f95 ".format(fsps)
+        cmd = "cd {0};f2py -c --fcompiler=gnu95 --f90flags=\"-fPIC\" --f77flags=\"-fPIC\" {0}.pyf {0}.f95 ".format(fsps)
         cmd += " ".join(links)
         subprocess.call(cmd, shell=True)
 

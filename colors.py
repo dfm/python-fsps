@@ -51,7 +51,7 @@ if __name__ == "__main__":
     gal = ModelGalaxy(0.1, -0.09, sfh=1, const=0.4)
 
     bands = ["sdss_" + b for b in "ugriz"]
-    error = 0.1
+    error = 0.01
     data = np.array([gal.mag(b, age) for b in bands])
     data += error * np.random.randn(len(data))
 
@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
     truth = np.array([gal.zmet, age])
     if "--mcmc" in sys.argv:
-        ndim, nwalkers = len(truth), 10
+        ndim, nwalkers = len(truth), 20
         p0 = truth[None, :] \
                 + 0.01 * np.random.randn(nwalkers * ndim)\
                 .reshape((nwalkers, ndim))
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         f.create_dataset("truth", data=truth)
         f.close()
         for i, (pos, lnprob, state) in \
-                                enumerate(sampler.sample(p0, iterations=10)):
+                                enumerate(sampler.sample(p0, iterations=500)):
             f = h5py.File(fn, "a")
             g = f.create_group(str(i))
             g.create_dataset("pos", data=pos)
@@ -103,7 +103,10 @@ if __name__ == "__main__":
         f = open(opfn, "w")
         f.write("# {0}\n".format(truth))
         f.close()
-        p = op.fmin_bfgs(chi2, [-1, 8], args=(True,))
-        f = open(opfn, "a")
-        f.write("# optimal = {0}\n".format(p))
-        f.close()
+        for i in range(15):
+            p = op.fmin_bfgs(chi2,
+                    truth + 0.1 * truth * np.random.randn(len(truth)),
+                    args=(False,))
+            f = open(opfn, "a")
+            f.write("{1} {0}\n".format(p, i))
+            f.close()

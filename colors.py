@@ -5,7 +5,6 @@ import fsps
 import sys
 import h5py
 import emcee
-import matplotlib.pyplot as pl
 
 
 fsps.ssps()
@@ -50,9 +49,53 @@ if __name__ == "__main__":
     age = 9  # Gyr
     gal = ModelGalaxy(0.1, -0.09, sfh=1, const=0.4)
 
+    if "--spec" in sys.argv:
+        from matplotlib import rc
+        rc("font", family="serif", serif="Computer Modern Roman", size=18)
+        rc("text", usetex=True)
+        import matplotlib.pyplot as pl
+
+        resp = []
+        for b in "ugriz":
+            f = open("sdss_filters/{0}.dat".format(b))
+
+            resp.append(np.array([line.split()
+                for line in f.readlines()[6: -1]],
+                dtype=float))
+
+            f.close()
+
+        lam, spec = fsps.get_spec()
+        ind = np.arange(len(gal.age))[gal.age <= age][-1]
+        spec = spec[ind, :]
+        spec /= spec.max()
+
+        pl.plot(lam, np.log10(spec) + np.log10(1 + gal.redshift), "k")
+        pl.ylim(-0.5, 0)
+        pl.gca().set_yticklabels([])
+
+        pl.xlabel(r"$\lambda \, [\mathrm{\AA}]$")
+
+        pl.gca().twinx()
+
+        for r in resp:
+            pl.plot(r[:, 0], r[:, 2])
+
+        pl.xlim(3000, 11000)
+        pl.gca().set_yticklabels([])
+
+        pl.savefig("spectrum.pdf")
+
+        sys.exit(0)
+
     bands = ["sdss_" + b for b in "ugriz"]
     error = 0.01
-    data = np.array([gal.mag(b, age) for b in bands])
+    data = [gal.mag(b, age) for b in bands]
+    d = []
+    for i in range(len(data)):
+        for j in range(i + 1, len(data)):
+            d.append(data[i] - data[j])
+    data = np.array(d)
     data += error * np.random.randn(len(data))
 
     opfn = "opt.dat"
@@ -65,10 +108,15 @@ if __name__ == "__main__":
         except Exception:
             return 1e10
         try:
-            diff = np.array([m.mag(b, p[1]) for b in bands]) - data
+            d0 = [m.mag(b, p[1]) for b in bands]
+            d = []
+            for i in range(len(d0)):
+                for j in range(i + 1, len(d0)):
+                    d.append(d0[i] - d0[j])
+            diff = np.array(d) - data
         except ValueError:
             return 1e10
-        c2 = np.sum(diff / error) ** 2
+        c2 = np.sum(diff) ** 2 / error ** 2
         if opt:
             f = open(opfn, "a")
             f.write("{0} {1} {2}\n".format(p[0], p[1], c2))

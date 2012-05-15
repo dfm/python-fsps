@@ -1,10 +1,10 @@
 *This is a work in progress and it's probably broken. Use at your own risk.*
 
-See [FSPS](https://www.cfa.harvard.edu/~cconroy/FSPS.html) by Charlie Conroy.
+See [FSPS](http://www.ucolick.org/~cconroy/FSPS.html) by Charlie Conroy.
 
 To get started:
 
-1. [Install FSPS](https://www.cfa.harvard.edu/~cconroy/FSPS.html).
+1. [Install FSPS](http://www.ucolick.org/~cconroy/FSPS.html).
 2. Make sure that your `$SPS_HOME` environment variable is set.
 3. Run `python setup.py build_fsps` in the `python-fsps` root directory.
 

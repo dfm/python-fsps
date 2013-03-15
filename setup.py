@@ -1,74 +1,52 @@
 #!/usr/bin/env python
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 
 import os
-import subprocess
-import glob
-import shutil
-from setuptools import setup, Command
+import sys
+import tempfile
 
-fsps = "fsps"
-desc = open("README.md").read()
-with open("requirements.txt") as f:
-    required = f.readlines()
+from numpy.distutils.core import setup, Extension
 
 
-class BuildFSPS(Command):
-    description = "Build FSPS and the fsps extension module"
-    user_options = []
+if sys.argv[-1] == "publish":
+    os.system("git rev-parse --short HEAD > COMMIT")
+    os.system("python setup.py sdist upload")
+    sys.exit()
 
-    def initialize_options(self):
-        pass
+os.system("cp ../fsps/src/*.o fsps")
+os.system("cp ../fsps/src/*.mod fsps")
 
-    def finalize_options(self):
-        pass
+# First, make sure that the f2py interfaces exist.
+interface_exists = os.path.exists("fsps/fsps.pyf")
+if "interface" in sys.argv or not interface_exists:
+    # Generate the Fortran signature/interface.
+    cmd = "cd fsps;f2py fsps.f90"
+    cmd += " -m _fsps -h fsps.pyf"
+    cmd += " --overwrite-signature"
+    os.system(cmd)
 
-    def run(self):
-        fsps_src_dir = os.path.join(os.environ["SPS_HOME"], "src")
+    if "interface" in sys.argv:
+        sys.exit(0)
 
-        # Build FSPS.
-        cmd = "cd {0};make".format(fsps_src_dir)
-        subprocess.call(cmd, shell=True)
-        links = glob.glob(os.path.join(fsps_src_dir, "*.o"))
-        [links.remove(os.path.join(fsps_src_dir, f)) for f in ["simple.o",
-            "lesssimple.o", "autosps.o"]]
+# Define the Fortran extension.
+bart = Extension("fsps._fsps", ["fsps/fsps.pyf"])
 
-        # Copy the modules to the right place.
-        modules = glob.glob(os.path.join(fsps_src_dir, "*.mod"))
-        for m in modules:
-            dest = os.path.join(fsps, os.path.split(m)[1])
-            shutil.copy(m, dest)
-
-        # Build f2py signature.
-        cmd = "cd {0};f2py {0}.f95 -m _{0} -h {0}.pyf".format(fsps)
-        cmd += " --overwrite-signature"
-        subprocess.call(cmd, shell=True)
-
-        # Compile the module.
-        cmd = "cd {0};f2py -c --fcompiler=gnu95 --f90flags=\"-fPIC\" --f77flags=\"-fPIC\" {0}.pyf {0}.f95 ".format(fsps)
-        cmd += " ".join(links)
-        subprocess.call(cmd, shell=True)
-
-        # Clean up.
-        for p in glob.glob(os.path.join(fsps, "*.mod")):
-            os.remove(p)
-
-cmdclass = {"build_fsps": BuildFSPS}
 
 setup(
-    name=fsps,
-    version="0.0.1",
-    author="Daniel Foreman-Mackey",
-    author_email="danfm@nyu.edu",
+    name="fsps",
     url="https://github.com/dfm/python-fsps",
-    py_modules=[fsps, ],
-    cmdclass=cmdclass,
-    install_requires=required,
-    license="MIT",
-    description="Python bindings to Conroy's (FSPS) Fortran code.",
-    long_description=desc,
+    version="0.0.1",
+    author="Dan Foreman-Mackey",
+    author_email="danfm@nyu.edu",
+    description="Python bindings for Charlie Conroy's FSPS.",
+    long_description=open("README.rst").read(),
+    packages=["fsps", ],
+    package_data={"": ["README.rst"]},
+    include_package_data=True,
+    ext_modules=[bart],
+    install_requires="numpy",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        # "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",

@@ -1,9 +1,8 @@
-! This is a module that will be used in Python as an iterface to FSPS.
-! Rock on, eh?
-
 module driver
 
-    use sps_vars; use nrtype; use sps_utils
+    use sps_vars
+    use nrtype
+    use sps_utils
     implicit none
 
     !f2py intent(hide) pset
@@ -24,8 +23,8 @@ module driver
         integer :: zi
 
         integer, intent(in) :: imf
-        real, intent(in) :: imf1, imf2, imf3, vdmc, mdave
-        real, intent(in) :: dell, delt, sbss, fbhb, pagb
+        double precision, intent(in) :: imf1, imf2, imf3, vdmc, mdave
+        double precision, intent(in) :: dell, delt, sbss, fbhb, pagb
 
         imf_type   = imf
         pset%imf1  = imf1
@@ -51,8 +50,8 @@ module driver
             dust2,dust_clumps,frac_no_dust,dust_index,mwr,wgp1,wgp2,wgp3,tage)
         ! Compute the stellar population given a set of physical parameters.
         integer, intent(in) :: dust, zmet, sfh
-        real, intent(in) :: tau,const,fburst,tburst,dust_tesc,dust1,dust2,&
-            dust_clumps,frac_no_dust,dust_index,mwr,tage
+        double precision, intent(in) :: tau,const,fburst,tburst,dust_tesc,&
+            dust1,dust2,dust_clumps,frac_no_dust,dust_index,mwr,tage
         integer, intent(in) :: wgp1,wgp2,wgp3
 
         dust_type = dust
@@ -99,7 +98,7 @@ module driver
     subroutine get_lambda(ns,lambda)
         ! Get the grid of wavelength bins.
         integer, intent(in) :: ns
-        real, dimension(ns), intent(out) :: lambda
+        double precision, dimension(ns), intent(out) :: lambda
         lambda = spec_lambda
     end subroutine
 
@@ -121,7 +120,8 @@ module driver
         ! Get some stats about the computed SP.
         integer :: i
         integer, intent(in) :: n_age
-        real, dimension(n_age), intent(out) :: age,mass_csp,lbol_csp,sfr,mdust
+        double precision, dimension(n_age), intent(out) :: age,mass_csp,&
+              lbol_csp,sfr,mdust
 
         do i=1,n_age
             age(i)      = ocompsp(i)%age
@@ -136,8 +136,8 @@ module driver
         ! Get the photometric magnitudes.
         integer :: i
         integer, intent(in) :: n_age, n_bands
-        real, intent(in) :: z_red
-        real, dimension(n_age,n_bands), intent(out) :: mags
+        double precision, intent(in) :: z_red
+        double precision, dimension(n_age,n_bands), intent(out) :: mags
 
         do i=1,n_age
             call getmags(z_red,ocompsp(i)%spec,mags(i,:))
@@ -148,7 +148,7 @@ module driver
         ! Get the set of spectra as a function of time.
         integer :: i
         integer, intent(in) :: ns,n_age
-        real, dimension(n_age,ns), intent(out) :: spec_out
+        double precision, dimension(n_age,ns), intent(out) :: spec_out
         do i=1,n_age
             spec_out(i,:) = ocompsp(i)%spec
         enddo
@@ -158,19 +158,19 @@ module driver
             mass_init_out,logl_out,logt_out,logg_out,ffco_out,&
             phase_out,wght_out,mags_out)
         integer, intent(in) :: zz,tt,n_mass,n_mags
-        real, intent(out) :: time_out, z_out
-        real, dimension(n_mass), intent(out) :: mass_init_out
-        real, dimension(n_mass), intent(out) :: logl_out
-        real, dimension(n_mass), intent(out) :: logt_out
-        real, dimension(n_mass), intent(out) :: logg_out
-        real, dimension(n_mass), intent(out) :: ffco_out
-        real, dimension(n_mass), intent(out) :: phase_out
-        real, dimension(n_mass), intent(out) :: wght_out
-        real, dimension(n_mass, n_mags), intent(out) :: mags_out
+        double precision, intent(out) :: time_out, z_out
+        double precision, dimension(n_mass), intent(out) :: mass_init_out
+        double precision, dimension(n_mass), intent(out) :: logl_out
+        double precision, dimension(n_mass), intent(out) :: logt_out
+        double precision, dimension(n_mass), intent(out) :: logg_out
+        double precision, dimension(n_mass), intent(out) :: ffco_out
+        double precision, dimension(n_mass), intent(out) :: phase_out
+        double precision, dimension(n_mass), intent(out) :: wght_out
+        double precision, dimension(n_mass, n_mags), intent(out) :: mags_out
         integer :: i
-        real, dimension(nm) :: wght
-        real, dimension(nspec)  :: spec
-        real, dimension(nbands) :: mags
+        double precision, dimension(nm) :: wght
+        double precision, dimension(nspec)  :: spec
+        double precision, dimension(nbands) :: mags
 
         call imf_weight(mini_isoc(zz,tt,:), wght, nmass_isoc(zz,tt))
         do i = 1, nmass_isoc(zz,tt)
@@ -178,7 +178,7 @@ module driver
             call getspec(zz, mini_isoc(zz,tt,i), mact_isoc(zz,tt,i), &
                     logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), &
                     phase_isoc(zz,tt,i), ffco_isoc(zz,tt,i), spec)
-            call getmags(0.0, spec, mags)
+            call getmags(0.d0, spec, mags)
             mass_init_out(i) = mini_isoc(zz,tt,i)
             logl_out(i) = logl_isoc(zz,tt,i)
             logt_out(i) = logt_isoc(zz,tt,i)
@@ -195,4 +195,3 @@ module driver
     end subroutine
 
 end module
-

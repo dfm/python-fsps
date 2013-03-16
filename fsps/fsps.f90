@@ -46,11 +46,11 @@ module driver
         enddo
     end subroutine
 
-    subroutine compute(dust,zmet,sfh,tau,const,fburst,tburst,dust_tesc,dust1,&
+    subroutine compute(dust,zmet,sfh,tau,cons,fburst,tburst,dust_tesc,dust1,&
             dust2,dust_clumps,frac_no_dust,dust_index,mwr,wgp1,wgp2,wgp3,tage)
         ! Compute the stellar population given a set of physical parameters.
         integer, intent(in) :: dust, zmet, sfh
-        double precision, intent(in) :: tau,const,fburst,tburst,dust_tesc,&
+        double precision, intent(in) :: tau,cons,fburst,tburst,dust_tesc,&
             dust1,dust2,dust_clumps,frac_no_dust,dust_index,mwr,tage
         integer, intent(in) :: wgp1,wgp2,wgp3
 
@@ -58,7 +58,7 @@ module driver
         pset%zmet = zmet
         pset%sfh = sfh
         pset%tau = tau
-        pset%const = const
+        pset%const = cons
         pset%tage = tage
         pset%fburst = fburst
         pset%tburst = tburst

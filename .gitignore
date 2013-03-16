@@ -6,3 +6,7 @@ fsps/fsps
 *.mod
 *.pyc
 *.pyf
+build
+fsps/_fsps*
+dist
+*.egg-info

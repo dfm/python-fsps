@@ -1,99 +1,125 @@
-__all__ = ["bands", "ntfull", "nbands", "nspec", "wavelengths",
-           "ssps", "compute", "get_stats", "get_spec", "get_mags", "logz"]
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import os
-import numpy as np
-from _fsps import driver
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 
-bands = ["v", "u", "deep_b", "deep_r", "deep_i", "twomass_j", "twomass_h",
-    "twomass_k", "sdss_u", "sdss_g", "sdss_r", "sdss_i", "sdss_z",
-    "wfc_f435w", "wfc_f606w", "wfc_f775w", "wfc_f814w", "wfc_f850lp",
-    "irac1", "irac2", "irac3", "irac4", "nicmos_f110w", "nicmos_f160w",
-    "fors_v", "fors_r", "galex_nuv", "galex_fuv", "wfcam_z", "wfcam_y",
-    "wfcam_j", "wfcam_h", "wfcam_k", "b", "r", "i", "b3", "wfpc2_f555w",
-    "wfpc2_f814w", "wfc3_f275w"]
+__all__ = ["StellarPopulation"]
 
-logz = np.array([-1.98, -1.8, -1.68, -1.58, -1.5, -1.38, -1.28, -1.2, -1.07,
-                 -0.98, -0.89, -0.79, -0.69, -0.59, -0.49, -0.39, -0.3, -0.2,
-                 -0.1, 0, 0.1, 0.2])
-
-# Load the wavelength values for the spectra.
-_fn = os.path.join(os.environ["SPS_HOME"], "SPECTRA",
-                    "BaSeL3.1", "basel.lambda")
-wavelengths = np.array([l for l in open(_fn)], dtype=float)
-
-# Set up the FSPS module.
-driver.setup()
-
-# Get some of the parameters of the module.
-ntfull = driver.get_ntfull()
-nspec = driver.get_nspec()
-nbands = driver.get_nbands()
-
-# Get the wavelength bins.
-wavelengths = driver.get_lambda(nspec)
+from ._fsps import driver
 
 
-def ssps(imf_type=0, imf1=1.3, imf2=2.3, imf3=2.3, vdmc=0.08, mdave=0.5,
-        dell=0.0, delt=0.0, sbss=0.0, fbhb=0.0, pagb=1.0):
-    # First check to make sure that the inputs are sane.
-    assert imf_type in range(6)
-
-    driver.ssps(imf_type, imf1, imf2, imf3, vdmc, mdave, dell, delt, sbss,
-            fbhb, pagb)
-
-
-def compute(zmet, dust_type=0, sfh=0, tau=1.0, const=0.0, fburst=0.0,
-        tburst=0.0, dust_tesc=7.0, dust1=0.0, dust2=0.0, dust_clumps=-99.0,
-        frac_no_dust=0.0, dust_index=-0.7, mwr=3.1, wgp1=1, wgp2=1, wgp3=0,
-        tage=0.0):
-    assert zmet in range(1, 23)
-    assert sfh in range(5)
-    assert 0.1 < tau < 100
-    assert 0 <= const <= 1
-    assert 0 <= fburst <= 1
-    assert wgp1 in range(1, 19)
-    assert wgp2 in range(1, 7)
-    assert wgp3 in [0, 1]
-
-    driver.compute(dust_type, zmet, sfh, tau, const, fburst, tburst,
-            dust_tesc, dust1, dust2, dust_clumps, frac_no_dust, dust_index,
-            mwr, wgp1, wgp2, wgp3, tage)
+# Hard-set FSPS parameters.
+NZ = driver.get_nz()
+NTFULL = driver.get_ntfull()
+NSPEC = driver.get_nspec()
+NBANDS = driver.get_nbands()
+LAMBDA_GRID = driver.get_lambda(NSPEC)
+NAGE, NMASS = driver.get_isochrone_dimensions()
 
 
-def get_stats():
-    stats = np.vstack(driver.get_stats(ntfull)).T
-    dt = [("age", float), ("mass", float), ("lbol", float), ("sfr", float),
-            ("mdust", float)]
-    return np.array([tuple(d) for d in stats], dtype=dt)
+def _get_nmass_isochrone(z, t):
+    return driver.get_nmass_isochrone(z, t)
 
 
-def get_spec():
-    return wavelengths, driver.get_spec(nspec, ntfull)
+class StellarPopulation(object):
+    """
 
+    """
 
-def get_mags(redshift=0):
-    dt = np.dtype([(b, float) for b in bands])
-    mags = driver.get_mags(ntfull, nbands, redshift)
-    return np.array([tuple(m[:len(bands)]) for m in mags], dtype=dt)
+    def __init__(self, **kwargs):
+        # Before the first time we interact with the FSPS driver, we need to
+        # run the ``setup`` method.
+        if not driver.is_setup:
+            driver.setup()
 
+        # Set up the parameters to their default values.
+        self.params = dict(
+            dust_type=0,
+            imf_type=2,
+            compute_vega_mags=0,
+            redshift_colors=0,
+            pagb=1.0,
+            dell=0.0,
+            delt=0.0,
+            fbhb=0.0,
+            sbss=0.0,
+            tau=1.0,
+            const=0.0,
+            tage=0.0,
+            fburst=0.0,
+            tburst=11.0,
+            dust1=0.0,
+            dust2=0.0,
+            logzsol=-0.2,
+            zred=0.0,
+            pmetals=0.02,
+            imf1=1.3,
+            imf2=2.3,
+            imf3=2.3,
+            vdmc=0.08,
+            dust_clumps=-99.,
+            frac_nodust=0.0,
+            dust_index=-0.7,
+            dust_tesc=7.0,
+            frac_obrun=0.0,
+            uvb=1.0,
+            mwr=3.1,
+            redgb=1.0,
+            dust1_index=-1.0,
+            mdave=0.5,
+            sf_start=0.0,
+            sf_trunc=0.0,
+            sf_theta=0.0,
+            duste_gamma=0.01,
+            duste_umin=1.0,
+            duste_qpah=3.5,
+            fcstar=1.0,
+            masscut=150.0,
+            zmet=1,
+            sfh=0,
+            wgp1=1,
+            wgp2=1,
+            wgp3=1,
+            evtype=-1
+        )
+        self._dirty = True
+        for k, v in self.params.iteritems():
+            self.params[k] = kwargs.pop(k, v)
 
-def get_isochrones(zmet):
-    assert zmet in range(1, 23)
-    n_age, n_mass = driver.get_isochrone_dimensions()
-    [driver.get_isochrone(zmet, t,
-        driver.get_nmass_isochrone(zmet, t), nbands) for t in range(n_age)]
+        if len(kwargs):
+            raise TypeError("__init__() got an unexpected keyword argument "
+                            "'{}'".format(kwargs.keys()[0]))
 
-if __name__ == "__main__":
-    import time
+    def _update_params(self):
+        keys = ["dust_type", "imf_type", "compute_vega_mags",
+                "redshift_colors", "zmet", "sfh", "wgp1", "wgp2", "wgp3",
+                "evtype", "pagb", "dell", "delt", "fbhb", "sbss", "tau",
+                "const", "tage", "fburst", "tburst", "dust1", "dust2",
+                "logzsol", "zred", "pmetals", "imf1", "imf2", "imf3", "vdmc",
+                "dust_clumps", "frac_nodust", "dust_index", "dust_tesc",
+                "frac_obrun", "uvb", "mwr", "redgb", "dust1_index", "mdave",
+                "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
+                "duste_umin", "duste_qpah", "fcstar", "masscut"]
+        driver.set_params(*[self.params[k] for k in keys])
+        self._dirty = False
 
-    strt = time.time()
-    ssps()
-    print("Calculating the SSPs took {0:.4f} seconds."
-            .format(time.time() - strt))
-    strt = time.time()
-    compute(1)
-    print("Calculating the CSP took {0:.4f} seconds."
-            .format(time.time() - strt))
+    def compute_ssp(self, zi=None):
+        if self._dirty:
+            self._update_params()
 
-    get_isochrones(5)
+        if zi is None:
+            driver.ssps()
+        else:
+            assert 0 <= zi < NZ
+            driver.ssp(int(zi) + 1)
+
+    def compute_csp(self, zmet):
+        if self._dirty:
+            self._update_params()
+
+        driver.compute(int(zmet) + 1)
+
+    @property
+    def wavelengths(self):
+        return LAMBDA_GRID

@@ -11,76 +11,138 @@ module driver
   !f2py intent(hide) ocompsp
   type(COMPSPOUT), dimension(ntfull) :: ocompsp
 
+  integer :: is_setup=0
+
+  !f2py intent(hide) has_ssp
+  integer, dimension(nz) :: has_ssp=0
+
 contains
 
   subroutine setup
 
     ! Load all the data files/templates into memory.
     call sps_setup(-1)
+    is_setup = 1
 
   end subroutine
 
-  subroutine ssps(imf,imf1,imf2,imf3,vdmc,mdave,dell,delt,sbss,fbhb,pagb)
+  subroutine set_params(dust_type0,imf_type0,&
+                        compute_vega_mags0,redshift_colors0,zmet,sfh,&
+                        wgp1,wgp2,wgp3,evtype,pagb,dell,delt,fbhb,sbss,&
+                        tau,const,tage,fburst,tburst,dust1,dust2,logzsol,&
+                        zred,pmetals,imf1,imf2,imf3,vdmc,dust_clumps,&
+                        frac_nodust,dust_index,dust_tesc,frac_obrun,&
+                        uvb,mwr,redgb,dust1_index,mdave,sf_start,&
+                        sf_trunc,sf_theta,duste_gamma,duste_umin,&
+                        duste_qpah,fcstar,masscut)
+
+    integer, intent(in) :: dust_type0,imf_type0,&
+                           compute_vega_mags0,redshift_colors0,zmet,sfh,&
+                           wgp1,wgp2,wgp3,evtype
+
+    double precision, intent(in) :: pagb,dell,delt,fbhb,sbss,tau,const,&
+                            tage,fburst,tburst,dust1,dust2,logzsol,zred,&
+                            pmetals,imf1,imf2,imf3,vdmc,dust_clumps,&
+                            frac_nodust,dust_index,dust_tesc,frac_obrun,&
+                            uvb,mwr,redgb,dust1_index,mdave,sf_start,&
+                            sf_trunc,sf_theta,duste_gamma,duste_umin,&
+                            duste_qpah,fcstar,masscut
+
+    dust_type=dust_type0
+    imf_type=imf_type0
+    compute_vega_mags=compute_vega_mags0
+    redshift_colors=redshift_colors0
+
+    pset%zmet=zmet
+    pset%sfh=sfh
+    pset%wgp1=wgp1
+    pset%wgp2=wgp2
+    pset%wgp3=wgp3
+    pset%evtype=evtype
+
+    pset%pagb=pagb
+    pset%dell=dell
+    pset%delt=delt
+    pset%fbhb=fbhb
+    pset%sbss=sbss
+    pset%tau=tau
+    pset%const=const
+    pset%tage=tage
+    pset%fburst=fburst
+    pset%tburst=tburst
+    pset%dust1=dust1
+    pset%dust2=dust2
+    pset%logzsol=logzsol
+    pset%zred=zred
+    pset%pmetals=pmetals
+    pset%imf1=imf1
+    pset%imf2=imf2
+    pset%imf3=imf3
+    pset%vdmc=vdmc
+    pset%dust_clumps=dust_clumps
+    pset%frac_nodust=frac_nodust
+    pset%dust_index=dust_index
+    pset%dust_tesc=dust_tesc
+    pset%frac_obrun=frac_obrun
+    pset%uvb=uvb
+    pset%mwr=mwr
+    pset%redgb=redgb
+    pset%dust1_index=dust1_index
+    pset%mdave=mdave
+    pset%sf_start=sf_start
+    pset%sf_trunc=sf_trunc
+    pset%sf_theta=sf_theta
+    pset%duste_gamma=duste_gamma
+    pset%duste_umin=duste_umin
+    pset%duste_qpah=duste_qpah
+    pset%fcstar=fcstar
+    pset%masscut=masscut
+
+    has_ssp(:) = 0
+
+  end subroutine
+
+  subroutine ssps
 
     ! Calculate all of the SSPs in one go.
     integer :: zi
 
-    integer, intent(in) :: imf
-    double precision, intent(in) :: imf1, imf2, imf3, vdmc, mdave
-    double precision, intent(in) :: dell, delt, sbss, fbhb, pagb
-
-    imf_type   = imf
-    pset%imf1  = imf1
-    pset%imf2  = imf2
-    pset%imf3  = imf3
-    pset%vdmc  = vdmc
-    pset%mdave = mdave
-    pset%dell  = dell
-    pset%delt  = delt
-    pset%sbss  = sbss
-    pset%fbhb  = fbhb
-    pset%pagb  = pagb
-
     ! Loop over the metallicities and generate the SSPs.
     do zi=1,nz
-      pset%zmet = zi
-      call ssp_gen(pset, mass_ssp_zz(zi,:),lbol_ssp_zz(zi,:),&
-                   spec_ssp_zz(zi,:,:))
+      call ssp(zi)
     enddo
 
   end subroutine
 
-  subroutine compute(dust,zmet,sfh,tau,cons,fburst,tburst,dust_tesc,dust1,&
-                     dust2,dust_clumps,frac_no_dust,dust_index,mwr,wgp1,&
-                     wgp2,wgp3,tage)
+  subroutine ssp(zi)
+
+    integer, intent(in) :: zi
+    pset%zmet = zi
+    has_ssp(zi) = 1
+    call ssp_gen(pset, mass_ssp_zz(zi,:),lbol_ssp_zz(zi,:),&
+                 spec_ssp_zz(zi,:,:))
+
+  end subroutine
+
+  subroutine compute(zmet)
 
     ! Compute the stellar population given a set of physical parameters.
-    integer, intent(in) :: dust, zmet, sfh
-    double precision, intent(in) :: tau,cons,fburst,tburst,dust_tesc,&
-      dust1,dust2,dust_clumps,frac_no_dust,dust_index,mwr,tage
-    integer, intent(in) :: wgp1,wgp2,wgp3
+    integer, intent(in) :: zmet
 
-    dust_type = dust
-    pset%zmet = zmet
-    pset%sfh = sfh
-    pset%tau = tau
-    pset%const = cons
-    pset%tage = tage
-    pset%fburst = fburst
-    pset%tburst = tburst
-    pset%dust_tesc = dust_tesc
-    pset%dust1 = dust1
-    pset%dust2 = dust2
-    pset%dust_clumps = dust_clumps
-    pset%frac_nodust = frac_no_dust
-    pset%dust_index = dust_index
-    pset%mwr = mwr
-    pset%wgp1 = wgp1
-    pset%wgp2 = wgp2
-    pset%wgp3 = wgp3
+    if (has_ssp(zmet) .eq. 0) then
+      call ssp(zmet)
+    endif
 
     call compsp(0,1,'',mass_ssp_zz(zmet,:),lbol_ssp_zz(zmet,:),&
                 spec_ssp_zz(zmet,:,:),pset,ocompsp)
+
+  end subroutine
+
+  subroutine get_nz(n_z)
+
+    ! Get the total number of time steps (hard coded in sps_vars).
+    integer, intent(out) :: n_z
+    n_z = nz
 
   end subroutine
 
@@ -136,6 +198,7 @@ contains
   end subroutine
 
   subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust)
+
     ! Get some stats about the computed SP.
     integer :: i
     integer, intent(in) :: n_age

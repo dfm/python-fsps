@@ -34,7 +34,7 @@ class StellarPopulation(object):
             driver.setup()
 
         # Set up the parameters to their default values.
-        self.params = dict(
+        self.params = ParameterSet(
             dust_type=0,
             imf_type=2,
             compute_vega_mags=0,
@@ -83,7 +83,6 @@ class StellarPopulation(object):
             wgp3=1,
             evtype=-1
         )
-        self._dirty = True
         for k, v in self.params.iteritems():
             self.params[k] = kwargs.pop(k, v)
 
@@ -102,10 +101,10 @@ class StellarPopulation(object):
                 "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
                 "duste_umin", "duste_qpah", "fcstar", "masscut"]
         driver.set_params(*[self.params[k] for k in keys])
-        self._dirty = False
+        self.params.dirty = False
 
     def compute_ssp(self, zi=None):
-        if self._dirty:
+        if self.params.dirty:
             self._update_params()
 
         if zi is None:
@@ -115,7 +114,8 @@ class StellarPopulation(object):
             driver.ssp(int(zi) + 1)
 
     def compute_csp(self, zmet):
-        if self._dirty:
+        if self.params.dirty:
+            print("sup")
             self._update_params()
 
         driver.compute(int(zmet) + 1)
@@ -123,3 +123,18 @@ class StellarPopulation(object):
     @property
     def wavelengths(self):
         return LAMBDA_GRID
+
+
+class ParameterSet(object):
+
+    def __init__(self, **kwargs):
+        self.dirty = True
+        self._params = kwargs
+        self.iteritems = self._params.iteritems
+
+    def __getitem__(self, k):
+        return self._params[k]
+
+    def __setitem__(self, k, v):
+        self.dirty = True
+        self._params[k] = v

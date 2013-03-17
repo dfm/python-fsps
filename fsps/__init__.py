@@ -13,4 +13,4 @@ try:
 except KeyError:
     raise ImportError("You need to have the SPS_HOME environment variable")
 
-from fsps import StellarPopulation
+from .fsps import StellarPopulation

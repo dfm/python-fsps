@@ -136,9 +136,9 @@ contains
     implicit none
     integer, intent(in) :: zi
     pset%zmet = zi
-    has_ssp(zi) = 1
     call ssp_gen(pset, mass_ssp_zz(zi,:),lbol_ssp_zz(zi,:),&
                  spec_ssp_zz(zi,:,:))
+    has_ssp(zi) = 1
 
   end subroutine
 

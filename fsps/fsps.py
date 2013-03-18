@@ -14,7 +14,6 @@ NZ = driver.get_nz()
 NTFULL = driver.get_ntfull()
 NSPEC = driver.get_nspec()
 NBANDS = driver.get_nbands()
-LAMBDA_GRID = driver.get_lambda(NSPEC)
 NAGE, NMASS = driver.get_isochrone_dimensions()
 
 
@@ -383,7 +382,10 @@ class StellarPopulation(object):
         The wavelength scale for the computed spectra.
 
         """
-        return LAMBDA_GRID
+        return driver.get_lambda(NSPEC)
+
+    def get_mag(self):
+        pass
 
 
 class ParameterSet(object):

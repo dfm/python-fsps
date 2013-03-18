@@ -6,11 +6,7 @@ from __future__ import (division, print_function, absolute_import,
 
 __all__ = ["StellarPopulation"]
 
-try:
-    from ._fsps import driver
-    driver = driver
-except ImportError:
-    driver = None
+from ._fsps import driver
 
 
 # Hard-set FSPS parameters.
@@ -293,9 +289,6 @@ class StellarPopulation(object):
 
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
                  **kwargs):
-        if driver is None:
-            raise ImportError("Can't import fsps._fsps")
-
         # Set up the parameters to their default values.
         self.params = ParameterSet(
             dust_type=0,

@@ -141,6 +141,151 @@ class StellarPopulation(object):
     :param logzsol: (default: -0.2)
         Undocumented.
 
+    :param zred: (default: 0.0)
+        Redshift. If this value is non-zero and if ``redshift_colors=1``,
+        the magnitudes will be computed for the spectrum placed at redshift
+        ``zred``.
+
+    :param pmetals: (default: 0.02)
+        Undocumented.
+
+    :param imf1: (default: 1.3)
+        Logarithmic slope of the IMF over the range :math:`0.08 < M < 0.5
+        M_\odot`. Only used if ``imf_type=2``.
+
+    :param imf2: (default: 2.3)
+        Logarithmic slope of the IMF over the range :math:`0.5 < M < 1
+        M_\odot`. Only used if ``imf_type=2``.
+
+    :param imf3: (default: 2.3)
+        Logarithmic slope of the IMF over the range :math:`1.0 < M < 100
+        M_\odot`. Only used if ``imf_type=2``.
+
+    :param vdmc: (default: 0.08)
+        IMF parameter defined in van Dokkum (2008). Only used if
+        ``imf_type=3``.
+
+    :param dust_clumps: (default: -99.)
+        Dust parameter describing the dispersion of a Gaussian PDF density
+        distribution for the old dust. Setting this value to -99.0 sets the
+        distribution to a uniform screen. See Conroy et al. (2009b) for
+        details.
+
+    :param frac_nodust: (default: 0.0)
+        Fraction of starlight that is not attenuated by the diffuse dust
+        component (i.e. that is not affected by ``dust2``).
+
+    :param dust_index: (default: -0.7)
+        Power law index of the attenuation curve. Only used when
+        ``dust_type=0``.
+
+    :param dust_tesc: (default: 7.0)
+        Stars younger than ``dust_tesc`` are attenuated by both ``dust1`` and
+        ``dust2``, while stars older are attenuated by ``dust2`` only. Units
+        are :math:`\\log (\\mathrm{yrs})`.
+
+    :param frac_obrun: (default: 0.0)
+        Undocumented.
+
+    :param uvb: (default: 1.0)
+        Parameter characterizing the strength of the 2175A extinction feature
+        with respect to the standard Cardelli et al. determination for the
+        MW. Only used when ``dust_type=1``.
+
+    :param mwr: (default: 3.1)
+        The ratio of total to selective absorption which characterizes the MW
+        extinction curve: :math:`R = A_V /E(B - V)`. Only used when
+        ``dust_type=1``.
+
+    :param redgb: (default: 1.0)
+        Undocumented.
+
+    :param dust1_index: (default: -1.0)
+        Undocumented.
+
+    :param mdave: (default: 0.5)
+        IMF parameter defined in Dave (2008). Only used if ``imf_type=4``.
+
+    :param sf_start: (default: 0.0)
+        Start time of the SFH, in Gyr.
+
+    :param sf_trunc: (default: 0.0)
+        Undocumented.
+
+    :param sf_theta: (default: 0.0)
+        Undocumented.
+
+    :param duste_gamma: (default: 0.01)
+        Parameter of the Draine & Li (2007) dust emission model. Specifies
+        the relative contribution of dust heated at a radiation field
+        strength of :math:`U_\mathrm{min}` and dust heated at
+        :math:`U_\mathrm{min} < U \le U_\mathrm{max}`. Allowable range is 0.0
+        – 1.0.
+
+    :param duste_umin: (default: 1.0)
+        Parameter of the Draine & Li (2007) dust emission model. Specifies
+        the minimum radiation field strength in units of the MW value. Valid
+        range is 0.1 – 25.0.
+
+    :param duste_qpah: (default: 3.5)
+        Parameter of the Draine & Li (2007) dust emission model. Specifies
+        the grain size distribution through the fraction of grain mass in
+        PAHs. This parameter has units of % and a valid range of 0.0 − 10.0.
+
+    :param fcstar: (default: 1.0)
+        Fraction of stars that the Padova isochrones identify as Carbon stars
+        that FSPS assigns to a Carbon star spectrum. Set this to 0.0 if for
+        example the users wishes to turn all Carbon stars into regular M-type
+        stars.
+
+    :param masscut: (default: 150.0)
+        Undocumented.
+
+    :param zmet: (default: 1)
+        The metallicity is specified as an integer ranging between 1 and 22.
+
+    :param sfh: (default: 0)
+        Defines the type of star formation history, normalized such that one
+        solar mass of stars is formed over the full SFH. Default value is 0.
+
+        * 0: Compute an SSP
+        * 1: Compute a five parameter SFH (see below).
+        * 2: Compute a tabulated SFH defined in a file called ``sfh.dat``
+          that must reside in the data directory. The file must contain three
+          rows. The first column is time since the Big Bang in Gyr, the
+          second is the SFR in units of solar masses per year, the third is
+          the absolute metallicity. An example is provided in the data
+          directory. The time grid in this file can be arbitrary (so long as
+          the units are correct), but it is up to the user to ensure that the
+          tabulated SFH is well-sampled so that the outputs are stable.
+          Obviously, highly oscillatory data require dense sampling.
+        * 4: Delayed tau-model. This is the same as option 1 except that the
+          tau-model component takes the form :math:`t\,e^{−t/\\tau}`.
+
+    :param wgp1: (default: 1)
+        Integer specifying the optical depth in the Witt & Gordon (2000)
+        models. Values range from 1 − 18, corresponding to optical depths of
+        0.25, 0.50, 0.75, 1.00, 1.50, 2.00, 2.50, 3.00, 3.50, 4.00, 4.50,
+        5.00, 5.50, 6.00, 7.00, 8.00, 9.00, 10.0. Note that these optical
+        depths are defined differently from the optical depths defined by
+        the parameters ``dust1`` and ``dust2``. See Witt & Gordon (2000)
+        for details.
+
+    :param wgp2: (default: 1)
+        Integer specifying the type of large-scale geometry and extinction
+        curve. Values range from 1-6, corresponding to MW+dusty, MW+shell,
+        MW+cloudy, SMC+dusty, SMC+shell, SMC+cloudy. Dusty, shell, and cloudy
+        specify the geometry and are described in Witt & Gordon (2000).
+
+    :param wgp3: (default: 1)
+        Integer specifying the local geometry for the Witt & Gordon (2000)
+        dust models. A value of 0 corresponds to a homogeneous distribution,
+        and a value of 1 corresponds to a clumpy distribution. See Witt &
+        Gordon (2000) for details.
+
+    :param evtype: (default: -1)
+        Undocumented.
+
     """
 
     def __init__(self, **kwargs):

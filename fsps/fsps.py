@@ -125,6 +125,22 @@ class StellarPopulation(object):
         Deﬁnes the fraction of mass formed in an instantaneous burst of star
         formation. Only used if ``sfh=1`` or ``sfh=4``.
 
+    :param tburst: (default: 11.0)
+        Defines the age of the Universe when the burst occurs. If
+        ``tburst > tage`` then there is no burst. Only used if ``sfh=1`` or
+        ``sfh=4``.
+
+    :param dust1: (default: 0.0)
+        Dust parameter describing the attenuation of young stellar light,
+        i.e. where ``t <= dust_tesc`` (for details, see Conroy et al. 2009a).
+
+    :param dust2: (default: 0.0)
+        Dust parameter describing the attenuation of old stellar light,
+        i.e. where ``t > dust_tesc`` (for details, see Conroy et al. 2009a).
+
+    :param logzsol: (default: -0.2)
+        Undocumented.
+
     """
 
     def __init__(self, **kwargs):

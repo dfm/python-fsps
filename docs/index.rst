@@ -3,7 +3,10 @@ Python FSPS
 
 These are a set of Python binding's to `Charlie Conroy's Flexible Stellar
 Population Synthesis (FSPS) Fortran library
-<http://www.ucolick.org/~cconroy/FSPS.html>`_.
+<http://www.ucolick.org/~cconroy/FSPS.html>`_. This code is very much inspired
+by `Jonathan Sick's version <https://github.com/jonathansick/pySPS>`_ of the
+same thing. The difference is that this version is lighter weight: providing
+less baked functionality but trading that for fewer dependencies.
 
 
 Installation

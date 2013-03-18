@@ -35,6 +35,13 @@ To test the installation, run:
     python -c 'import fsps;fsps.test()'
 
 
+API
+---
+
+.. autoclass:: fsps.StellarPopulation
+   :inherited-members:
+
+
 License
 -------
 

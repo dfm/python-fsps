@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python FSPS &mdash; Python FSPS  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Python FSPS  documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="#">Python FSPS  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="python-fsps">
+<h1>Python FSPS<a class="headerlink" href="#python-fsps" title="Permalink to this headline">¶</a></h1>
+<p>These are a set of Python binding&#8217;s to <a class="reference external" href="http://www.ucolick.org/~cconroy/FSPS.html">Charlie Conroy&#8217;s Flexible Stellar
+Population Synthesis (FSPS) Fortran library</a>. This code is very much inspired
+by <a class="reference external" href="https://github.com/jonathansick/pySPS">Jonathan Sick&#8217;s version</a> of the
+same thing. The difference is that this version is lighter weight: providing
+less baked functionality but trading that for fewer dependencies.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>There are only two required dependencies for building this package: FSPS
+(obviously) and <a class="reference external" href="http://www.numpy.org/">NumPy</a>. First, m sure that you have
+NumPy installed (using your favorite method) and access to the <tt class="docutils literal"><span class="pre">f2py</span></tt>
+executable (this should be installed along with NumPy).
+Then, you need to follow the directions on <a class="reference external" href="http://www.ucolick.org/~cconroy/FSPS.html">the FSPS page</a> to checkout and compile
+the FSPS package. In particular, these bindings rely on the value of the
+<tt class="docutils literal"><span class="pre">SPS_HOME</span></tt> environment variable being correctly set and the compiled
+<tt class="docutils literal"><span class="pre">.o</span></tt> and <tt class="docutils literal"><span class="pre">.mod</span></tt> files be available in the <tt class="docutils literal"><span class="pre">${SPS_HOME}/src</span></tt>
+directory. Finally, clone the <a class="reference external" href="https://github.com/dfm/python-fsps">python-fsps repoistory</a>: <tt class="docutils literal"><span class="pre">git</span> <span class="pre">clone</span>
+<span class="pre">https://github.com/dfm/python-fsps.git</span></tt> and run</p>
+<div class="highlight-python"><pre>cd python-fsps
+python setup.py build_fsps
+python setup.py develop</pre>
+</div>
+<p>To test the installation, run:</p>
+<div class="highlight-python"><pre>python -c 'import fsps;fsps.test()'</pre>
+</div>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="fsps.StellarPopulation">
+<em class="property">class </em><tt class="descclassname">fsps.</tt><tt class="descname">StellarPopulation</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main interface to use when interacting with FSPS from Python.
+Most of the Fortran API is exposed through Python hooks with various
+features added for user friendliness. When initializing, you can set any
+of the parameters of the system using keyword arguments. Below, you&#8217;ll
+find a list of the options that you can include (with the comments taken
+directly from the <a class="reference external" href="http://www.ucolick.org/~cconroy/FSPS_files/MANUAL.pdf">FSPS docs</a>. To change
+these values later, use the <tt class="docutils literal"><span class="pre">params</span></tt> property—which is <tt class="docutils literal"><span class="pre">dict</span></tt>-like.
+For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sp</span> <span class="o">=</span> <span class="n">StellarPopulation</span><span class="p">(</span><span class="n">imf_type</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">&quot;imf_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dust_type</strong> &#8211; <p>(default: 0)
+Common variable deﬁning the extinction curve for dust around old
+stars:</p>
+<ul>
+<li>0: power law with index dust index set by <tt class="docutils literal"><span class="pre">dust_index</span></tt>.</li>
+<li>1: Milky Way extinction law (with <span class="math">\(R = A_V /E(B - V)\)</span> value
+<tt class="docutils literal"><span class="pre">mwr</span></tt>) parameterized by Cardelli et al. (1989).</li>
+<li>2: Calzetti et al. (2000) attenuation curve. Note that if this
+value is set then the dust attenuation is applied to all starlight
+equally (not split by age), and therefore the only relevant
+parameter is <tt class="docutils literal"><span class="pre">dust2</span></tt>, which sets the overall normalization.</li>
+<li>3: allows the user to access a variety of attenuation curve models
+from Witt &amp; Gordon (2000) using the parameters <tt class="docutils literal"><span class="pre">wgp1</span></tt> and
+<tt class="docutils literal"><span class="pre">wgp2</span></tt>.</li>
+</ul>
+</li>
+<li><strong>imf_type</strong> &#8211; <p>(default: 2)
+Common variable defining the IMF type:</p>
+<ul>
+<li>0: Salpeter (1955)</li>
+<li>1: Chabrier (2003)</li>
+<li>2: Kroupa (2001)</li>
+<li>3: van Dokkum (2008)</li>
+<li>4: Dave (2008)</li>
+<li>5: tabulated piece-wise power law IMF, specified in <tt class="docutils literal"><span class="pre">imf.dat</span></tt>
+file located in the data directory</li>
+</ul>
+</li>
+<li><strong>compute_vega_mags</strong> &#8211; (default: True)
+A switch that sets the zero points of the magnitude system: <tt class="docutils literal"><span class="pre">True</span></tt>
+uses Vega magnitudes versus AB magnitudes.</li>
+<li><strong>redshift_colors</strong> &#8211; <p>(default: False)</p>
+<ul>
+<li><tt class="docutils literal"><span class="pre">False</span></tt>: Magnitudes are computed at a fixed redshift specified
+by <tt class="docutils literal"><span class="pre">zred</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">True</span></tt>: Magnitudes are computed at a redshift that corresponds
+to the age of the output SSP/CSP (assuming a redshift–age relation
+appropriate for a WMAP5 cosmology). This switch is useful if
+the user wants to compute the evolution in observed colors of a
+SSP/CSP.</li>
+</ul>
+</li>
+<li><strong>pagb</strong> &#8211; (default: 1.0)
+Weight given to the post–AGB phase. A value of 0.0 turns off post-AGB
+stars; a value of 1.0 implies that the Vassiliadis &amp; Wood (1994)
+tracks are implemented as–is.</li>
+<li><strong>dell</strong> &#8211; (default: 0.0)
+Shift in <span class="math">\(\log L_\mathrm{bol}\)</span> of the TP-AGB isochrones. Note
+that the meaning of this parameter and the one below has changed to
+reflect the updated calibrations presented in Conroy &amp; Gunn (2009).
+That is, these parameters now refer to a modification about the
+calibrations presented in that paper.</li>
+<li><strong>delt</strong> &#8211; (default: 0.0)
+Shift in <span class="math">\(\log T_\mathrm{eff}\)</span> of the TP-AGB isochrones.</li>
+<li><strong>fbhb</strong> &#8211; (default: 0.0)
+Fraction of horizontal branch stars that are blue. The blue HB stars
+are uniformly spread in <span class="math">\(\log T_\mathrm{eff}\)</span> to <cite>10^4</cite> K. See
+Conroy et al. (2009a) for details and a plausible range.</li>
+<li><strong>sbss</strong> &#8211; (default: 0.0)
+Specific frequency of blue straggler stars. See Conroy et al. (2009a)
+for details and a plausible range.</li>
+<li><strong>tau</strong> &#8211; (default: 1.0)
+Defines e-folding time for the SFH, in Gyr. Only used if <tt class="docutils literal"><span class="pre">sfh=1</span></tt> or
+<tt class="docutils literal"><span class="pre">sfh=4</span></tt>. The range is <span class="math">\(0.1 &lt; \tau &lt; 10^2\)</span>.</li>
+<li><strong>const</strong> &#8211; (default: 0.0)
+Defines the constant component of the SFH. This quantity is defined
+as the fraction of mass formed in a constant mode of SF; the range
+is therefore <span class="math">\(0 \le C \le 1\)</span>. Only used if <tt class="docutils literal"><span class="pre">sfh=1</span></tt> or
+<tt class="docutils literal"><span class="pre">sf=4</span></tt>.</li>
+<li><strong>tage</strong> &#8211; (default: 0.0)
+If set to a non-zero value, the
+<tt class="xref py py-func docutils literal"><span class="pre">fsps.StellarPopulation.compute_csp()</span></tt> method will compute the
+spectra and magnitudes only at this age, and will therefore only
+output one age result. The units are Gyr. (The default is to compute
+and return results from <span class="math">\(t \approx 0\)</span> to the maximum age in
+the isochrones).</li>
+<li><strong>fburst</strong> &#8211; (default: 0.0)
+Deﬁnes the fraction of mass formed in an instantaneous burst of star
+formation. Only used if <tt class="docutils literal"><span class="pre">sfh=1</span></tt> or <tt class="docutils literal"><span class="pre">sfh=4</span></tt>.</li>
+<li><strong>tburst</strong> &#8211; (default: 11.0)
+Defines the age of the Universe when the burst occurs. If
+<tt class="docutils literal"><span class="pre">tburst</span> <span class="pre">&gt;</span> <span class="pre">tage</span></tt> then there is no burst. Only used if <tt class="docutils literal"><span class="pre">sfh=1</span></tt> or
+<tt class="docutils literal"><span class="pre">sfh=4</span></tt>.</li>
+<li><strong>dust1</strong> &#8211; (default: 0.0)
+Dust parameter describing the attenuation of young stellar light,
+i.e. where <tt class="docutils literal"><span class="pre">t</span> <span class="pre">&lt;=</span> <span class="pre">dust_tesc</span></tt> (for details, see Conroy et al. 2009a).</li>
+<li><strong>dust2</strong> &#8211; (default: 0.0)
+Dust parameter describing the attenuation of old stellar light,
+i.e. where <tt class="docutils literal"><span class="pre">t</span> <span class="pre">&gt;</span> <span class="pre">dust_tesc</span></tt> (for details, see Conroy et al. 2009a).</li>
+<li><strong>logzsol</strong> &#8211; (default: -0.2)
+Undocumented.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p><em>Copyright 2013 Dan Foreman-Mackey.</em></p>
+<p>These bindings are available under the <a class="reference external" href="https://raw.github.com/dfm/python-fsps/master/LICENSE.rst">MIT License</a>. See the <a class="reference external" href="http://www.ucolick.org/~cconroy/FSPS.html">FSPS
+homepage</a> for usage
+restrictions and citation requirements.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Python FSPS</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex/" title="General Index"
+             >index</a></li>
+        <li><a href="#">Python FSPS  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Dan Foreman-Mackey.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -171,6 +171,20 @@ contains
 
   end subroutine
 
+  subroutine get_mags(n_age,n_bands,z_red,mags)
+
+    ! Get the photometric magnitudes in all the recognized bands.
+    implicit none
+    integer :: i
+    integer, intent(in) :: n_age, n_bands
+    double precision, intent(in) :: z_red
+    double precision, dimension(n_age,n_bands), intent(out) :: mags
+    do i=1,n_age
+      call getmags(z_red,ocompsp(i)%spec,mags(i,:))
+    enddo
+
+  end subroutine
+
   subroutine get_nz(n_z)
 
     ! Get the number of metallicity bins (hard coded in sps_vars).
@@ -256,22 +270,6 @@ contains
       lbol_csp(i) = ocompsp(i)%lbol_csp
       sfr(i)      = ocompsp(i)%sfr
       mdust(i)    = ocompsp(i)%mdust
-    enddo
-
-  end subroutine
-
-  subroutine get_mags(n_age,n_bands,z_red,mags)
-
-    implicit none
-
-    ! Get the photometric magnitudes.
-    integer :: i
-    integer, intent(in) :: n_age, n_bands
-    double precision, intent(in) :: z_red
-    double precision, dimension(n_age,n_bands), intent(out) :: mags
-
-    do i=1,n_age
-      call getmags(z_red,ocompsp(i)%spec,mags(i,:))
     enddo
 
   end subroutine

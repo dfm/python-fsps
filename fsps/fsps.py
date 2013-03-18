@@ -352,6 +352,9 @@ class StellarPopulation(object):
         if not driver.is_setup:
             driver.setup(compute_vega_mags, redshift_colors)
 
+        # Caches.
+        self._mags = None
+
     def _update_params(self):
         if self.params.dirtiness == 2:
             driver.set_ssp_params(*[self.params[k]
@@ -384,8 +387,18 @@ class StellarPopulation(object):
         """
         return driver.get_lambda(NSPEC)
 
-    def get_mag(self):
-        pass
+    def get_mags(self, redshift=0.0):
+        """
+        Get the magnitude of the CSP in all known bands. The shape of the
+        resulting object is ``(NAGE, NBANDS)``.
+
+        :param redshift: (default: 0.0)
+            Optionally redshift the spectrum first.
+
+        """
+        if self.params.dirty:
+            self._compute_csp()
+        return driver.get_mags(NAGE, NBANDS, redshift)
 
 
 class ParameterSet(object):

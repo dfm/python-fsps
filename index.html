@@ -67,7 +67,7 @@ directory. Finally, clone the <a class="reference external" href="https://github
 python setup.py build_fsps
 python setup.py develop</pre>
 </div>
-<p>To test the installation, run:</p>
+<p>To test the installation, run (this doesn&#8217;t actually work yet):</p>
 <div class="highlight-python"><pre>python -c 'import fsps;fsps.test()'</pre>
 </div>
 </div>
@@ -75,7 +75,7 @@ python setup.py develop</pre>
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="fsps.StellarPopulation">
-<em class="property">class </em><tt class="descclassname">fsps.</tt><tt class="descname">StellarPopulation</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">fsps.</tt><tt class="descname">StellarPopulation</tt><big>(</big><em>compute_vega_mags=True</em>, <em>redshift_colors=False</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the main interface to use when interacting with FSPS from Python.
 Most of the Fortran API is exposed through Python hooks with various
 features added for user friendliness. When initializing, you can set any
@@ -93,6 +93,20 @@ For example:</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>compute_vega_mags</strong> &#8211; (default: True)
+A switch that sets the zero points of the magnitude system: <tt class="docutils literal"><span class="pre">True</span></tt>
+uses Vega magnitudes versus AB magnitudes.</li>
+<li><strong>redshift_colors</strong> &#8211; <p>(default: False)</p>
+<ul>
+<li><tt class="docutils literal"><span class="pre">False</span></tt>: Magnitudes are computed at a fixed redshift specified
+by <tt class="docutils literal"><span class="pre">zred</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">True</span></tt>: Magnitudes are computed at a redshift that corresponds
+to the age of the output SSP/CSP (assuming a redshift–age relation
+appropriate for a WMAP5 cosmology). This switch is useful if
+the user wants to compute the evolution in observed colors of a
+SSP/CSP.</li>
+</ul>
+</li>
 <li><strong>dust_type</strong> &#8211; <p>(default: 0)
 Common variable deﬁning the extinction curve for dust around old
 stars:</p>
@@ -119,20 +133,6 @@ Common variable defining the IMF type:</p>
 <li>4: Dave (2008)</li>
 <li>5: tabulated piece-wise power law IMF, specified in <tt class="docutils literal"><span class="pre">imf.dat</span></tt>
 file located in the data directory</li>
-</ul>
-</li>
-<li><strong>compute_vega_mags</strong> &#8211; (default: True)
-A switch that sets the zero points of the magnitude system: <tt class="docutils literal"><span class="pre">True</span></tt>
-uses Vega magnitudes versus AB magnitudes.</li>
-<li><strong>redshift_colors</strong> &#8211; <p>(default: False)</p>
-<ul>
-<li><tt class="docutils literal"><span class="pre">False</span></tt>: Magnitudes are computed at a fixed redshift specified
-by <tt class="docutils literal"><span class="pre">zred</span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre">True</span></tt>: Magnitudes are computed at a redshift that corresponds
-to the age of the output SSP/CSP (assuming a redshift–age relation
-appropriate for a WMAP5 cosmology). This switch is useful if
-the user wants to compute the evolution in observed colors of a
-SSP/CSP.</li>
 </ul>
 </li>
 <li><strong>pagb</strong> &#8211; (default: 1.0)
@@ -184,11 +184,157 @@ Dust parameter describing the attenuation of old stellar light,
 i.e. where <tt class="docutils literal"><span class="pre">t</span> <span class="pre">&gt;</span> <span class="pre">dust_tesc</span></tt> (for details, see Conroy et al. 2009a).</li>
 <li><strong>logzsol</strong> &#8211; (default: -0.2)
 Undocumented.</li>
+<li><strong>zred</strong> &#8211; (default: 0.0)
+Redshift. If this value is non-zero and if <tt class="docutils literal"><span class="pre">redshift_colors=1</span></tt>,
+the magnitudes will be computed for the spectrum placed at redshift
+<tt class="docutils literal"><span class="pre">zred</span></tt>.</li>
+<li><strong>pmetals</strong> &#8211; (default: 0.02)
+Undocumented.</li>
+<li><strong>imf1</strong> &#8211; (default: 1.3)
+Logarithmic slope of the IMF over the range <span class="math">\(0.08 &lt; M &lt; 0.5
+M_\odot\)</span>. Only used if <tt class="docutils literal"><span class="pre">imf_type=2</span></tt>.</li>
+<li><strong>imf2</strong> &#8211; (default: 2.3)
+Logarithmic slope of the IMF over the range <span class="math">\(0.5 &lt; M &lt; 1
+M_\odot\)</span>. Only used if <tt class="docutils literal"><span class="pre">imf_type=2</span></tt>.</li>
+<li><strong>imf3</strong> &#8211; (default: 2.3)
+Logarithmic slope of the IMF over the range <span class="math">\(1.0 &lt; M &lt; 100
+M_\odot\)</span>. Only used if <tt class="docutils literal"><span class="pre">imf_type=2</span></tt>.</li>
+<li><strong>vdmc</strong> &#8211; (default: 0.08)
+IMF parameter defined in van Dokkum (2008). Only used if
+<tt class="docutils literal"><span class="pre">imf_type=3</span></tt>.</li>
+<li><strong>dust_clumps</strong> &#8211; (default: -99.)
+Dust parameter describing the dispersion of a Gaussian PDF density
+distribution for the old dust. Setting this value to -99.0 sets the
+distribution to a uniform screen. See Conroy et al. (2009b) for
+details.</li>
+<li><strong>frac_nodust</strong> &#8211; (default: 0.0)
+Fraction of starlight that is not attenuated by the diffuse dust
+component (i.e. that is not affected by <tt class="docutils literal"><span class="pre">dust2</span></tt>).</li>
+<li><strong>dust_index</strong> &#8211; (default: -0.7)
+Power law index of the attenuation curve. Only used when
+<tt class="docutils literal"><span class="pre">dust_type=0</span></tt>.</li>
+<li><strong>dust_tesc</strong> &#8211; (default: 7.0)
+Stars younger than <tt class="docutils literal"><span class="pre">dust_tesc</span></tt> are attenuated by both <tt class="docutils literal"><span class="pre">dust1</span></tt> and
+<tt class="docutils literal"><span class="pre">dust2</span></tt>, while stars older are attenuated by <tt class="docutils literal"><span class="pre">dust2</span></tt> only. Units
+are <span class="math">\(\log (\mathrm{yrs})\)</span>.</li>
+<li><strong>frac_obrun</strong> &#8211; (default: 0.0)
+Undocumented.</li>
+<li><strong>uvb</strong> &#8211; (default: 1.0)
+Parameter characterizing the strength of the 2175A extinction feature
+with respect to the standard Cardelli et al. determination for the
+MW. Only used when <tt class="docutils literal"><span class="pre">dust_type=1</span></tt>.</li>
+<li><strong>mwr</strong> &#8211; (default: 3.1)
+The ratio of total to selective absorption which characterizes the MW
+extinction curve: <span class="math">\(R = A_V /E(B - V)\)</span>. Only used when
+<tt class="docutils literal"><span class="pre">dust_type=1</span></tt>.</li>
+<li><strong>redgb</strong> &#8211; (default: 1.0)
+Undocumented.</li>
+<li><strong>dust1_index</strong> &#8211; (default: -1.0)
+Undocumented.</li>
+<li><strong>mdave</strong> &#8211; (default: 0.5)
+IMF parameter defined in Dave (2008). Only used if <tt class="docutils literal"><span class="pre">imf_type=4</span></tt>.</li>
+<li><strong>sf_start</strong> &#8211; (default: 0.0)
+Start time of the SFH, in Gyr.</li>
+<li><strong>sf_trunc</strong> &#8211; (default: 0.0)
+Undocumented.</li>
+<li><strong>sf_theta</strong> &#8211; (default: 0.0)
+Undocumented.</li>
+<li><strong>duste_gamma</strong> &#8211; (default: 0.01)
+Parameter of the Draine &amp; Li (2007) dust emission model. Specifies
+the relative contribution of dust heated at a radiation field
+strength of <span class="math">\(U_\mathrm{min}\)</span> and dust heated at
+<span class="math">\(U_\mathrm{min} &lt; U \le U_\mathrm{max}\)</span>. Allowable range is 0.0
+– 1.0.</li>
+<li><strong>duste_umin</strong> &#8211; (default: 1.0)
+Parameter of the Draine &amp; Li (2007) dust emission model. Specifies
+the minimum radiation field strength in units of the MW value. Valid
+range is 0.1 – 25.0.</li>
+<li><strong>duste_qpah</strong> &#8211; (default: 3.5)
+Parameter of the Draine &amp; Li (2007) dust emission model. Specifies
+the grain size distribution through the fraction of grain mass in
+PAHs. This parameter has units of % and a valid range of 0.0 − 10.0.</li>
+<li><strong>fcstar</strong> &#8211; (default: 1.0)
+Fraction of stars that the Padova isochrones identify as Carbon stars
+that FSPS assigns to a Carbon star spectrum. Set this to 0.0 if for
+example the users wishes to turn all Carbon stars into regular M-type
+stars.</li>
+<li><strong>masscut</strong> &#8211; (default: 150.0)
+Undocumented.</li>
+<li><strong>zmet</strong> &#8211; (default: 1)
+The metallicity is specified as an integer ranging between 1 and 22.</li>
+<li><strong>sfh</strong> &#8211; <p>(default: 0)
+Defines the type of star formation history, normalized such that one
+solar mass of stars is formed over the full SFH. Default value is 0.</p>
+<ul>
+<li>0: Compute an SSP</li>
+<li>1: Compute a five parameter SFH (see below).</li>
+<li>2: Compute a tabulated SFH defined in a file called <tt class="docutils literal"><span class="pre">sfh.dat</span></tt>
+that must reside in the data directory. The file must contain three
+rows. The first column is time since the Big Bang in Gyr, the
+second is the SFR in units of solar masses per year, the third is
+the absolute metallicity. An example is provided in the data
+directory. The time grid in this file can be arbitrary (so long as
+the units are correct), but it is up to the user to ensure that the
+tabulated SFH is well-sampled so that the outputs are stable.
+Obviously, highly oscillatory data require dense sampling.</li>
+<li>4: Delayed tau-model. This is the same as option 1 except that the
+tau-model component takes the form <span class="math">\(t\,e^{−t/\tau}\)</span>.</li>
+</ul>
+</li>
+<li><strong>wgp1</strong> &#8211; (default: 1)
+Integer specifying the optical depth in the Witt &amp; Gordon (2000)
+models. Values range from 1 − 18, corresponding to optical depths of
+0.25, 0.50, 0.75, 1.00, 1.50, 2.00, 2.50, 3.00, 3.50, 4.00, 4.50,
+5.00, 5.50, 6.00, 7.00, 8.00, 9.00, 10.0. Note that these optical
+depths are defined differently from the optical depths defined by
+the parameters <tt class="docutils literal"><span class="pre">dust1</span></tt> and <tt class="docutils literal"><span class="pre">dust2</span></tt>. See Witt &amp; Gordon (2000)
+for details.</li>
+<li><strong>wgp2</strong> &#8211; (default: 1)
+Integer specifying the type of large-scale geometry and extinction
+curve. Values range from 1-6, corresponding to MW+dusty, MW+shell,
+MW+cloudy, SMC+dusty, SMC+shell, SMC+cloudy. Dusty, shell, and cloudy
+specify the geometry and are described in Witt &amp; Gordon (2000).</li>
+<li><strong>wgp3</strong> &#8211; (default: 1)
+Integer specifying the local geometry for the Witt &amp; Gordon (2000)
+dust models. A value of 0 corresponds to a homogeneous distribution,
+and a value of 1 corresponds to a clumpy distribution. See Witt &amp;
+Gordon (2000) for details.</li>
+<li><strong>evtype</strong> &#8211; (default: -1)
+Undocumented.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="fsps.StellarPopulation.get_mags">
+<tt class="descname">get_mags</tt><big>(</big><em>redshift=0.0</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation.get_mags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the magnitude of the CSP in all known bands. The shape of the
+resulting object is <tt class="docutils literal"><span class="pre">(NAGE,</span> <span class="pre">NBANDS)</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>redshift</strong> &#8211; (default: 0.0)
+Optionally redshift the spectrum first.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fsps.StellarPopulation.spectrum">
+<tt class="descname">spectrum</tt><a class="headerlink" href="#fsps.StellarPopulation.spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>A grid (in age) of the spectra for the current CSP. The shape of
+the resulting object is <tt class="docutils literal"><span class="pre">(NAGE,</span> <span class="pre">NSPEC)</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fsps.StellarPopulation.wavelengths">
+<tt class="descname">wavelengths</tt><a class="headerlink" href="#fsps.StellarPopulation.wavelengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>The wavelength scale for the computed spectra.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>

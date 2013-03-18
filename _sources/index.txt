@@ -31,7 +31,7 @@ https://github.com/dfm/python-fsps.git`` and run
     python setup.py build_fsps
     python setup.py develop
 
-To test the installation, run:
+To test the installation, run (this doesn't actually work yet):
 
 ::
 

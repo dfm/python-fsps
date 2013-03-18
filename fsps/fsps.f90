@@ -18,40 +18,67 @@ module driver
 
 contains
 
-  subroutine setup
+  subroutine setup(compute_vega_mags0,redshift_colors0)
 
     ! Load all the data files/templates into memory.
+
+    implicit none
+
+    integer, intent(in) :: compute_vega_mags0, redshift_colors0
+    compute_vega_mags = compute_vega_mags0
+    redshift_colors = redshift_colors0
     call sps_setup(-1)
     is_setup = 1
 
   end subroutine
 
-  subroutine set_params(dust_type0,imf_type0,&
-                        compute_vega_mags0,redshift_colors0,zmet,sfh,&
-                        wgp1,wgp2,wgp3,evtype,pagb,dell,delt,fbhb,sbss,&
-                        tau,const,tage,fburst,tburst,dust1,dust2,logzsol,&
-                        zred,pmetals,imf1,imf2,imf3,vdmc,dust_clumps,&
-                        frac_nodust,dust_index,dust_tesc,frac_obrun,&
-                        uvb,mwr,redgb,dust1_index,mdave,sf_start,&
-                        sf_trunc,sf_theta,duste_gamma,duste_umin,&
-                        duste_qpah,fcstar,masscut)
+  subroutine set_ssp_params(imf_type0,imf1,imf2,imf3,vdmc,mdave,dell,&
+                            delt,sbss,fbhb,pagb)
 
-    integer, intent(in) :: dust_type0,imf_type0,&
-                           compute_vega_mags0,redshift_colors0,zmet,sfh,&
-                           wgp1,wgp2,wgp3,evtype
+    ! Set the parameters that affect the SSP computation.
 
-    double precision, intent(in) :: pagb,dell,delt,fbhb,sbss,tau,const,&
-                            tage,fburst,tburst,dust1,dust2,logzsol,zred,&
-                            pmetals,imf1,imf2,imf3,vdmc,dust_clumps,&
-                            frac_nodust,dust_index,dust_tesc,frac_obrun,&
-                            uvb,mwr,redgb,dust1_index,mdave,sf_start,&
-                            sf_trunc,sf_theta,duste_gamma,duste_umin,&
-                            duste_qpah,fcstar,masscut
+    implicit none
 
-    dust_type=dust_type0
+    integer, intent(in) :: imf_type0
+    double precision, intent(in) :: imf1,imf2,imf3,vdmc,mdave,dell,&
+                                    delt,sbss,fbhb,pagb
+
     imf_type=imf_type0
-    compute_vega_mags=compute_vega_mags0
-    redshift_colors=redshift_colors0
+    pset%imf1=imf1
+    pset%imf2=imf2
+    pset%imf3=imf3
+    pset%vdmc=vdmc
+    pset%mdave=mdave
+    pset%dell=dell
+    pset%delt=delt
+    pset%sbss=sbss
+    pset%fbhb=fbhb
+    pset%pagb=pagb
+
+    has_ssp(:) = 0
+
+  end subroutine
+
+  subroutine set_csp_params(dust_type0,zmet,sfh,wgp1,wgp2,wgp3,evtype,tau,&
+                            const,tage,fburst,tburst,dust1,dust2,&
+                            logzsol,zred,pmetals,dust_clumps,frac_nodust,&
+                            dust_index,dust_tesc,frac_obrun,uvb,mwr,&
+                            redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
+                            duste_gamma,duste_umin,duste_qpah,fcstar,&
+                            masscut)
+
+    ! Set all the parameters that don't affect the SSP computation.
+
+    implicit none
+
+    integer, intent(in) :: dust_type0,zmet,sfh,wgp1,wgp2,wgp3,evtype
+    double precision, intent(in) :: tau,&
+                            const,tage,fburst,tburst,dust1,dust2,&
+                            logzsol,zred,pmetals,dust_clumps,frac_nodust,&
+                            dust_index,dust_tesc,frac_obrun,uvb,mwr,&
+                            redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
+                            duste_gamma,duste_umin,duste_qpah,fcstar,&
+                            masscut
 
     pset%zmet=zmet
     pset%sfh=sfh
@@ -60,11 +87,6 @@ contains
     pset%wgp3=wgp3
     pset%evtype=evtype
 
-    pset%pagb=pagb
-    pset%dell=dell
-    pset%delt=delt
-    pset%fbhb=fbhb
-    pset%sbss=sbss
     pset%tau=tau
     pset%const=const
     pset%tage=tage
@@ -75,10 +97,6 @@ contains
     pset%logzsol=logzsol
     pset%zred=zred
     pset%pmetals=pmetals
-    pset%imf1=imf1
-    pset%imf2=imf2
-    pset%imf3=imf3
-    pset%vdmc=vdmc
     pset%dust_clumps=dust_clumps
     pset%frac_nodust=frac_nodust
     pset%dust_index=dust_index
@@ -88,7 +106,6 @@ contains
     pset%mwr=mwr
     pset%redgb=redgb
     pset%dust1_index=dust1_index
-    pset%mdave=mdave
     pset%sf_start=sf_start
     pset%sf_trunc=sf_trunc
     pset%sf_theta=sf_theta
@@ -98,16 +115,14 @@ contains
     pset%fcstar=fcstar
     pset%masscut=masscut
 
-    has_ssp(:) = 0
-
   end subroutine
 
   subroutine ssps
 
-    ! Calculate all of the SSPs in one go.
-    integer :: zi
+    ! Loop over the metallicity grid and compute all the SSPs.
 
-    ! Loop over the metallicities and generate the SSPs.
+    implicit none
+    integer :: zi
     do zi=1,nz
       call ssp(zi)
     enddo
@@ -116,6 +131,9 @@ contains
 
   subroutine ssp(zi)
 
+    ! Compute a SSP at a single metallicity.
+
+    implicit none
     integer, intent(in) :: zi
     pset%zmet = zi
     has_ssp(zi) = 1
@@ -124,23 +142,39 @@ contains
 
   end subroutine
 
-  subroutine compute(zmet)
+  subroutine compute
 
-    ! Compute the stellar population given a set of physical parameters.
-    integer, intent(in) :: zmet
+    ! Compute the full CSP (and the SSP if it isn't already cached).
 
+    implicit none
+    integer :: zmet
+    zmet = pset%zmet
     if (has_ssp(zmet) .eq. 0) then
       call ssp(zmet)
     endif
-
     call compsp(0,1,'',mass_ssp_zz(zmet,:),lbol_ssp_zz(zmet,:),&
                 spec_ssp_zz(zmet,:,:),pset,ocompsp)
 
   end subroutine
 
+  subroutine get_spec(ns,n_age,spec_out)
+
+    ! Get the grid of spectra for the computed CSP at all ages.
+
+    implicit none
+    integer :: i
+    integer, intent(in) :: ns,n_age
+    double precision, dimension(n_age,ns), intent(out) :: spec_out
+    do i=1,n_age
+      spec_out(i,:) = ocompsp(i)%spec
+    enddo
+
+  end subroutine
+
   subroutine get_nz(n_z)
 
-    ! Get the total number of time steps (hard coded in sps_vars).
+    ! Get the number of metallicity bins (hard coded in sps_vars).
+    implicit none
     integer, intent(out) :: n_z
     n_z = nz
 
@@ -149,6 +183,7 @@ contains
   subroutine get_ntfull(n_age)
 
     ! Get the total number of time steps (hard coded in sps_vars).
+    implicit none
     integer, intent(out) :: n_age
     n_age = ntfull
 
@@ -156,7 +191,9 @@ contains
 
   subroutine get_nspec(ns)
 
-    ! Get the number of wavelength bins in the spectra.
+    ! Get the number of wavelength bins in the spectra (hard coded in
+    ! sps_vars).
+    implicit none
     integer, intent(out) :: ns
     ns = nspec
 
@@ -164,7 +201,8 @@ contains
 
   subroutine get_nbands(nb)
 
-    ! Get the number of wavebands calculated.
+    ! Get the number of known filters (hard coded in sps_vars).
+    implicit none
     integer, intent(out) :: nb
     nb = nbands
 
@@ -173,6 +211,7 @@ contains
   subroutine get_lambda(ns,lambda)
 
     ! Get the grid of wavelength bins.
+    implicit none
     integer, intent(in) :: ns
     double precision, dimension(ns), intent(out) :: lambda
     lambda = spec_lambda
@@ -180,6 +219,8 @@ contains
   end subroutine
 
   subroutine get_isochrone_dimensions(n_age,n_mass)
+
+    implicit none
 
     ! Get the dimensions of the produced isochrones.
     integer, intent(out) :: n_age,n_mass
@@ -190,6 +231,8 @@ contains
 
   subroutine get_nmass_isochrone(zz, tt, nmass)
 
+    implicit none
+
     ! Get the number of masses included in a specific isochrone.
     integer, intent(in) :: zz,tt
     integer, intent(out) :: nmass
@@ -198,6 +241,8 @@ contains
   end subroutine
 
   subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust)
+
+    implicit none
 
     ! Get some stats about the computed SP.
     integer :: i
@@ -217,6 +262,8 @@ contains
 
   subroutine get_mags(n_age,n_bands,z_red,mags)
 
+    implicit none
+
     ! Get the photometric magnitudes.
     integer :: i
     integer, intent(in) :: n_age, n_bands
@@ -229,21 +276,11 @@ contains
 
   end subroutine
 
-  subroutine get_spec(ns,n_age,spec_out)
-
-    ! Get the set of spectra as a function of time.
-    integer :: i
-    integer, intent(in) :: ns,n_age
-    double precision, dimension(n_age,ns), intent(out) :: spec_out
-    do i=1,n_age
-      spec_out(i,:) = ocompsp(i)%spec
-    enddo
-
-  end subroutine
-
   subroutine get_isochrone(zz,tt,n_mass,n_mags,time_out,z_out,&
                            mass_init_out,logl_out,logt_out,logg_out,&
                            ffco_out,phase_out,wght_out,mags_out)
+
+    implicit none
 
     integer, intent(in) :: zz,tt,n_mass,n_mags
     double precision, intent(out) :: time_out, z_out

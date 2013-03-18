@@ -39,6 +39,20 @@ class StellarPopulation(object):
         sp = StellarPopulation(imf_type=2)
         sp.params["imf_type"] = 1
 
+    :param compute_vega_mags: (default: True)
+        A switch that sets the zero points of the magnitude system: ``True``
+        uses Vega magnitudes versus AB magnitudes.
+
+    :param redshift_colors: (default: False)
+
+        * ``False``: Magnitudes are computed at a fixed redshift specified
+          by ``zred``.
+        * ``True``: Magnitudes are computed at a redshift that corresponds
+          to the age of the output SSP/CSP (assuming a redshift–age relation
+          appropriate for a WMAP5 cosmology). This switch is useful if
+          the user wants to compute the evolution in observed colors of a
+          SSP/CSP.
+
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old
         stars:
@@ -64,20 +78,6 @@ class StellarPopulation(object):
         * 4: Dave (2008)
         * 5: tabulated piece-wise power law IMF, specified in ``imf.dat``
           file located in the data directory
-
-    :param compute_vega_mags: (default: True)
-        A switch that sets the zero points of the magnitude system: ``True``
-        uses Vega magnitudes versus AB magnitudes.
-
-    :param redshift_colors: (default: False)
-
-        * ``False``: Magnitudes are computed at a fixed redshift specified
-          by ``zred``.
-        * ``True``: Magnitudes are computed at a redshift that corresponds
-          to the age of the output SSP/CSP (assuming a redshift–age relation
-          appropriate for a WMAP5 cosmology). This switch is useful if
-          the user wants to compute the evolution in observed colors of a
-          SSP/CSP.
 
     :param pagb: (default: 1.0)
         Weight given to the post–AGB phase. A value of 0.0 turns off post-AGB
@@ -288,18 +288,12 @@ class StellarPopulation(object):
 
     """
 
-    def __init__(self, **kwargs):
-        # Before the first time we interact with the FSPS driver, we need to
-        # run the ``setup`` method.
-        if not driver.is_setup:
-            driver.setup()
-
+    def __init__(self, compute_vega_mags=True, redshift_colors=False,
+                 **kwargs):
         # Set up the parameters to their default values.
         self.params = ParameterSet(
             dust_type=0,
             imf_type=2,
-            compute_vega_mags=True,
-            redshift_colors=False,
             pagb=1.0,
             dell=0.0,
             delt=0.0,
@@ -344,51 +338,78 @@ class StellarPopulation(object):
             wgp3=1,
             evtype=-1
         )
+
+        # Parse any input options.
         for k, v in self.params.iteritems():
             self.params[k] = kwargs.pop(k, v)
 
+        # Make sure that we didn't get any unknown options.
         if len(kwargs):
             raise TypeError("__init__() got an unexpected keyword argument "
                             "'{}'".format(kwargs.keys()[0]))
 
+        # Before the first time we interact with the FSPS driver, we need to
+        # run the ``setup`` method.
+        if not driver.is_setup:
+            driver.setup(compute_vega_mags, redshift_colors)
+
     def _update_params(self):
-        keys = ["dust_type", "imf_type", "compute_vega_mags",
-                "redshift_colors", "zmet", "sfh", "wgp1", "wgp2", "wgp3",
-                "evtype", "pagb", "dell", "delt", "fbhb", "sbss", "tau",
-                "const", "tage", "fburst", "tburst", "dust1", "dust2",
-                "logzsol", "zred", "pmetals", "imf1", "imf2", "imf3", "vdmc",
-                "dust_clumps", "frac_nodust", "dust_index", "dust_tesc",
-                "frac_obrun", "uvb", "mwr", "redgb", "dust1_index", "mdave",
-                "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
-                "duste_umin", "duste_qpah", "fcstar", "masscut"]
-        driver.set_params(*[self.params[k] for k in keys])
-        self.params.dirty = False
+        if self.params.dirtiness == 2:
+            driver.set_ssp_params(*[self.params[k]
+                                    for k in self.params.ssp_params])
+        if self.params.dirtiness >= 1:
+            driver.set_csp_params(*[self.params[k]
+                                    for k in self.params.csp_params])
+        self.params.dirtiness = 0
 
-    def compute_ssp(self, zi=None):
+    def _compute_csp(self):
+        self._update_params()
+        driver.compute()
+
+    @property
+    def spectrum(self):
+        """
+        A grid (in age) of the spectra for the current CSP. The shape of
+        the resulting object is ``(NAGE, NSPEC)``.
+
+        """
         if self.params.dirty:
-            self._update_params()
-
-        if zi is None:
-            driver.ssps()
-        else:
-            assert 0 <= zi < NZ
-            driver.ssp(int(zi) + 1)
-
-    def compute_csp(self, zmet):
-        if self.params.dirty:
-            self._update_params()
-
-        driver.compute(int(zmet) + 1)
+            self._compute_csp()
+        return driver.get_spec(NSPEC, NAGE)
 
     @property
     def wavelengths(self):
+        """
+        The wavelength scale for the computed spectra.
+
+        """
         return LAMBDA_GRID
 
 
 class ParameterSet(object):
 
+    ssp_params = ["imf_type", "imf1", "imf2", "imf3", "vdmc", "mdave",
+                  "dell", "delt", "sbss", "fbhb", "pagb"]
+
+    csp_params = ["dust_type",
+                  "zmet", "sfh", "wgp1", "wgp2", "wgp3", "evtype", "tau",
+                  "const", "tage", "fburst", "tburst", "dust1", "dust2",
+                  "logzsol", "zred", "pmetals", "dust_clumps", "frac_nodust",
+                  "dust_index", "dust_tesc", "frac_obrun", "uvb", "mwr",
+                  "redgb", "dust1_index", "sf_start", "sf_trunc", "sf_theta",
+                  "duste_gamma", "duste_umin", "duste_qpah", "fcstar",
+                  "masscut"]
+
+    @property
+    def all_params(self):
+        return self.ssp_params + self.csp_params
+
+    @property
+    def dirty(self):
+        return self.dirtiness > 0
+
     def __init__(self, **kwargs):
-        self.dirty = True
+        self.dirtiness = 2
         self._params = kwargs
         self.iteritems = self._params.iteritems
 
@@ -396,5 +417,11 @@ class ParameterSet(object):
         return self._params[k]
 
     def __setitem__(self, k, v):
-        self.dirty = True
+        if k in self.ssp_params:
+            self.dirtiness = 2
+        elif k in self.csp_params:
+            self.dirtiness = 1
+        else:
+            raise KeyError("Unrecognized parameter {}".format(k))
+
         self._params[k] = v

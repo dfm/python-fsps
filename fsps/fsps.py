@@ -10,11 +10,6 @@ from ._fsps import driver
 
 
 # Hard-set FSPS parameters.
-NZ = driver.get_nz()
-NTFULL = driver.get_ntfull()
-NSPEC = driver.get_nspec()
-NBANDS = driver.get_nbands()
-NAGE, NMASS = driver.get_isochrone_dimensions()
 
 
 def _get_nmass_isochrone(z, t):
@@ -360,6 +355,7 @@ class StellarPopulation(object):
         # Caching.
         self._wavelengths = None
         self._mags = None
+        self._stats = None
 
     def _update_params(self):
         if self.params.dirtiness == 2:
@@ -374,6 +370,7 @@ class StellarPopulation(object):
         self._update_params()
         driver.compute()
         self._mags = None
+        self._stats = None
 
     def get_spectrum(self, zmet=None, tage=0.0):
         """
@@ -395,7 +392,7 @@ class StellarPopulation(object):
             The spectrum in :math:`L_\odot/\mathrm{Hz}`. If an age was
             was provided by the ``tage`` parameter then the result is a 1D
             array with ``NSPEC`` values. Otherwise, it is a 2D array with
-            shape ``(NAGE, NSPEC)``.
+            shape ``(NTFULL, NSPEC)``.
 
         """
         self.params["tage"] = tage
@@ -405,10 +402,12 @@ class StellarPopulation(object):
         if self.params.dirty:
             self._compute_csp()
 
+        NSPEC = driver.get_nspec()
+        NTFULL = driver.get_ntfull()
         if tage > 0.0:
-            return self.wavelengths, driver.get_spec(NSPEC, NAGE)[0]
+            return self.wavelengths, driver.get_spec(NSPEC, NTFULL)[0]
 
-        return self.wavelengths, driver.get_spec(NSPEC, NAGE)
+        return self.wavelengths, driver.get_spec(NSPEC, NTFULL)
 
     @property
     def wavelengths(self):
@@ -417,13 +416,14 @@ class StellarPopulation(object):
 
         """
         if self._wavelengths is None:
+            NSPEC = driver.get_nspec()
             self._wavelengths = driver.get_lambda(NSPEC)
         return self._wavelengths
 
     def get_mags(self, zmet=None, tage=0.0, redshift=0.0, band=None):
         """
         Get the magnitude of the CSP in all known bands. The shape of the
-        resulting object is ``(NAGE, NBANDS)``.
+        resulting object is ``(NTFULL, NBANDS)``.
 
         :param zmet: (default: None)
             The (integer) index of the metallicity to use. By default, use
@@ -445,7 +445,7 @@ class StellarPopulation(object):
         :returns mags:
             The magnitude grid. If an age was was provided by the ``tage``
             parameter then the result is a 1D array with ``NBANDS`` values.
-            Otherwise, it is a 2D array with shape ``(NAGE, NBANDS)``. If
+            Otherwise, it is a 2D array with shape ``(NTFULL, NBANDS)``. If
             a particular band was requested then this return value will be
             properly compressed along that axis.
 
@@ -458,7 +458,9 @@ class StellarPopulation(object):
             self._compute_csp()
 
         if self._mags is None:
-            self._mags = driver.get_mags(NAGE, NBANDS, redshift)
+            NTFULL = driver.get_ntfull()
+            NBANDS = driver.get_nbands()
+            self._mags = driver.get_mags(NTFULL, NBANDS, redshift)
 
         # Only return the first element if ``tage`` was provided.
         if tage > 0.0:
@@ -468,11 +470,42 @@ class StellarPopulation(object):
 
         if band is not None:
             return self._mags[:, FILTERS[band.lower()].index]
-        return self._mags
+        return self._mags[:]
 
-    def get_grid_stats(self):
-        results = driver.get_stats(NAGE)
-        return dict(zip(["age", "mass", "lbol", "sfr", "mdust"], results))
+    @property
+    def log_age(self):
+        return self._stat(0)
+
+    @property
+    def log_mass(self):
+        return self._stat(1)
+
+    @property
+    def log_lbol(self):
+        return self._stat(2)
+
+    @property
+    def log_sfr(self):
+        return self._stat(3)
+
+    @property
+    def log_mdust(self):
+        return self._stat(4)
+
+    def _get_grid_stats(self):
+        if self.params.dirty:
+            self._compute_csp()
+
+        if self._stats is None:
+            self._stats = driver.get_stats(driver.get_ntfull())
+
+        return self._stats
+
+    def _stat(self, k):
+        stats = self.get_grid_stats()
+        if self.params["tage"] > 0:
+            return stats[k][0]
+        return stats[k]
 
 
 class ParameterSet(object):
@@ -502,6 +535,7 @@ class ParameterSet(object):
         self.iteritems = self._params.iteritems
 
     def check_params(self):
+        NZ = driver.get_nz()
         assert self._params["zmet"] in range(1, NZ + 1), \
             "zmet={} out of range [1, {0}]".format(self._params["zmet"], NZ)
         assert self._params["dust_type"] in range(4), \

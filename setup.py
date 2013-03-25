@@ -40,6 +40,7 @@ class build_fsps(build_ext):
         cmd = "cd fsps;f2py -c -I{0} ".format(fsps_dir)
         cmd += " ".join(fns)
         cmd += " --f90flags=-cpp"
+        cmd += " --f90flags=-fPIC"
         print("Running: {0}".format(cmd))
         sp.call(cmd, shell=True)
 

@@ -502,7 +502,7 @@ class StellarPopulation(object):
         return self._stats
 
     def _stat(self, k):
-        stats = self.get_grid_stats()
+        stats = self._get_grid_stats()
         if self.params["tage"] > 0:
             return stats[k][0]
         return stats[k]

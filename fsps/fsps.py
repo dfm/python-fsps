@@ -347,7 +347,7 @@ class StellarPopulation(object):
         # Make sure that we didn't get any unknown options.
         if len(kwargs):
             raise TypeError("__init__() got an unexpected keyword argument "
-                            "'{}'".format(kwargs.keys()[0]))
+                            "'{0}'".format(kwargs.keys()[0]))
 
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
@@ -453,7 +453,7 @@ class ParameterSet(object):
 
     def check_params(self):
         assert self._params["zmet"] in range(1, NZ + 1), \
-            "zmet={} out of range [1, {}]".format(self._params["zmet"], NZ)
+            "zmet={} out of range [1, {0}]".format(self._params["zmet"], NZ)
         assert self._params["dust_type"] in range(4), \
             "dust_type={} out of range [0, 3]".format(
                 self._params["dust_type"])
@@ -469,7 +469,7 @@ class ParameterSet(object):
         elif k in self.csp_params:
             self.dirtiness = 1
         else:
-            raise KeyError("Unrecognized parameter {}".format(k))
+            raise KeyError("Unrecognized parameter {0}".format(k))
 
         self._params[k] = v
         self.check_params()
@@ -483,10 +483,10 @@ class Filter(object):
         self.fullname = fullname
 
     def __str__(self):
-        return "<Filter({})>".format(self.name)
+        return "<Filter({0})>".format(self.name)
 
     def __repr__(self):
-        return "<Filter({})>".format(self.name)
+        return "<Filter({0})>".format(self.name)
 
 
 FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "

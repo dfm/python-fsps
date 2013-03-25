@@ -24,23 +24,23 @@ class build_fsps(build_ext):
         cmd = "cd fsps;f2py fsps.f90"
         cmd += " -m _fsps -h fsps.pyf"
         cmd += " --overwrite-signature"
-        print("Running: {}".format(cmd))
+        print("Running: {0}".format(cmd))
         sp.call(cmd, shell=True)
 
         # Find the FSPS source files.
         fsps_dir = os.path.join(os.environ["SPS_HOME"], "src")
         fns = [f for f in glob.glob(os.path.join(fsps_dir, "*.o"))
-                    if os.path.basename(f) not in ["autosps.o", "simple.o",
-                                                "lesssimple.o"]]
+               if os.path.basename(f) not in ["autosps.o", "simple.o",
+                                              "lesssimple.o"]]
 
         # Add the interface source files to the file list.
         fns += ["fsps.f90", "fsps.pyf"]
 
         # Compile the library.
-        cmd = "cd fsps;f2py -c -I{} ".format(fsps_dir)
+        cmd = "cd fsps;f2py -c -I{0} ".format(fsps_dir)
         cmd += " ".join(fns)
         cmd += " --f90flags=-cpp"
-        print("Running: {}".format(cmd))
+        print("Running: {0}".format(cmd))
         sp.call(cmd, shell=True)
 
 

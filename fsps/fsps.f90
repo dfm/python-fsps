@@ -1,9 +1,8 @@
 module driver
 
-  use sps_vars
-  use nrtype
-  use sps_utils
+  use sps_vars; use sps_utils
   implicit none
+  save
 
   !f2py intent(hide) pset
   type(PARAMS) :: pset

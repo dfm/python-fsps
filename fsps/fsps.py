@@ -375,17 +375,38 @@ class StellarPopulation(object):
         driver.compute()
         self._mags = None
 
-    def get_spectrum(self, zmet=None):
+    def get_spectrum(self, zmet=None, tage=0.0):
         """
-        A grid (in age) of the spectra for the current CSP. The shape of
-        the resulting object is ``(NAGE, NSPEC)``.
+        A grid (in age) of the spectra for the current CSP.
+
+        :param zmet: (default: None)
+            The (integer) index of the metallicity to use. By default, use
+            the current value of ``self.params["zmet"]``.
+
+        :param tage: (default: 0.0)
+            The age of the stellar population. By default, this will compute
+            a grid of ages from :math:`t \approx 0` to the maximum age in the
+            isochrones.
+
+        :returns wavelengths:
+            The wavelength grid in Angstroms.
+
+        :returns spectrum:
+            The spectrum in :math:`L_\odot/\mathrm{Hz}`. If an age was
+            was provided by the ``tage`` parameter then the result is a 1D
+            array with ``NSPEC`` values. Otherwise, it is a 2D array with
+            shape ``(NAGE, NSPEC)``.
 
         """
+        self.params["tage"] = tage
         if zmet is not None:
             self.params["zmet"] = zmet
 
         if self.params.dirty:
             self._compute_csp()
+
+        if tage > 0.0:
+            return self.wavelengths, driver.get_spec(NSPEC, NAGE)[0]
 
         return self.wavelengths, driver.get_spec(NSPEC, NAGE)
 
@@ -399,15 +420,37 @@ class StellarPopulation(object):
             self._wavelengths = driver.get_lambda(NSPEC)
         return self._wavelengths
 
-    def get_mags(self, zmet=None, redshift=0.0, band=None):
+    def get_mags(self, zmet=None, tage=0.0, redshift=0.0, band=None):
         """
         Get the magnitude of the CSP in all known bands. The shape of the
         resulting object is ``(NAGE, NBANDS)``.
 
+        :param zmet: (default: None)
+            The (integer) index of the metallicity to use. By default, use
+            the current value of ``self.params["zmet"]``.
+
+        :param tage: (default: 0.0)
+            The age of the stellar population. By default, this will compute
+            a grid of ages from :math:`t \approx 0` to the maximum age in the
+            isochrones.
+
         :param redshift: (default: 0.0)
             Optionally redshift the spectrum first.
 
+        :param band: (default: None)
+            The name of the filter that you would like to compute the
+            magnitude for. This should correspond to the result of
+            :func:`fsps.find_filter`.
+
+        :returns mags:
+            The magnitude grid. If an age was was provided by the ``tage``
+            parameter then the result is a 1D array with ``NBANDS`` values.
+            Otherwise, it is a 2D array with shape ``(NAGE, NBANDS)``. If
+            a particular band was requested then this return value will be
+            properly compressed along that axis.
+
         """
+        self.params["tage"] = tage
         if zmet is not None:
             self.params["zmet"] = zmet
 
@@ -417,10 +460,19 @@ class StellarPopulation(object):
         if self._mags is None:
             self._mags = driver.get_mags(NAGE, NBANDS, redshift)
 
+        # Only return the first element if ``tage`` was provided.
+        if tage > 0.0:
+            if band is not None:
+                return self._mags[0, FILTERS[band.lower()].index]
+            return self._mags[0]
+
         if band is not None:
             return self._mags[:, FILTERS[band.lower()].index]
-
         return self._mags
+
+    def get_grid_stats(self):
+        results = driver.get_stats(NAGE)
+        return dict(zip(["age", "mass", "lbol", "sfr", "mdust"], results))
 
 
 class ParameterSet(object):
@@ -462,21 +514,23 @@ class ParameterSet(object):
         return self._params[k]
 
     def __setitem__(self, k, v):
-        if k in self.ssp_params:
-            self.dirtiness = 2
-        elif k in self.csp_params:
-            self.dirtiness = 1
-        else:
-            raise KeyError("Unrecognized parameter {0}".format(k))
+        original = self._params[k]
+        is_changed = original != v
 
-        self._params[k] = v
-        self.check_params()
+        if is_changed:
+            if k in self.ssp_params:
+                self.dirtiness = 2
+            elif k in self.csp_params:
+                self.dirtiness = 1
+
+            self._params[k] = v
+            self.check_params()
 
 
 class Filter(object):
 
     def __init__(self, index, name, fullname):
-        self.index = index
+        self.index = index - 1
         self.name = name.lower()
         self.fullname = fullname
 

@@ -185,6 +185,15 @@ contains
 
   end subroutine
 
+  subroutine get_setup_vars(cvms, rcolors)
+
+    implicit none
+    integer, intent(out) :: cvms, rcolors
+    cvms = compute_vega_mags
+    rcolors = redshift_colors
+
+  end subroutine
+
   subroutine get_nz(n_z)
 
     ! Get the number of metallicity bins (hard coded in sps_vars).

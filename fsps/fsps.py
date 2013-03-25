@@ -6,8 +6,6 @@ from __future__ import (division, print_function, absolute_import,
 
 __all__ = ["StellarPopulation"]
 
-import os
-import numpy as np
 from ._fsps import driver
 
 
@@ -610,3 +608,27 @@ FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "
            (85, "WFC_ACS_F658N", "WFC ACS F658N"),
            (86, "HRC_ACS_F330W", "HRC ACS F330W")]
 FILTERS = {f[1].lower(): Filter(*f) for f in FILTERS}
+
+
+def find_filter(band):
+    """
+    Find the FSPS name for a filter.
+
+    Usage:
+
+    ::
+
+        >>> import fsps
+        >>> fsps.find_filter("F555W")
+        ['wfpc2_f555w', 'wfc_acs_f555w']
+
+    :param band:
+        Something like the name of the band.
+
+    """
+    b = band.lower()
+    possible = []
+    for k in FILTERS.keys():
+        if b in k:
+            possible.append(k)
+    return possible

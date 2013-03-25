@@ -661,7 +661,7 @@ FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "
             "(http://acs.pha.jhu.edu/instrument/photometry/)"),
            (85, "WFC_ACS_F658N", "WFC ACS F658N"),
            (86, "HRC_ACS_F330W", "HRC ACS F330W")]
-FILTERS = {f[1].lower(): Filter(*f) for f in FILTERS}
+FILTERS = dict([(f[1].lower(), Filter(*f)) for f in FILTERS])
 
 
 def find_filter(band):

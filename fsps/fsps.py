@@ -4,16 +4,10 @@
 from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 
-__all__ = ["StellarPopulation"]
+__all__ = ["StellarPopulation", "find_filter"]
 
+import numpy as np
 from ._fsps import driver
-
-
-# Hard-set FSPS parameters.
-
-
-def _get_nmass_isochrone(z, t):
-    return driver.get_nmass_isochrone(z, t)
 
 
 class StellarPopulation(object):
@@ -372,7 +366,7 @@ class StellarPopulation(object):
         self._mags = None
         self._stats = None
 
-    def get_spectrum(self, zmet=None, tage=0.0):
+    def get_spectrum(self, zmet=None, tage=0.0, peraa=False):
         """
         A grid (in age) of the spectra for the current CSP.
 
@@ -385,14 +379,19 @@ class StellarPopulation(object):
             a grid of ages from :math:`t \approx 0` to the maximum age in the
             isochrones.
 
+        :param peraa: (default: False)
+            If ``True``, return the spectrum in :math:`L_\odot/\AA`.
+            Otherwise, return the spectrum in the FSPS standard
+            :math:`L_\odot/\mathrm{Hz}`.
+
         :returns wavelengths:
             The wavelength grid in Angstroms.
 
         :returns spectrum:
-            The spectrum in :math:`L_\odot/\mathrm{Hz}`. If an age was
-            was provided by the ``tage`` parameter then the result is a 1D
-            array with ``NSPEC`` values. Otherwise, it is a 2D array with
-            shape ``(NTFULL, NSPEC)``.
+            The spectrum in :math:`L_\odot/\mathrm{Hz}` or :math:`L_\odot/\AA`.
+            If an age was provided by the ``tage`` parameter then the result
+            is a 1D array with ``NSPEC`` values. Otherwise, it is a 2D array
+            with shape ``(NTFULL, NSPEC)``.
 
         """
         self.params["tage"] = tage
@@ -402,12 +401,19 @@ class StellarPopulation(object):
         if self.params.dirty:
             self._compute_csp()
 
+        wavegrid = self.wavelengths
+        if peraa:
+            factor = 3e18 / wavegrid ** 2
+
+        else:
+            factor = np.ones_like(wavegrid)
+
         NSPEC = driver.get_nspec()
         NTFULL = driver.get_ntfull()
         if tage > 0.0:
-            return self.wavelengths, driver.get_spec(NSPEC, NTFULL)[0]
+            return wavegrid, driver.get_spec(NSPEC, NTFULL)[0] * factor
 
-        return self.wavelengths, driver.get_spec(NSPEC, NTFULL)
+        return wavegrid, driver.get_spec(NSPEC, NTFULL) * factor[None, :]
 
     @property
     def wavelengths(self):

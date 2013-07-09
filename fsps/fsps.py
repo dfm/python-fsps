@@ -274,6 +274,9 @@ class StellarPopulation(object):
     :param evtype: (default: -1)
         Undocumented.
 
+    :param vel_broad: (default: 0.0)
+        Undocumented.
+
     """
 
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
@@ -324,7 +327,8 @@ class StellarPopulation(object):
             wgp1=1,
             wgp2=1,
             wgp3=1,
-            evtype=-1
+            evtype=-1,
+            vel_broad=0.0,
         )
 
         # Parse any input options.
@@ -525,7 +529,8 @@ class ParameterSet(object):
                   "dust_clumps", "frac_nodust", "dust_index", "dust_tesc",
                   "frac_obrun", "uvb", "mwr", "redgb", "dust1_index",
                   "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
-                  "duste_umin", "duste_qpah", "fcstar", "masscut"]
+                  "duste_umin", "duste_qpah", "fcstar", "masscut",
+                  "vel_broad"]
 
     @property
     def all_params(self):

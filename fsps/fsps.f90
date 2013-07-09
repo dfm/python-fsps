@@ -64,7 +64,7 @@ contains
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut)
+                            masscut,vel_broad)
 
     ! Set all the parameters that don't affect the SSP computation.
 
@@ -77,7 +77,7 @@ contains
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut
+                            masscut,vel_broad
 
     pset%zmet=zmet
     pset%sfh=sfh
@@ -113,6 +113,7 @@ contains
     pset%duste_qpah=duste_qpah
     pset%fcstar=fcstar
     pset%masscut=masscut
+    pset%vel_broad=vel_broad
 
   end subroutine
 

@@ -473,13 +473,12 @@ class StellarPopulation(object):
             band_array[np.array([i not in inds for i in range(NBANDS)],
                                 dtype=bool)] = False
 
-        print(np.array(band_array, dtype=int).shape)
-        mags = driver.get_mags(NTFULL, NBANDS, redshift)
-                               # np.array(band_array, dtype=int))
-        print(mags)
-        # if tage > 0.0:
-        #     return mags[0, band_array]
-        # return mags[:, band_array]
+        inds = np.array(band_array, dtype=int)
+        mags = driver.get_mags(NTFULL, redshift, inds)
+
+        if tage > 0.0:
+            return mags[0, band_array]
+        return mags[:, band_array]
 
     @property
     def log_age(self):

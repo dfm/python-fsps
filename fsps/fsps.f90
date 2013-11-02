@@ -180,9 +180,8 @@ contains
     double precision, intent(in) :: z_red
     integer, dimension(n_bands), intent(in) :: mc
     double precision, dimension(n_age,n_bands), intent(out) :: mags
-    write(*,*) "sup"
     do i=1,n_age
-      call getmags(z_red,ocompsp(i)%spec,mags(i,:))
+      call getmags(z_red,ocompsp(i)%spec,mags(i,:),mc)
     enddo
 
   end subroutine

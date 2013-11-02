@@ -352,7 +352,6 @@ class StellarPopulation(object):
 
         # Caching.
         self._wavelengths = None
-        self._mags = None
         self._stats = None
 
     def _update_params(self):
@@ -367,7 +366,6 @@ class StellarPopulation(object):
     def _compute_csp(self):
         self._update_params()
         driver.compute()
-        self._mags = None
         self._stats = None
 
     def get_spectrum(self, zmet=None, tage=0.0, peraa=False):
@@ -430,10 +428,9 @@ class StellarPopulation(object):
             self._wavelengths = driver.get_lambda(NSPEC)
         return self._wavelengths
 
-    def get_mags(self, zmet=None, tage=0.0, redshift=0.0, band=None):
+    def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None):
         """
-        Get the magnitude of the CSP in all known bands. The shape of the
-        resulting object is ``(NTFULL, NBANDS)``.
+        Get the magnitude of the CSP.
 
         :param zmet: (default: None)
             The (integer) index of the metallicity to use. By default, use
@@ -447,8 +444,8 @@ class StellarPopulation(object):
         :param redshift: (default: 0.0)
             Optionally redshift the spectrum first.
 
-        :param band: (default: None)
-            The name of the filter that you would like to compute the
+        :param bands: (default: None)
+            The names of the filters that you would like to compute the
             magnitude for. This should correspond to the result of
             :func:`fsps.find_filter`.
 
@@ -467,20 +464,22 @@ class StellarPopulation(object):
         if self.params.dirty:
             self._compute_csp()
 
-        if self._mags is None:
-            NTFULL = driver.get_ntfull()
-            NBANDS = driver.get_nbands()
-            self._mags = driver.get_mags(NTFULL, NBANDS, redshift)
+        NTFULL = driver.get_ntfull()
+        NBANDS = driver.get_nbands()
 
-        # Only return the first element if ``tage`` was provided.
-        if tage > 0.0:
-            if band is not None:
-                return self._mags[0, FILTERS[band.lower()].index]
-            return self._mags[0]
+        band_array = np.ones(NBANDS, dtype=bool)
+        if bands is not None:
+            inds = [FILTERS[band.lower()].index for band in bands]
+            band_array[np.array([i not in inds for i in range(NBANDS)],
+                                dtype=bool)] = False
 
-        if band is not None:
-            return self._mags[:, FILTERS[band.lower()].index]
-        return self._mags[:]
+        print(np.array(band_array, dtype=int).shape)
+        mags = driver.get_mags(NTFULL, NBANDS, redshift)
+                               # np.array(band_array, dtype=int))
+        print(mags)
+        # if tage > 0.0:
+        #     return mags[0, band_array]
+        # return mags[:, band_array]
 
     @property
     def log_age(self):

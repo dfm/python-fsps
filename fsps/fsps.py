@@ -277,6 +277,12 @@ class StellarPopulation(object):
     :param vel_broad: (default: 0.0)
         Undocumented.
 
+    :param min_wave_smooth: (default: 1e3)
+        Undocumented.
+
+    :param max_wave_smooth: (default: 1e4)
+        Undocumented.
+
     """
 
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
@@ -329,6 +335,8 @@ class StellarPopulation(object):
             wgp3=1,
             evtype=-1,
             vel_broad=0.0,
+            min_wave_smooth=1e3,
+            max_wave_smooth=1e4,
         )
 
         # Parse any input options.
@@ -528,7 +536,7 @@ class ParameterSet(object):
                   "frac_obrun", "uvb", "mwr", "redgb", "dust1_index",
                   "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
                   "duste_umin", "duste_qpah", "fcstar", "masscut",
-                  "vel_broad"]
+                  "vel_broad", "min_wave_smooth", "max_wave_smooth"]
 
     @property
     def all_params(self):

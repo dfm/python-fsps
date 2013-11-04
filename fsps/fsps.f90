@@ -64,7 +64,7 @@ contains
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut,vel_broad)
+                            masscut,vel_broad,min_wave_smooth,max_wave_smooth)
 
     ! Set all the parameters that don't affect the SSP computation.
 
@@ -77,7 +77,7 @@ contains
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut,vel_broad
+                            masscut,vel_broad,min_wave_smooth,max_wave_smooth
 
     pset%zmet=zmet
     pset%sfh=sfh
@@ -114,6 +114,8 @@ contains
     pset%fcstar=fcstar
     pset%masscut=masscut
     pset%vel_broad=vel_broad
+    pset%min_wave_smooth=min_wave_smooth
+    pset%max_wave_smooth=max_wave_smooth
 
   end subroutine
 

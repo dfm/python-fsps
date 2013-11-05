@@ -572,7 +572,7 @@ class ParameterSet(object):
             if k in self.ssp_params:
                 self.dirtiness = 2
             elif k in self.csp_params:
-                self.dirtiness = 1
+                self.dirtiness = max(1, self.dirtiness)
 
             self._params[k] = v
             self.check_params()

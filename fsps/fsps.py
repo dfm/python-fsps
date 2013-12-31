@@ -490,22 +490,29 @@ class StellarPopulation(object):
 
     @property
     def log_age(self):
+        """log10(age/yr)."""
         return self._stat(0)
 
     @property
-    def log_mass(self):
+    def stellar_mass(self):
+        """Stellar mass (including remants if the FSPS parameters
+        `add_stellar_remants=1`) in solar masses.
+        """
         return self._stat(1)
 
     @property
     def log_lbol(self):
+        """log(bolometric luminosity / L_solar)."""
         return self._stat(2)
 
     @property
-    def log_sfr(self):
+    def sfr(self):
+        """Star formation rate (solar masses per year)."""
         return self._stat(3)
 
     @property
-    def log_mdust(self):
+    def dust_mass(self):
+        """Dust mass, in solar masses."""
         return self._stat(4)
 
     def _get_grid_stats(self):

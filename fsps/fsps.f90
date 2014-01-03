@@ -310,8 +310,8 @@ contains
     call imf_weight(mini_isoc(zz,tt,:), wght, nmass_isoc(zz,tt))
     do i = 1, nmass_isoc(zz,tt)
     ! Compute mags on isochrone at this mass
-    call getspec(zz, mini_isoc(zz,tt,i), mact_isoc(zz,tt,i), &
-      logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), &
+    call getspec(pset, mact_isoc(zz,tt,i), &
+      logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), logg_isoc(zz,tt,i), &
       phase_isoc(zz,tt,i), ffco_isoc(zz,tt,i), spec)
     call getmags(0.d0, spec, mags)
     mass_init_out(i) = mini_isoc(zz,tt,i)

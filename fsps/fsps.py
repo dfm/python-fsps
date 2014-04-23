@@ -41,6 +41,10 @@ class StellarPopulation(object):
           the user wants to compute the evolution in observed colors of a
           SSP/CSP.
 
+    :param smooth_velocity: (default: True)
+        Switch to choose smoothing in velocity space (``True``) or
+        wavelength space.
+          
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old
         stars:
@@ -274,8 +278,13 @@ class StellarPopulation(object):
     :param evtype: (default: -1)
         Undocumented.
 
-    :param vel_broad: (default: 0.0)
-        Undocumented.
+    :param sigma_smooth: (default: 0.0)
+        If smooth_velocity is True, this gives the velocity dispersion in
+        km/s.  Otherwise, it gives the width of the gaussian wavelength
+        smoothing in Angstroms.
+        
+    :param agb_dust: (default: 1.0)
+        scales the circumstellar AGB dust emission
 
     :param min_wave_smooth: (default: 1e3)
         Undocumented.
@@ -286,7 +295,7 @@ class StellarPopulation(object):
     """
 
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
-                 **kwargs):
+                 smooth_velocity=True, **kwargs):
         # Set up the parameters to their default values.
         self.params = ParameterSet(
             dust_type=0,
@@ -334,7 +343,8 @@ class StellarPopulation(object):
             wgp2=1,
             wgp3=1,
             evtype=-1,
-            vel_broad=0.0,
+            sigma_smooth=0.0,
+            agb_dust = 1.0,
             min_wave_smooth=1e3,
             max_wave_smooth=1e4,
         )
@@ -351,12 +361,13 @@ class StellarPopulation(object):
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
         if not driver.is_setup:
-            driver.setup(compute_vega_mags, redshift_colors)
+            driver.setup(compute_vega_mags, redshift_colors, smooth_velocity)
 
         else:
-            cvms, rcolors = driver.get_setup_vars()
+            cvms, rcolors, svel = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
             assert redshift_colors == bool(rcolors)
+            assert smooth_velocity == bool(svel)
 
         # Caching.
         self._wavelengths = None
@@ -534,7 +545,7 @@ class StellarPopulation(object):
 class ParameterSet(object):
 
     ssp_params = ["imf_type", "imf1", "imf2", "imf3", "vdmc", "mdave",
-                  "dell", "delt", "sbss", "fbhb", "pagb"]
+                  "dell", "delt", "sbss", "fbhb", "pagb", "agb_dust"]
 
     csp_params = ["dust_type", "zmet", "sfh", "wgp1", "wgp2", "wgp3",
                   "evtype", "tau", "const", "tage", "fburst", "tburst",
@@ -543,7 +554,8 @@ class ParameterSet(object):
                   "frac_obrun", "uvb", "mwr", "redgb", "dust1_index",
                   "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
                   "duste_umin", "duste_qpah", "fcstar", "masscut",
-                  "vel_broad", "min_wave_smooth", "max_wave_smooth"]
+                  "sigma_smooth", "min_wave_smooth",
+                  "max_wave_smooth"]
 
     @property
     def all_params(self):
@@ -563,10 +575,10 @@ class ParameterSet(object):
         assert self._params["zmet"] in range(1, NZ + 1), \
             "zmet={0} out of range [1, {1}]".format(self._params["zmet"], NZ)
         assert self._params["dust_type"] in range(4), \
-            "dust_type={} out of range [0, 3]".format(
+            "dust_type={0} out of range [0, 3]".format(
                 self._params["dust_type"])
         assert self._params["imf_type"] in range(6), \
-            "imf_type={} out of range [0, 5]".format(self._params["imf_type"])
+            "imf_type={0} out of range [0, 5]".format(self._params["imf_type"])
 
     def __getitem__(self, k):
         return self._params[k]

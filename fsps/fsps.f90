@@ -17,22 +17,24 @@ module driver
 
 contains
 
-  subroutine setup(compute_vega_mags0,redshift_colors0)
+  subroutine setup(compute_vega_mags0,redshift_colors0,smooth_velocity0)
 
     ! Load all the data files/templates into memory.
 
     implicit none
 
-    integer, intent(in) :: compute_vega_mags0, redshift_colors0
+    integer, intent(in) :: compute_vega_mags0, redshift_colors0, &
+         smooth_velocity0
     compute_vega_mags = compute_vega_mags0
     redshift_colors = redshift_colors0
+    smooth_velocity = smooth_velocity0
     call sps_setup(-1)
     is_setup = 1
 
   end subroutine
 
   subroutine set_ssp_params(imf_type0,imf1,imf2,imf3,vdmc,mdave,dell,&
-                            delt,sbss,fbhb,pagb)
+                            delt,sbss,fbhb,pagb,agb_dust)
 
     ! Set the parameters that affect the SSP computation.
 
@@ -40,7 +42,7 @@ contains
 
     integer, intent(in) :: imf_type0
     double precision, intent(in) :: imf1,imf2,imf3,vdmc,mdave,dell,&
-                                    delt,sbss,fbhb,pagb
+                                    delt,sbss,fbhb,pagb,agb_dust
 
     imf_type=imf_type0
     pset%imf1=imf1
@@ -53,6 +55,7 @@ contains
     pset%sbss=sbss
     pset%fbhb=fbhb
     pset%pagb=pagb
+    pset%agb_dust=agb_dust 
 
     has_ssp(:) = 0
 
@@ -64,7 +67,8 @@ contains
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut,vel_broad,min_wave_smooth,max_wave_smooth)
+                            masscut,sigma_smooth,min_wave_smooth,&
+                            max_wave_smooth)
 
     ! Set all the parameters that don't affect the SSP computation.
 
@@ -77,7 +81,8 @@ contains
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut,vel_broad,min_wave_smooth,max_wave_smooth
+                            masscut,sigma_smooth,min_wave_smooth,&
+                            max_wave_smooth
 
     pset%zmet=zmet
     pset%sfh=sfh
@@ -113,7 +118,7 @@ contains
     pset%duste_qpah=duste_qpah
     pset%fcstar=fcstar
     pset%masscut=masscut
-    pset%vel_broad=vel_broad
+    pset%sigma_smooth=sigma_smooth
     pset%min_wave_smooth=min_wave_smooth
     pset%max_wave_smooth=max_wave_smooth
 
@@ -188,12 +193,13 @@ contains
 
   end subroutine
 
-  subroutine get_setup_vars(cvms, rcolors)
+  subroutine get_setup_vars(cvms, rcolors, svel)
 
     implicit none
-    integer, intent(out) :: cvms, rcolors
+    integer, intent(out) :: cvms, rcolors, svel
     cvms = compute_vega_mags
     rcolors = redshift_colors
+    svel = smooth_velocity
 
   end subroutine
 

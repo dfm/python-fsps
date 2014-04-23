@@ -75,7 +75,7 @@ python setup.py develop</pre>
 <h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="fsps.StellarPopulation">
-<em class="property">class </em><tt class="descclassname">fsps.</tt><tt class="descname">StellarPopulation</tt><big>(</big><em>compute_vega_mags=True</em>, <em>redshift_colors=False</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">fsps.</tt><tt class="descname">StellarPopulation</tt><big>(</big><em>compute_vega_mags=True</em>, <em>redshift_colors=False</em>, <em>smooth_velocity=True</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the main interface to use when interacting with FSPS from Python.
 Most of the Fortran API is exposed through Python hooks with various
 features added for user friendliness. When initializing, you can set any
@@ -107,6 +107,9 @@ the user wants to compute the evolution in observed colors of a
 SSP/CSP.</li>
 </ul>
 </li>
+<li><strong>smooth_velocity</strong> &#8211; (default: True)
+Switch to choose smoothing in velocity space (<tt class="docutils literal"><span class="pre">True</span></tt>) or
+wavelength space.</li>
 <li><strong>dust_type</strong> &#8211; <p>(default: 0)
 Common variable deﬁning the extinction curve for dust around old
 stars:</p>
@@ -301,32 +304,124 @@ and a value of 1 corresponds to a clumpy distribution. See Witt &amp;
 Gordon (2000) for details.</li>
 <li><strong>evtype</strong> &#8211; (default: -1)
 Undocumented.</li>
+<li><strong>sigma_smooth</strong> &#8211; (default: 0.0)
+If smooth_velocity is True, this gives the velocity dispersion in
+km/s.  Otherwise, it gives the width of the gaussian wavelength
+smoothing in Angstroms.</li>
+<li><strong>agb_dust</strong> &#8211; (default: 1.0)
+scales the circumstellar AGB dust emission</li>
+<li><strong>min_wave_smooth</strong> &#8211; (default: 1e3)
+Undocumented.</li>
+<li><strong>max_wave_smooth</strong> &#8211; (default: 1e4)
+Undocumented.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="fsps.StellarPopulation.dust_mass">
+<tt class="descname">dust_mass</tt><a class="headerlink" href="#fsps.StellarPopulation.dust_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dust mass, in solar masses.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="fsps.StellarPopulation.get_mags">
-<tt class="descname">get_mags</tt><big>(</big><em>redshift=0.0</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation.get_mags" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the magnitude of the CSP in all known bands. The shape of the
-resulting object is <tt class="docutils literal"><span class="pre">(NAGE,</span> <span class="pre">NBANDS)</span></tt>.</p>
+<tt class="descname">get_mags</tt><big>(</big><em>zmet=None</em>, <em>tage=0.0</em>, <em>redshift=0.0</em>, <em>bands=None</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation.get_mags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the magnitude of the CSP.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>redshift</strong> &#8211; (default: 0.0)
-Optionally redshift the spectrum first.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>zmet</strong> &#8211; (default: None)
+The (integer) index of the metallicity to use. By default, use
+the current value of <tt class="docutils literal"><span class="pre">self.params[&quot;zmet&quot;]</span></tt>.</li>
+<li><strong>tage</strong> &#8211; (default: 0.0)
+The age of the stellar population. By default, this will compute
+a grid of ages from <span class="math">\(t pprox 0\)</span> to the maximum age in the
+isochrones.</li>
+<li><strong>redshift</strong> &#8211; (default: 0.0)
+Optionally redshift the spectrum first.</li>
+<li><strong>bands</strong> &#8211; (default: None)
+The names of the filters that you would like to compute the
+magnitude for. This should correspond to the result of
+<a class="reference internal" href="#fsps.find_filter" title="fsps.find_filter"><tt class="xref py py-func docutils literal"><span class="pre">fsps.find_filter()</span></tt></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns mags:</th><td class="field-body"><p class="first last">The magnitude grid. If an age was was provided by the <tt class="docutils literal"><span class="pre">tage</span></tt>
+parameter then the result is a 1D array with <tt class="docutils literal"><span class="pre">NBANDS</span></tt> values.
+Otherwise, it is a 2D array with shape <tt class="docutils literal"><span class="pre">(NTFULL,</span> <span class="pre">NBANDS)</span></tt>. If
+a particular band was requested then this return value will be
+properly compressed along that axis.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="fsps.StellarPopulation.get_spectrum">
+<tt class="descname">get_spectrum</tt><big>(</big><em>zmet=None</em>, <em>tage=0.0</em>, <em>peraa=False</em><big>)</big><a class="headerlink" href="#fsps.StellarPopulation.get_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>A grid (in age) of the spectra for the current CSP.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>zmet</strong> &#8211; (default: None)
+The (integer) index of the metallicity to use. By default, use
+the current value of <tt class="docutils literal"><span class="pre">self.params[&quot;zmet&quot;]</span></tt>.</li>
+<li><strong>tage</strong> &#8211; (default: 0.0)
+The age of the stellar population. By default, this will compute
+a grid of ages from <span class="math">\(t pprox 0\)</span> to the maximum age in the
+isochrones.</li>
+<li><strong>peraa</strong> &#8211; (default: False)
+If <tt class="docutils literal"><span class="pre">True</span></tt>, return the spectrum in <span class="math">\(L_\odot/\AA\)</span>.
+Otherwise, return the spectrum in the FSPS standard
+<span class="math">\(L_\odot/\mathrm{Hz}\)</span>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Returns wavelengths:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first">The wavelength grid in Angstroms.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Returns spectrum:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first last">The spectrum in <span class="math">\(L_\odot/\mathrm{Hz}\)</span> or <span class="math">\(L_\odot/\AA\)</span>.
+If an age was provided by the <tt class="docutils literal"><span class="pre">tage</span></tt> parameter then the result
+is a 1D array with <tt class="docutils literal"><span class="pre">NSPEC</span></tt> values. Otherwise, it is a 2D array
+with shape <tt class="docutils literal"><span class="pre">(NTFULL,</span> <span class="pre">NSPEC)</span></tt>.</p>
+</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="fsps.StellarPopulation.spectrum">
-<tt class="descname">spectrum</tt><a class="headerlink" href="#fsps.StellarPopulation.spectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>A grid (in age) of the spectra for the current CSP. The shape of
-the resulting object is <tt class="docutils literal"><span class="pre">(NAGE,</span> <span class="pre">NSPEC)</span></tt>.</p>
+<dt id="fsps.StellarPopulation.log_age">
+<tt class="descname">log_age</tt><a class="headerlink" href="#fsps.StellarPopulation.log_age" title="Permalink to this definition">¶</a></dt>
+<dd><p>log10(age/yr).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fsps.StellarPopulation.log_lbol">
+<tt class="descname">log_lbol</tt><a class="headerlink" href="#fsps.StellarPopulation.log_lbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>log(bolometric luminosity / L_solar).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fsps.StellarPopulation.sfr">
+<tt class="descname">sfr</tt><a class="headerlink" href="#fsps.StellarPopulation.sfr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Star formation rate (solar masses per year).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fsps.StellarPopulation.stellar_mass">
+<tt class="descname">stellar_mass</tt><a class="headerlink" href="#fsps.StellarPopulation.stellar_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stellar mass (including remants if the FSPS parameters
+<cite>add_stellar_remants=1</cite>) in solar masses.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -335,6 +430,26 @@ the resulting object is <tt class="docutils literal"><span class="pre">(NAGE,</s
 <dd><p>The wavelength scale for the computed spectra.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="fsps.find_filter">
+<tt class="descclassname">fsps.</tt><tt class="descname">find_filter</tt><big>(</big><em>band</em><big>)</big><a class="headerlink" href="#fsps.find_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the FSPS name for a filter.</p>
+<p>Usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fsps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fsps</span><span class="o">.</span><span class="n">find_filter</span><span class="p">(</span><span class="s">&quot;F555W&quot;</span><span class="p">)</span>
+<span class="go">[&#39;wfpc2_f555w&#39;, &#39;wfc_acs_f555w&#39;]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>band</strong> &#8211; Something like the name of the band.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

@@ -44,6 +44,8 @@ API
 .. autoclass:: fsps.StellarPopulation
    :inherited-members:
 
+.. autofunction:: fsps.find_filter
+
 
 License
 -------

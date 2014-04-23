@@ -44,7 +44,7 @@ class StellarPopulation(object):
     :param smooth_velocity: (default: True)
         Switch to choose smoothing in velocity space (``True``) or
         wavelength space.
-          
+
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old
         stars:
@@ -282,7 +282,7 @@ class StellarPopulation(object):
         If smooth_velocity is True, this gives the velocity dispersion in
         km/s.  Otherwise, it gives the width of the gaussian wavelength
         smoothing in Angstroms.
-        
+
     :param agb_dust: (default: 1.0)
         scales the circumstellar AGB dust emission
 
@@ -344,7 +344,7 @@ class StellarPopulation(object):
             wgp3=1,
             evtype=-1,
             sigma_smooth=0.0,
-            agb_dust = 1.0,
+            agb_dust=1.0,
             min_wave_smooth=1e3,
             max_wave_smooth=1e4,
         )
@@ -612,11 +612,11 @@ class Filter(object):
 
 
 FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "
-                "defines V=0 for the Vega system"),
+            "defines V=0 for the Vega system"),
            (2, "U", "Johnson U (from Bessell 1990 via M. Blanton)"),
            (3, "B", "Johnson B (from Bessell 1990 via M. Blanton)"),
            (4, "Buser_B2", "Johnson B (from BC03. This is the B2 filter from "
-                "Buser)"),
+            "Buser)"),
            (5, "Cousins_R", "Cousins R (from Bessell 1990 via M. Blanton)"),
            (6, "Cousins_I", "Cousins I (from Bessell 1990 via M. Blanton)"),
            (7, "CFHT_B", "CFHT B-band (from Blanton's kcorrect)"),
@@ -780,11 +780,11 @@ FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "
            (110, "Stromgren_b", "Stromgren b (Bessell 2011)"),
            (111, "Stromgren_y", "Stromgren y (Bessell 2011)"),
            (112, "1500A", "Idealized 1500A bandpass with 15% bandwidth, "
-                "FWHM = 225A from M. Dickinson"),
+            "FWHM = 225A from M. Dickinson"),
            (113, "2300A", "Idealized 2300A bandpass with 15% bandwidth, "
-                "FWHM = 345A from M. Dickinson"),
+            "FWHM = 345A from M. Dickinson"),
            (114, "2800A", "Idealized 2800A bandpass with 15% bandwidth, "
-                "FWHM = 420A from M. Dickinson")]
+            "FWHM = 420A from M. Dickinson")]
 
 
 FILTERS = dict([(f[1].lower(), Filter(*f)) for f in FILTERS])

@@ -190,7 +190,7 @@ class StellarPopulation(object):
         ``dust_type=1``.
 
     :param redgb: (default: 1.0)
-        Undocumented.
+        Weighting of red  giant branch.
 
     :param dust1_index: (default: -1.0)
         Undocumented.
@@ -231,7 +231,7 @@ class StellarPopulation(object):
         stars.
 
     :param masscut: (default: 150.0)
-        Undocumented.
+        Truncate the IMF above this value.
 
     :param zmet: (default: 1)
         The metallicity is specified as an integer ranging between 1 and 22.
@@ -276,7 +276,7 @@ class StellarPopulation(object):
         Gordon (2000) for details.
 
     :param evtype: (default: -1)
-        Undocumented.
+        Compute SSPs for only the given evolutionary type
 
     :param sigma_smooth: (default: 0.0)
         If smooth_velocity is True, this gives the velocity dispersion in
@@ -284,7 +284,7 @@ class StellarPopulation(object):
         smoothing in Angstroms.
 
     :param agb_dust: (default: 1.0)
-        scales the circumstellar AGB dust emission
+        Scales the circumstellar AGB dust emission
 
     :param min_wave_smooth: (default: 1e3)
         Undocumented.
@@ -545,17 +545,17 @@ class StellarPopulation(object):
 class ParameterSet(object):
 
     ssp_params = ["imf_type", "imf1", "imf2", "imf3", "vdmc", "mdave",
-                  "dell", "delt", "sbss", "fbhb", "pagb", "agb_dust"]
+                  "dell", "delt", "sbss", "fbhb", "pagb", "agb_dust",
+                  "redgb", "masscut", "fcstar", "evtype"]
 
     csp_params = ["dust_type", "zmet", "sfh", "wgp1", "wgp2", "wgp3",
-                  "evtype", "tau", "const", "tage", "fburst", "tburst",
+                  "tau", "const", "tage", "fburst", "tburst",
                   "dust1", "dust2", "logzsol", "zred", "pmetals",
                   "dust_clumps", "frac_nodust", "dust_index", "dust_tesc",
-                  "frac_obrun", "uvb", "mwr", "redgb", "dust1_index",
+                  "frac_obrun", "uvb", "mwr", "dust1_index",
                   "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
-                  "duste_umin", "duste_qpah", "fcstar", "masscut",
-                  "sigma_smooth", "min_wave_smooth",
-                  "max_wave_smooth"]
+                  "duste_umin", "duste_qpah","sigma_smooth",
+                  "min_wave_smooth", "max_wave_smooth"]
 
     @property
     def all_params(self):

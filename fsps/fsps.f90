@@ -34,7 +34,8 @@ contains
   end subroutine
 
   subroutine set_ssp_params(imf_type0,imf1,imf2,imf3,vdmc,mdave,dell,&
-                            delt,sbss,fbhb,pagb,agb_dust)
+                            delt,sbss,fbhb,pagb,agb_dust,redgb,&
+                            masscut,fcstar,evtype)
 
     ! Set the parameters that affect the SSP computation.
 
@@ -42,7 +43,8 @@ contains
 
     integer, intent(in) :: imf_type0
     double precision, intent(in) :: imf1,imf2,imf3,vdmc,mdave,dell,&
-                                    delt,sbss,fbhb,pagb,agb_dust
+                                    delt,sbss,fbhb,pagb,agb_dust,&
+                                    redgb,masscut,fcstar,evtype
 
     imf_type=imf_type0
     pset%imf1=imf1
@@ -56,32 +58,36 @@ contains
     pset%fbhb=fbhb
     pset%pagb=pagb
     pset%agb_dust=agb_dust 
+    pset%redgb=redgb
+    pset%masscut=masscut
+    pset%fcstar=fcstar
+    pset%evtype=evtype
 
     has_ssp(:) = 0
 
   end subroutine
 
-  subroutine set_csp_params(dust_type0,zmet,sfh,wgp1,wgp2,wgp3,evtype,tau,&
+  subroutine set_csp_params(dust_type0,zmet,sfh,wgp1,wgp2,wgp3,tau,&
                             const,tage,fburst,tburst,dust1,dust2,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
-                            redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
-                            duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut,sigma_smooth,min_wave_smooth,&
+                            dust1_index,sf_start,sf_trunc,sf_theta,&
+                            duste_gamma,duste_umin,duste_qpah,&
+                            sigma_smooth,min_wave_smooth,&
                             max_wave_smooth)
 
     ! Set all the parameters that don't affect the SSP computation.
 
     implicit none
 
-    integer, intent(in) :: dust_type0,zmet,sfh,wgp1,wgp2,wgp3,evtype
+    integer, intent(in) :: dust_type0,zmet,sfh,wgp1,wgp2,wgp3
     double precision, intent(in) :: tau,&
                             const,tage,fburst,tburst,dust1,dust2,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
-                            redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
-                            duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut,sigma_smooth,min_wave_smooth,&
+                            dust1_index,sf_start,sf_trunc,sf_theta,&
+                            duste_gamma,duste_umin,duste_qpah,&
+                            sigma_smooth,min_wave_smooth,&
                             max_wave_smooth
 
     pset%zmet=zmet
@@ -89,7 +95,6 @@ contains
     pset%wgp1=wgp1
     pset%wgp2=wgp2
     pset%wgp3=wgp3
-    pset%evtype=evtype
 
     pset%tau=tau
     pset%const=const
@@ -108,7 +113,6 @@ contains
     pset%frac_obrun=frac_obrun
     pset%uvb=uvb
     pset%mwr=mwr
-    pset%redgb=redgb
     pset%dust1_index=dust1_index
     pset%sf_start=sf_start
     pset%sf_trunc=sf_trunc
@@ -116,8 +120,6 @@ contains
     pset%duste_gamma=duste_gamma
     pset%duste_umin=duste_umin
     pset%duste_qpah=duste_qpah
-    pset%fcstar=fcstar
-    pset%masscut=masscut
     pset%sigma_smooth=sigma_smooth
     pset%min_wave_smooth=min_wave_smooth
     pset%max_wave_smooth=max_wave_smooth

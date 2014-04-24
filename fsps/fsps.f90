@@ -145,8 +145,8 @@ contains
     implicit none
     integer, intent(in) :: zi
     pset%zmet = zi
-    call ssp_gen(pset, mass_ssp_zz(zi,:),lbol_ssp_zz(zi,:),&
-                 spec_ssp_zz(zi,:,:))
+    call ssp_gen(pset, mass_ssp_zz(:,zi),lbol_ssp_zz(:,zi),&
+                 spec_ssp_zz(:,:,zi))
     has_ssp(zi) = 1
 
   end subroutine
@@ -161,8 +161,8 @@ contains
     if (has_ssp(zmet) .eq. 0) then
       call ssp(zmet)
     endif
-    call compsp(0,1,'',mass_ssp_zz(zmet,:),lbol_ssp_zz(zmet,:),&
-                spec_ssp_zz(zmet,:,:),pset,ocompsp)
+    call compsp(0,1,'',mass_ssp_zz(:,zmet),lbol_ssp_zz(:,zmet),&
+                spec_ssp_zz(:,:,zmet),pset,ocompsp)
 
   end subroutine
 

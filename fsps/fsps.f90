@@ -151,6 +151,59 @@ contains
 
   end subroutine
 
+  subroutine get_ssp_spec(ns,n_age,nz,ssp_spec_out)
+
+    ! Return the contents of the ssp spectral arrays
+
+    implicit none
+    integer, intent(in) :: ns,n_age,nz
+    double precision, dimension(ns,n_age,nz), intent(out) :: ssp_spec_out
+
+    ssp_spec_out = spec_ssp_zz
+
+  end subroutine
+
+
+  subroutine interp_ssp(ns,zpos,tpos,spec,mass,lbol)
+
+    !return the SSPs interpolated to the target metallicity (zpos) and age (tpos)
+    
+    implicit none
+
+    integer, intent(in) :: ns
+    double precision, intent(in) :: zpos
+    double precision, intent(in) :: tpos
+
+    double precision, dimension(ns,1), intent(inout) :: spec
+    double precision, dimension(1), intent(inout) :: mass,lbol
+
+    integer :: zlo,zmet
+
+    zlo = MAX(MIN(locate(LOG10(zlegend/0.0190),zpos),nz-1),1)
+    do zmet=zlo,zlo+1
+       if (has_ssp(zmet) .eq. 0) then
+          call ssp(zmet)
+       endif
+    enddo
+
+    call ztinterp(zpos,spec,lbol,mass,tpos)
+
+    end subroutine
+
+  subroutine smooth_spectrum(ns,wave,spec,sigma_broad,minw,maxw)
+    
+    ! Smooth the spectrum by a gaussian of width sigma_broad
+    
+    implicit none
+    integer, intent(in) :: ns
+    double precision, intent(in) :: sigma_broad,minw,maxw
+    double precision, dimension(ns), intent(in) :: wave
+    double precision, dimension(ns), intent(inout) :: spec
+    
+    call smoothspec(wave,spec,sigma_broad,minw,maxw)
+
+  end subroutine
+
   subroutine compute
 
     ! Compute the full CSP (and the SSP if it isn't already cached).
@@ -165,6 +218,7 @@ contains
                 spec_ssp_zz(:,:,zmet),pset,ocompsp)
 
   end subroutine
+
 
   subroutine get_spec(ns,n_age,spec_out)
 

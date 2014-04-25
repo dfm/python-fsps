@@ -45,3 +45,20 @@ def test_imf3_multiprocessing():
     multi = pool.map(_get_model, thetas)
 
     assert_allclose(single, multi)
+
+
+def test_smoothspec():
+    
+    wave, spec = pop.get_spectrum(tage = 1, peraa = True)
+    spec2 = pop.smoothspec(wave, spec, 160., minw = 1e3, maxw =1e4)
+    assert (spec-spec2 == 0.).sum() > 0
+
+
+def test_ssp_at():
+
+import fsps
+pop = fsps.StellarPopulation()
+s,m,l = pop.ssp_at(0.010, 1)
+
+ssp_spec= pop.all_ssps()
+

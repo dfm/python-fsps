@@ -499,6 +499,74 @@ class StellarPopulation(object):
             return mags[0, band_array]
         return mags[:, band_array]
 
+    
+
+    def ssp_at(self, zpos, tpos):
+        """Return an SSP spectrum interpolated to a target metallicity and age.
+
+        :params zpos:
+            The metallicity, linear units
+        :params tpos:
+            The desired age, in Gyr.
+        
+        """
+        if self.params.dirty:
+            self._update_params()
+
+        NSPEC = driver.get_nspec()
+        spec, lbol, mass = np.zeros(NSPEC), np.zeros(1), np.zeros(1)
+        logt_yrs = np.log10(tpos * 1e9)
+        driver.interp_ssp(zpos,tpos,spec,mass,lbol)
+        return spec, mass, lbol
+    
+    def all_ssps(self):
+        """Return the contents of ssp_spec_zz.
+        """
+        NSPEC = driver.get_nspec()
+        NTFULL = driver.get_ntfull()
+        NZ = driver.get_nz()
+        # specarray = np.zeros([NSPEC, NTFULL, NZ])
+        specarray = driver.get_ssp_spec(NSPEC, NTFULL, NZ)
+        
+        return specarray
+    
+    def smoothspec(self, wave, spec, sigma, minw = None, maxw = None):
+        """Smooth a spectrum by a gaussian with standard deviation
+        given by sigma.  Whether the smoothing is in velocity space or
+        in wavelength space depends on the value of the value of
+        smooth_velocity.
+
+        :param wave:
+            The input wavelength grid.
+            
+        :param spec:
+            The input spectrum.
+            
+        :param sigma:
+            The standard deviation of the gaussian broadening function.
+            
+        :param minw:
+            Optionally set the minimum wavelength to consider when
+            broadening.
+        
+        :param maxw:
+            Optionally set the maximum wavelength to consider when
+            broadening.
+
+        :returns outspec:
+            The smoothed spectrum, on the same wavelength grid as the input.
+                   
+        """
+        ns = len(wave)
+        if maxw is None:
+            maxw = np.max(wave)
+        if minw is None:
+            minw = np.min(wave)
+        assert len(wave) == len(spec)
+        outspec = np.array(spec)
+        driver.smooth_spectrum(wave, outspec, sigma, minw, maxw)
+        return outspec
+
     @property
     def log_age(self):
         """log10(age/yr)."""

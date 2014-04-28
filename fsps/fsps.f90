@@ -151,13 +151,21 @@ contains
 
   end subroutine
 
-  subroutine get_ssp_spec(ns,n_age,nz,ssp_spec_out)
+  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out)
 
-    ! Return the contents of the ssp spectral arrays
+    ! Return the contents of the ssp spectral array,
+    ! regenerating the ssps if necessary
 
     implicit none
-    integer, intent(in) :: ns,n_age,nz
-    double precision, dimension(ns,n_age,nz), intent(out) :: ssp_spec_out
+    integer, intent(in) :: ns,n_age,n_z
+    integer :: zi
+    double precision, dimension(ns,n_age,n_z), intent(out) :: ssp_spec_out
+
+    do zi=1,nz
+       if (has_ssp(zi) .eq. 0) then
+          call ssp(zi)
+       endif
+    enddo
 
     ssp_spec_out = spec_ssp_zz
 
@@ -166,7 +174,8 @@ contains
 
   subroutine interp_ssp(ns,zpos,tpos,spec,mass,lbol)
 
-    !return the SSPs interpolated to the target metallicity (zpos) and age (tpos)
+    ! Return the SSPs interpolated to the target metallicity 
+    !(zpos) and target age (tpos)
     
     implicit none
 
@@ -267,6 +276,18 @@ contains
     n_z = nz
 
   end subroutine
+
+
+  subroutine get_zlegend(n_z,z_legend)
+
+    ! Get the available metallicity values.
+    implicit none
+    integer, intent(in) :: n_z
+    double precision, dimension(n_z), intent(out) :: z_legend
+    z_legend = zlegend
+
+  end subroutine
+
 
   subroutine get_ntfull(n_age)
 

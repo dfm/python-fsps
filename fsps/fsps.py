@@ -284,7 +284,7 @@ class StellarPopulation(object):
         smoothing in Angstroms.
 
     :param agb_dust: (default: 1.0)
-        Scales the circumstellar AGB dust emission
+        Scales the circumstellar AGB dust emission.
 
     :param min_wave_smooth: (default: 1e3)
         Undocumented.
@@ -371,6 +371,7 @@ class StellarPopulation(object):
 
         # Caching.
         self._wavelengths = None
+        self._zlegend = None
         self._stats = None
 
     def _update_params(self):
@@ -447,6 +448,19 @@ class StellarPopulation(object):
             self._wavelengths = driver.get_lambda(NSPEC)
         return self._wavelengths
 
+
+    @property
+    def zlegend(self):
+        """
+        The available metallicities.
+
+        """
+        if self._zlegend is None:
+            NZ = driver.get_nz()
+            self._zlegend = driver.get_zlegend(NZ)
+        return self._zlegend
+
+    
     def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None):
         """
         Get the magnitude of the CSP.
@@ -500,15 +514,24 @@ class StellarPopulation(object):
         return mags[:, band_array]
 
     
-
-    def ssp_at(self, zpos, tpos):
-        """Return an SSP spectrum interpolated to a target metallicity and age.
+    def ztinterp(self, zpos, tpos, peraa = False):
+        """Return an SSP spectrum, mass, and luminosity interpolated
+        to a target metallicity and age.  This effectively wraps the
+        ZTINTERP subroutine.  Only the SSPs bracketing a given
+        metallicity will be regenerated, if parameters are dirty.
 
         :params zpos:
-            The metallicity, linear units
+            The metallicity, in units of log(Z/Z_sun)
+            
         :params tpos:
             The desired age, in Gyr.
-        
+            
+        :returns spec:
+            The SSP spectrum, interpolated to zpos and tpos.
+        :returns mass:
+            The stellar mass of the SSP at tpos.
+        :returns lbol:
+            The bolometric luminosity of the returned SSP.
         """
         if self.params.dirty:
             self._update_params()
@@ -516,18 +539,32 @@ class StellarPopulation(object):
         NSPEC = driver.get_nspec()
         spec, lbol, mass = np.zeros(NSPEC), np.zeros(1), np.zeros(1)
         logt_yrs = np.log10(tpos * 1e9)
-        driver.interp_ssp(zpos,tpos,spec,mass,lbol)
+        driver.interp_ssp(zpos,logt_yrs,spec,mass,lbol)
+
+        if peraa:
+            wavegrid = self.wavelengths
+            factor = 3e18 / wavegrid ** 2
+            spec *= factor
+        
         return spec, mass, lbol
     
-    def all_ssps(self):
-        """Return the contents of ssp_spec_zz.
+    def all_ssp_spec(self, update = True, peraa = False):
+        """Return the contents of the ssp_spec_zz array. 
         """
+
+        if self.params.dirty and update:
+            self._update_params()
+
         NSPEC = driver.get_nspec()
         NTFULL = driver.get_ntfull()
         NZ = driver.get_nz()
-        # specarray = np.zeros([NSPEC, NTFULL, NZ])
         specarray = driver.get_ssp_spec(NSPEC, NTFULL, NZ)
-        
+                
+        if peraa:
+            wavegrid = self.wavelengths
+            factor = 3e18 / wavegrid ** 2
+            specarray *= factor[:,None,None]
+            
         return specarray
     
     def smoothspec(self, wave, spec, sigma, minw = None, maxw = None):

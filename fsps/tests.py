@@ -54,11 +54,19 @@ def test_smoothspec():
     assert (spec-spec2 == 0.).sum() > 0
 
 
-def test_ssp_at():
+def test_ztinterp():
+    
+    wave, s2 = pop.get_spectrum(tage = 1, zmet = 2, peraa =True)
+    wave, s3 = pop.get_spectrum(tage = 1, zmet = 3, peraa =True)
+    s,m,l = pop.ztinterp(-0.5, 1., peraa = True)
 
-import fsps
-pop = fsps.StellarPopulation()
-s,m,l = pop.ssp_at(0.010, 1)
+    optical = ((wave > 2000) & (wave < 5e3))
+    assert s[optical].sum() < s2[optical].sum()
+    assert s[optical].sum() > s3[optical].sum()
+    assert m < 1
 
-ssp_spec= pop.all_ssps()
 
+def test_exposedspec():
+    allspec = pop.all_ssp_spec(peraa =True)
+    assert len(allspec.shape) == 3
+    assert allspec.shape[0] == len(pop.wavelengths)

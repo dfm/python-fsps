@@ -372,6 +372,7 @@ class StellarPopulation(object):
         # Caching.
         self._wavelengths = None
         self._zlegend = None
+        self._ssp_ages = None
         self._stats = None
 
     def _update_params(self):
@@ -460,7 +461,20 @@ class StellarPopulation(object):
             self._zlegend = driver.get_zlegend(NZ)
         return self._zlegend
 
-    
+
+    @property
+    def ssp_ages(self):
+        """
+        The age grid of the SSPs, in linear years, used by FSPS.
+
+        """
+        if self._ssp_ages is None:
+            NTFULL = driver.get_ntfull()
+            self._ssp_ages = driver.get_timefull(NTFULL)
+        return self._ssp_ages
+
+
+        
     def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None):
         """
         Get the magnitude of the CSP.
@@ -520,11 +534,15 @@ class StellarPopulation(object):
         ZTINTERP subroutine.  Only the SSPs bracketing a given
         metallicity will be regenerated, if parameters are dirty.
 
-        :params zpos:
+        :param zpos:
             The metallicity, in units of log(Z/Z_sun)
             
-        :params tpos:
+        :param tpos:
             The desired age, in Gyr.
+
+        :param peraa: (default: False)
+            If true, return spectra in units of L_sun/AA, otherwise
+            L_sun/Hz
             
         :returns spec:
             The SSP spectrum, interpolated to zpos and tpos.
@@ -549,7 +567,20 @@ class StellarPopulation(object):
         return spec, mass, lbol
     
     def all_ssp_spec(self, update = True, peraa = False):
-        """Return the contents of the ssp_spec_zz array. 
+        """Return the contents of the ssp_spec_zz array.
+
+        :param update: (default: True)
+            If True, forces an update of the SSPs if the ssp
+            parameters have changed. Otherwise simply dumps the
+            current contents of the ssp_spec_zz array.
+            
+        :param peraa: (default: False)
+            If true, return spectra in units of L_sun/AA, otherwise
+            L_sun/Hz
+
+        :returns specarray:
+            The spectra of the SSPs, having shape (nspec, ntfull, nz).
+            
         """
 
         if self.params.dirty and update:

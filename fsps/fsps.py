@@ -465,7 +465,7 @@ class StellarPopulation(object):
     @property
     def ssp_ages(self):
         """
-        The age grid of the SSPs, in linear years, used by FSPS.
+        The age grid of the SSPs, in log(years), used by FSPS.
 
         """
         if self._ssp_ages is None:

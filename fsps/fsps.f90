@@ -288,12 +288,13 @@ contains
 
   end subroutine
 
-  subroutine get_timefull(n_age)
+  subroutine get_timefull(n_age,timefull)
 
     ! Get the actual time steps of the SSPs.
     implicit none
     integer, intent(in) :: n_age
     double precision, dimension(n_age), intent(out) :: timefull
+
     timefull = time_full
 
   end subroutine

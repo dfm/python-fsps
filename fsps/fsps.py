@@ -546,11 +546,14 @@ class StellarPopulation(object):
             
         :returns spec:
             The SSP spectrum, interpolated to zpos and tpos.
+            
         :returns mass:
             The stellar mass of the SSP at tpos.
+            
         :returns lbol:
             The bolometric luminosity of the returned SSP.
         """
+        
         if self.params.dirty:
             self._update_params()
 

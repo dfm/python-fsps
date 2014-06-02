@@ -15,6 +15,7 @@ try:
 except KeyError:
     raise ImportError("You need to have the SPS_HOME environment variable")
 
+ACCEPTED_FSPS_REVISIONS = [140]
 
 def run_command(cmd):
     """Open a child process, and return its exit status and stdout"""
@@ -24,21 +25,19 @@ def run_command(cmd):
     w = child.wait()
     return os.WEXITSTATUS(w), out
 
-from .fsps import StellarPopulation, find_filter
-
 
 cmd = ['svnversion', ev]
 stat, out = run_command(' '.join(cmd))
 fsps_vers = int(re.match("^([0-9])+", out[0]).group(0)) #pull out only the beginning numeric characters
 
-ACCEPTED_FSPS_REVISIONS = [135, 136]
 accepted = ((fsps_vers in ACCEPTED_FSPS_REVISIONS) and
-            (len(out[0].split(':')) == 1) ) #make sure you don't have some weird mixed version
+            (len(out[0].split(':')) == 1) and
+            stat == 0) #make sure you don't have some weird mixed version
 if not accepted:
     raise ImportError("Your FSPS revision, {0}, is not known to work with this " \
-                      "version of python-fsps. Please checkout an accepted FSPS revision "\
-                      "with 'svn update -r rev_number' The accepted FSPS rev_numbers are: " \
+                      "version of python-fsps. You can checkout an accepted FSPS revision "\
+                      "with 'svn update -r rev_number'. The accepted FSPS rev_numbers are: " \
                       "{1}".format(out[0].rstrip('\n'), ACCEPTED_FSPS_REVISIONS))
     
 
-
+from .fsps import StellarPopulation, find_filter

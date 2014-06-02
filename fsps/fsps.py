@@ -853,8 +853,8 @@ FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "
            (59, "FORS_R", "FORS R"),
            (60, "NICMOS_F110W", "HST NICMOS F110W"),
            (61, "NICMOS_F160W", "HST NICMOS F160W"),
-           (62, "GALEX_NUV", "GALEX NUV"),
-           (63, "GALEX_FUV", "GALEX FUV"),
+           (62, "GALEX_FUV", "GALEX FUV"),
+           (63, "GALEX_NUV", "GALEX NUV"),
            (64, "DES_g", "DES g (from Huan Lin, for DES camera)"),
            (65, "DES_r", "DES r (from Huan Lin, for DES camera)"),
            (66, "DES_i", "DES i (from Huan Lin, for DES camera)"),
@@ -923,8 +923,23 @@ FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "
            (113, "2300A", "Idealized 2300A bandpass with 15% bandwidth, "
             "FWHM = 345A from M. Dickinson"),
            (114, "2800A", "Idealized 2800A bandpass with 15% bandwidth, "
-            "FWHM = 420A from M. Dickinson")]
-
+            "FWHM = 420A from M. Dickinson"),
+           (115, "JWST_F070W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (116, "JWST_F090W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (117, "JWST_F115W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (118, "JWST_F150W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (119, "JWST_F200W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (120, "JWST_F277W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (121, "JWST_F356W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (122, "JWST_F444W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)")]
 
 FILTERS = dict([(f[1].lower(), Filter(*f)) for f in FILTERS])
 

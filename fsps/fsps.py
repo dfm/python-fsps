@@ -62,7 +62,7 @@ class StellarPopulation(object):
         Switch to turn on/off the AGB circumstellar dust model. NB:
         this feature is currently under development, do not use!  If
         you do use it, note that the AGB dust emission is scaled by
-        the parameter `agb_dust`, which defaults to 0!
+        the parameter `agb_dust`.
    
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old

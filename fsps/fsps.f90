@@ -228,11 +228,12 @@ contains
 
     implicit none
     integer :: zmet
+    character(100) :: outfile
     zmet = pset%zmet
     if (has_ssp(zmet) .eq. 0) then
       call ssp(zmet)
     endif
-    call compsp(0,1,'',mass_ssp_zz(:,zmet),lbol_ssp_zz(:,zmet),&
+    call compsp(0,1,outfile,mass_ssp_zz(:,zmet),lbol_ssp_zz(:,zmet),&
                 spec_ssp_zz(:,:,zmet),pset,ocompsp)
 
   end subroutine

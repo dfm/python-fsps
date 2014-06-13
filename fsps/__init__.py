@@ -15,7 +15,7 @@ try:
 except KeyError:
     raise ImportError("You need to have the SPS_HOME environment variable")
 
-ACCEPTED_FSPS_REVISIONS = [140]
+ACCEPTED_FSPS_REVISIONS = [140, 143]
 
 def run_command(cmd):
     """Open a child process, and return its exit status and stdout"""

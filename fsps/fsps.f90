@@ -17,17 +17,26 @@ module driver
 
 contains
 
-  subroutine setup(compute_vega_mags0,redshift_colors0,smooth_velocity0)
+  subroutine setup(compute_vega_mags0,redshift_colors0,smooth_velocity0,&
+                   add_stellar_remnants0,add_neb_emission0, &
+                   add_dust_emission0,add_agb_dust_model0)
 
     ! Load all the data files/templates into memory.
 
     implicit none
 
     integer, intent(in) :: compute_vega_mags0, redshift_colors0, &
-         smooth_velocity0
+         smooth_velocity0,add_stellar_remnants0,add_neb_emission0, &
+         add_dust_emission0,add_agb_dust_model0
+         
+
     compute_vega_mags = compute_vega_mags0
     redshift_colors = redshift_colors0
     smooth_velocity = smooth_velocity0
+    add_dust_emission = add_dust_emission0
+    add_agb_dust_model = add_agb_dust_model0
+    add_neb_emission = add_neb_emission0
+    add_stellar_remnants = add_stellar_remnants0
     call sps_setup(-1)
     is_setup = 1
 
@@ -258,13 +267,17 @@ contains
 
   end subroutine
 
-  subroutine get_setup_vars(cvms, rcolors, svel)
+  subroutine get_setup_vars(cvms, rcolors, svel, asr, ane, ade, agbd)
 
     implicit none
-    integer, intent(out) :: cvms, rcolors, svel
+    integer, intent(out) :: cvms, rcolors, svel, asr, ane, ade, agbd
     cvms = compute_vega_mags
     rcolors = redshift_colors
     svel = smooth_velocity
+    asr = add_stellar_remnants
+    ane = add_neb_emission 
+    ade = add_dust_emission
+    agbd = add_agb_dust_model
 
   end subroutine
 

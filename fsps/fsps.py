@@ -45,6 +45,25 @@ class StellarPopulation(object):
         Switch to choose smoothing in velocity space (``True``) or
         wavelength space.
 
+    :param add_stellar_remanants: (default: True)
+        Switch to add stellar remnnants in the stellar mass
+        computation.
+
+    :param add_neb_emission: (default: False)
+        Switch to turn on/off a Cloudy-based nebular emission
+        model. NB: this feature is currently under development, do not
+        use!
+
+    :param add_dust_emission: (default: True)
+        Switch to turn on/off the Draine & Li 2007 dust emission
+        model.
+
+    :param add_agb_dust_model: (default: False)
+        Switch to turn on/off the AGB circumstellar dust model. NB:
+        this feature is currently under development, do not use!  If
+        you do use it, note that the AGB dust emission is scaled by
+        the parameter `agb_dust`, which defaults to 0!
+   
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old
         stars:
@@ -295,7 +314,9 @@ class StellarPopulation(object):
     """
 
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
-                 smooth_velocity=True, **kwargs):
+                 smooth_velocity=True, add_stellar_remnants =True,
+                 add_dust_emission = True, add_agb_dust_model = False,
+                 add_neb_emission = False, **kwargs):
         # Set up the parameters to their default values.
         self.params = ParameterSet(
             dust_type=0,
@@ -361,13 +382,19 @@ class StellarPopulation(object):
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
         if not driver.is_setup:
-            driver.setup(compute_vega_mags, redshift_colors, smooth_velocity)
+            driver.setup(compute_vega_mags, redshift_colors, smooth_velocity,
+                         add_stellar_remnants, add_neb_emission,
+                         add_dust_emission, add_agb_dust_model)
 
         else:
-            cvms, rcolors, svel = driver.get_setup_vars()
+            cvms, rcolors, svel, asr, ane, ade, agbd = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
             assert redshift_colors == bool(rcolors)
             assert smooth_velocity == bool(svel)
+            assert add_stellar_remnants == bool(asr)
+            assert add_neb_emission == bool(ane)
+            assert add_dust_emission == bool(ade)
+            assert add_agb_dust_model == bool(agbd)
 
         # Caching.
         self._wavelengths = None

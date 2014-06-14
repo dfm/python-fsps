@@ -6,6 +6,7 @@ from __future__ import (division, print_function, absolute_import,
 
 __all__ = ["StellarPopulation", "find_filter"]
 
+import os
 import numpy as np
 from ._fsps import driver
 
@@ -763,6 +764,10 @@ class ParameterSet(object):
             self.check_params()
 
 
+# Cache for $SPS_HOME/data/magsun.dat parsed by numpy
+MSUN_TABLE = None
+
+
 class Filter(object):
 
     def __init__(self, index, name, fullname):
@@ -775,6 +780,26 @@ class Filter(object):
 
     def __repr__(self):
         return "<Filter({0})>".format(self.name)
+
+    @property
+    def msun_ab(self):
+        """Solar absolute magnitude in Filter, AB zeropoint."""
+        # if self._msun_ab is None:
+        if MSUN_TABLE is None:
+            self._load_msun_table()
+        return float(MSUN_TABLE[self.index, 1])
+
+    @property
+    def msun_vega(self):
+        """Solar absolute magnitude in Filter, VEGAMAG zeropoint."""
+        if MSUN_TABLE is None:
+            self._load_msun_table()
+        return float(MSUN_TABLE[self.index, 2])
+
+    def _load_msun_table(self):
+        global MSUN_TABLE
+        MSUN_TABLE = np.loadtxt(
+            os.path.expandvars("$SPS_HOME/data/magsun.dat"))
 
 
 FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "

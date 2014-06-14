@@ -767,6 +767,9 @@ class ParameterSet(object):
 # Cache for $SPS_HOME/data/magsun.dat parsed by numpy
 MSUN_TABLE = None
 
+# Cache for $SPS_HOME/data/filter_lambda_eff.dat parsed by numpy
+LAMBDA_EFF_TABLE = None
+
 
 class Filter(object):
 
@@ -796,10 +799,22 @@ class Filter(object):
             self._load_msun_table()
         return float(MSUN_TABLE[self.index, 2])
 
+    @property
+    def lambda_eff(self):
+        """Effective wavelength of Filter, in Angstroms."""
+        if LAMBDA_EFF_TABLE is None:
+            self._load_lambda_eff_table()
+        return float(LAMBDA_EFF_TABLE[self.index, 1])
+
     def _load_msun_table(self):
         global MSUN_TABLE
         MSUN_TABLE = np.loadtxt(
             os.path.expandvars("$SPS_HOME/data/magsun.dat"))
+
+    def _load_lambda_eff_table(self):
+        global LAMBDA_EFF_TABLE
+        LAMBDA_EFF_TABLE = np.loadtxt(
+            os.path.expandvars("$SPS_HOME/data/filter_lambda_eff.dat"))
 
 
 FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "

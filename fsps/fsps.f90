@@ -160,7 +160,7 @@ contains
 
   end subroutine
 
-  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out)
+  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
 
     ! Return the contents of the ssp spectral array,
     ! regenerating the ssps if necessary
@@ -168,8 +168,8 @@ contains
     implicit none
     integer, intent(in) :: ns,n_age,n_z
     integer :: zi
-    double precision, dimension(ns,n_age,n_z), intent(out) :: ssp_spec_out
-
+    double precision, dimension(ns,n_age,n_z), intent(inout) :: ssp_spec_out
+    double precision, dimension(n_age,n_z), intent(inout) :: ssp_mass_out, ssp_lbol_out
     do zi=1,nz
        if (has_ssp(zi) .eq. 0) then
           call ssp(zi)
@@ -177,6 +177,8 @@ contains
     enddo
 
     ssp_spec_out = spec_ssp_zz
+    ssp_mass_out = mass_ssp_zz
+    ssp_lbol_out = lbol_ssp_zz
 
   end subroutine
 

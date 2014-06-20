@@ -47,6 +47,15 @@ def test_imf3_multiprocessing():
     assert_allclose(single, multi)
 
 
+def test_get_mags():
+    fuv1 = pop.get_mags(bands=["galex_fuv"])[:, 0]
+    mags = pop.get_mags()
+    fuv2 = mags[:, 61]
+    fuv3 = mags[:, 62]
+    assert np.all(fuv1 == fuv2)
+    assert np.all(fuv1 != fuv3)
+
+
 def test_smoothspec():
     
     wave, spec = pop.get_spectrum(tage = 1, peraa = True)

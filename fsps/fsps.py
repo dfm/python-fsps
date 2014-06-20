@@ -45,6 +45,25 @@ class StellarPopulation(object):
         Switch to choose smoothing in velocity space (``True``) or
         wavelength space.
 
+    :param add_stellar_remanants: (default: True)
+        Switch to add stellar remnnants in the stellar mass
+        computation.
+
+    :param add_neb_emission: (default: False)
+        Switch to turn on/off a Cloudy-based nebular emission
+        model. NB: this feature is currently under development, do not
+        use!
+
+    :param add_dust_emission: (default: True)
+        Switch to turn on/off the Draine & Li 2007 dust emission
+        model.
+
+    :param add_agb_dust_model: (default: False)
+        Switch to turn on/off the AGB circumstellar dust model. NB:
+        this feature is currently under development, do not use!  If
+        you do use it, note that the AGB dust emission is scaled by
+        the parameter `agb_dust`.
+   
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old
         stars:
@@ -190,7 +209,7 @@ class StellarPopulation(object):
         ``dust_type=1``.
 
     :param redgb: (default: 1.0)
-        Undocumented.
+        Weighting of red  giant branch.
 
     :param dust1_index: (default: -1.0)
         Undocumented.
@@ -231,7 +250,7 @@ class StellarPopulation(object):
         stars.
 
     :param masscut: (default: 150.0)
-        Undocumented.
+        Truncate the IMF above this value.
 
     :param zmet: (default: 1)
         The metallicity is specified as an integer ranging between 1 and 22.
@@ -276,7 +295,7 @@ class StellarPopulation(object):
         Gordon (2000) for details.
 
     :param evtype: (default: -1)
-        Undocumented.
+        Compute SSPs for only the given evolutionary type
 
     :param sigma_smooth: (default: 0.0)
         If smooth_velocity is True, this gives the velocity dispersion in
@@ -284,7 +303,7 @@ class StellarPopulation(object):
         smoothing in Angstroms.
 
     :param agb_dust: (default: 1.0)
-        scales the circumstellar AGB dust emission
+        Scales the circumstellar AGB dust emission.
 
     :param min_wave_smooth: (default: 1e3)
         Undocumented.
@@ -295,7 +314,9 @@ class StellarPopulation(object):
     """
 
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
-                 smooth_velocity=True, **kwargs):
+                 smooth_velocity=True, add_stellar_remnants =True,
+                 add_dust_emission = True, add_agb_dust_model = False,
+                 add_neb_emission = False, **kwargs):
         # Set up the parameters to their default values.
         self.params = ParameterSet(
             dust_type=0,
@@ -361,16 +382,24 @@ class StellarPopulation(object):
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
         if not driver.is_setup:
-            driver.setup(compute_vega_mags, redshift_colors, smooth_velocity)
+            driver.setup(compute_vega_mags, redshift_colors, smooth_velocity,
+                         add_stellar_remnants, add_neb_emission,
+                         add_dust_emission, add_agb_dust_model)
 
         else:
-            cvms, rcolors, svel = driver.get_setup_vars()
+            cvms, rcolors, svel, asr, ane, ade, agbd = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
             assert redshift_colors == bool(rcolors)
             assert smooth_velocity == bool(svel)
+            assert add_stellar_remnants == bool(asr)
+            assert add_neb_emission == bool(ane)
+            assert add_dust_emission == bool(ade)
+            assert add_agb_dust_model == bool(agbd)
 
         # Caching.
         self._wavelengths = None
+        self._zlegend = None
+        self._ssp_ages = None
         self._stats = None
 
     def _update_params(self):
@@ -447,6 +476,32 @@ class StellarPopulation(object):
             self._wavelengths = driver.get_lambda(NSPEC)
         return self._wavelengths
 
+
+    @property
+    def zlegend(self):
+        """
+        The available metallicities.
+
+        """
+        if self._zlegend is None:
+            NZ = driver.get_nz()
+            self._zlegend = driver.get_zlegend(NZ)
+        return self._zlegend
+
+
+    @property
+    def ssp_ages(self):
+        """
+        The age grid of the SSPs, in log(years), used by FSPS.
+
+        """
+        if self._ssp_ages is None:
+            NTFULL = driver.get_ntfull()
+            self._ssp_ages = driver.get_timefull(NTFULL)
+        return self._ssp_ages
+
+
+        
     def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None):
         """
         Get the magnitude of the CSP.
@@ -499,6 +554,117 @@ class StellarPopulation(object):
             return mags[0, band_array]
         return mags[:, band_array]
 
+    
+    def ztinterp(self, zpos, tpos, peraa = False):
+        """Return an SSP spectrum, mass, and luminosity interpolated
+        to a target metallicity and age.  This effectively wraps the
+        ZTINTERP subroutine.  Only the SSPs bracketing a given
+        metallicity will be regenerated, if parameters are dirty.
+
+        :param zpos:
+            The metallicity, in units of log(Z/Z_sun)
+            
+        :param tpos:
+            The desired age, in Gyr.
+
+        :param peraa: (default: False)
+            If true, return spectra in units of L_sun/AA, otherwise
+            L_sun/Hz
+            
+        :returns spec:
+            The SSP spectrum, interpolated to zpos and tpos.
+            
+        :returns mass:
+            The stellar mass of the SSP at tpos.
+            
+        :returns lbol:
+            The bolometric luminosity of the returned SSP.
+        """
+        
+        if self.params.dirty:
+            self._update_params()
+
+        NSPEC = driver.get_nspec()
+        spec, lbol, mass = np.zeros(NSPEC), np.zeros(1), np.zeros(1)
+        logt_yrs = np.log10(tpos * 1e9)
+        driver.interp_ssp(zpos,logt_yrs,spec,mass,lbol)
+
+        if peraa:
+            wavegrid = self.wavelengths
+            factor = 3e18 / wavegrid ** 2
+            spec *= factor
+        
+        return spec, mass, lbol
+    
+    def all_ssp_spec(self, update = True, peraa = False):
+        """Return the contents of the ssp_spec_zz array.
+
+        :param update: (default: True)
+            If True, forces an update of the SSPs if the ssp
+            parameters have changed. Otherwise simply dumps the
+            current contents of the ssp_spec_zz array.
+            
+        :param peraa: (default: False)
+            If true, return spectra in units of L_sun/AA, otherwise
+            L_sun/Hz
+
+        :returns specarray:
+            The spectra of the SSPs, having shape (nspec, ntfull, nz).
+            
+        """
+
+        if self.params.dirty and update:
+            self._update_params()
+
+        NSPEC = driver.get_nspec()
+        NTFULL = driver.get_ntfull()
+        NZ = driver.get_nz()
+        specarray = driver.get_ssp_spec(NSPEC, NTFULL, NZ)
+                
+        if peraa:
+            wavegrid = self.wavelengths
+            factor = 3e18 / wavegrid ** 2
+            specarray *= factor[:,None,None]
+            
+        return specarray
+    
+    def smoothspec(self, wave, spec, sigma, minw = None, maxw = None):
+        """Smooth a spectrum by a gaussian with standard deviation
+        given by sigma.  Whether the smoothing is in velocity space or
+        in wavelength space depends on the value of the value of
+        smooth_velocity.
+
+        :param wave:
+            The input wavelength grid.
+            
+        :param spec:
+            The input spectrum.
+            
+        :param sigma:
+            The standard deviation of the gaussian broadening function.
+            
+        :param minw:
+            Optionally set the minimum wavelength to consider when
+            broadening.
+        
+        :param maxw:
+            Optionally set the maximum wavelength to consider when
+            broadening.
+
+        :returns outspec:
+            The smoothed spectrum, on the same wavelength grid as the input.
+                   
+        """
+        ns = len(wave)
+        if maxw is None:
+            maxw = np.max(wave)
+        if minw is None:
+            minw = np.min(wave)
+        assert len(wave) == len(spec)
+        outspec = np.array(spec)
+        driver.smooth_spectrum(wave, outspec, sigma, minw, maxw)
+        return outspec
+
     @property
     def log_age(self):
         """log10(age/yr)."""
@@ -545,17 +711,17 @@ class StellarPopulation(object):
 class ParameterSet(object):
 
     ssp_params = ["imf_type", "imf1", "imf2", "imf3", "vdmc", "mdave",
-                  "dell", "delt", "sbss", "fbhb", "pagb", "agb_dust"]
+                  "dell", "delt", "sbss", "fbhb", "pagb", "agb_dust",
+                  "redgb", "masscut", "fcstar", "evtype"]
 
     csp_params = ["dust_type", "zmet", "sfh", "wgp1", "wgp2", "wgp3",
-                  "evtype", "tau", "const", "tage", "fburst", "tburst",
+                  "tau", "const", "tage", "fburst", "tburst",
                   "dust1", "dust2", "logzsol", "zred", "pmetals",
                   "dust_clumps", "frac_nodust", "dust_index", "dust_tesc",
-                  "frac_obrun", "uvb", "mwr", "redgb", "dust1_index",
+                  "frac_obrun", "uvb", "mwr", "dust1_index",
                   "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
-                  "duste_umin", "duste_qpah", "fcstar", "masscut",
-                  "sigma_smooth", "min_wave_smooth",
-                  "max_wave_smooth"]
+                  "duste_umin", "duste_qpah","sigma_smooth",
+                  "min_wave_smooth", "max_wave_smooth"]
 
     @property
     def all_params(self):
@@ -784,8 +950,23 @@ FILTERS = [(1, "V", "Johnson V (from Bessell 1990 via M. Blanton) - this "
            (113, "2300A", "Idealized 2300A bandpass with 15% bandwidth, "
             "FWHM = 345A from M. Dickinson"),
            (114, "2800A", "Idealized 2800A bandpass with 15% bandwidth, "
-            "FWHM = 420A from M. Dickinson")]
-
+            "FWHM = 420A from M. Dickinson"),
+           (115, "JWST_F070W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (116, "JWST_F090W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (117, "JWST_F115W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (118, "JWST_F150W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (119, "JWST_F200W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (120, "JWST_F277W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (121, "JWST_F356W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)"),
+           (122, "JWST_F444W",
+            "(http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/)")]
 
 FILTERS = dict([(f[1].lower(), Filter(*f)) for f in FILTERS])
 

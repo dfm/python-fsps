@@ -54,3 +54,28 @@ def test_get_mags():
     fuv3 = mags[:, 62]
     assert np.all(fuv1 == fuv2)
     assert np.all(fuv1 != fuv3)
+
+
+def test_smoothspec():
+    
+    wave, spec = pop.get_spectrum(tage = 1, peraa = True)
+    spec2 = pop.smoothspec(wave, spec, 160., minw = 1e3, maxw =1e4)
+    assert (spec-spec2 == 0.).sum() > 0
+
+
+def test_ztinterp():
+    
+    wave, s2 = pop.get_spectrum(tage = 1, zmet = 2, peraa =True)
+    wave, s3 = pop.get_spectrum(tage = 1, zmet = 3, peraa =True)
+    s,m,l = pop.ztinterp(-0.5, 1., peraa = True)
+
+    optical = ((wave > 2000) & (wave < 5e3))
+    assert s[optical].sum() < s2[optical].sum()
+    assert s[optical].sum() > s3[optical].sum()
+    assert m < 1
+
+
+def test_exposedspec():
+    allspec = pop.all_ssp_spec(peraa =True)
+    assert len(allspec.shape) == 3
+    assert allspec.shape[0] == len(pop.wavelengths)

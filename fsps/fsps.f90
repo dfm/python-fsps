@@ -17,24 +17,34 @@ module driver
 
 contains
 
-  subroutine setup(compute_vega_mags0,redshift_colors0,smooth_velocity0)
+  subroutine setup(compute_vega_mags0,redshift_colors0,smooth_velocity0,&
+                   add_stellar_remnants0,add_neb_emission0, &
+                   add_dust_emission0,add_agb_dust_model0)
 
     ! Load all the data files/templates into memory.
 
     implicit none
 
     integer, intent(in) :: compute_vega_mags0, redshift_colors0, &
-         smooth_velocity0
+         smooth_velocity0,add_stellar_remnants0,add_neb_emission0, &
+         add_dust_emission0,add_agb_dust_model0
+         
+
     compute_vega_mags = compute_vega_mags0
     redshift_colors = redshift_colors0
     smooth_velocity = smooth_velocity0
+    add_dust_emission = add_dust_emission0
+    add_agb_dust_model = add_agb_dust_model0
+    add_neb_emission = add_neb_emission0
+    add_stellar_remnants = add_stellar_remnants0
     call sps_setup(-1)
     is_setup = 1
 
   end subroutine
 
   subroutine set_ssp_params(imf_type0,imf1,imf2,imf3,vdmc,mdave,dell,&
-                            delt,sbss,fbhb,pagb,agb_dust)
+                            delt,sbss,fbhb,pagb,agb_dust,redgb,&
+                            masscut,fcstar,evtype)
 
     ! Set the parameters that affect the SSP computation.
 
@@ -42,7 +52,8 @@ contains
 
     integer, intent(in) :: imf_type0
     double precision, intent(in) :: imf1,imf2,imf3,vdmc,mdave,dell,&
-                                    delt,sbss,fbhb,pagb,agb_dust
+                                    delt,sbss,fbhb,pagb,agb_dust,&
+                                    redgb,masscut,fcstar,evtype
 
     imf_type=imf_type0
     pset%imf1=imf1
@@ -56,32 +67,36 @@ contains
     pset%fbhb=fbhb
     pset%pagb=pagb
     pset%agb_dust=agb_dust 
+    pset%redgb=redgb
+    pset%masscut=masscut
+    pset%fcstar=fcstar
+    pset%evtype=evtype
 
     has_ssp(:) = 0
 
   end subroutine
 
-  subroutine set_csp_params(dust_type0,zmet,sfh,wgp1,wgp2,wgp3,evtype,tau,&
+  subroutine set_csp_params(dust_type0,zmet,sfh,wgp1,wgp2,wgp3,tau,&
                             const,tage,fburst,tburst,dust1,dust2,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
-                            redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
-                            duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut,sigma_smooth,min_wave_smooth,&
+                            dust1_index,sf_start,sf_trunc,sf_theta,&
+                            duste_gamma,duste_umin,duste_qpah,&
+                            sigma_smooth,min_wave_smooth,&
                             max_wave_smooth)
 
     ! Set all the parameters that don't affect the SSP computation.
 
     implicit none
 
-    integer, intent(in) :: dust_type0,zmet,sfh,wgp1,wgp2,wgp3,evtype
+    integer, intent(in) :: dust_type0,zmet,sfh,wgp1,wgp2,wgp3
     double precision, intent(in) :: tau,&
                             const,tage,fburst,tburst,dust1,dust2,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
-                            redgb,dust1_index,sf_start,sf_trunc,sf_theta,&
-                            duste_gamma,duste_umin,duste_qpah,fcstar,&
-                            masscut,sigma_smooth,min_wave_smooth,&
+                            dust1_index,sf_start,sf_trunc,sf_theta,&
+                            duste_gamma,duste_umin,duste_qpah,&
+                            sigma_smooth,min_wave_smooth,&
                             max_wave_smooth
 
     pset%zmet=zmet
@@ -89,7 +104,6 @@ contains
     pset%wgp1=wgp1
     pset%wgp2=wgp2
     pset%wgp3=wgp3
-    pset%evtype=evtype
 
     pset%tau=tau
     pset%const=const
@@ -108,7 +122,6 @@ contains
     pset%frac_obrun=frac_obrun
     pset%uvb=uvb
     pset%mwr=mwr
-    pset%redgb=redgb
     pset%dust1_index=dust1_index
     pset%sf_start=sf_start
     pset%sf_trunc=sf_trunc
@@ -116,8 +129,6 @@ contains
     pset%duste_gamma=duste_gamma
     pset%duste_umin=duste_umin
     pset%duste_qpah=duste_qpah
-    pset%fcstar=fcstar
-    pset%masscut=masscut
     pset%sigma_smooth=sigma_smooth
     pset%min_wave_smooth=min_wave_smooth
     pset%max_wave_smooth=max_wave_smooth
@@ -143,9 +154,71 @@ contains
     implicit none
     integer, intent(in) :: zi
     pset%zmet = zi
-    call ssp_gen(pset, mass_ssp_zz(zi,:),lbol_ssp_zz(zi,:),&
-                 spec_ssp_zz(zi,:,:))
+    call ssp_gen(pset, mass_ssp_zz(:,zi),lbol_ssp_zz(:,zi),&
+                 spec_ssp_zz(:,:,zi))
     has_ssp(zi) = 1
+
+  end subroutine
+
+  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out)
+
+    ! Return the contents of the ssp spectral array,
+    ! regenerating the ssps if necessary
+
+    implicit none
+    integer, intent(in) :: ns,n_age,n_z
+    integer :: zi
+    double precision, dimension(ns,n_age,n_z), intent(out) :: ssp_spec_out
+
+    do zi=1,nz
+       if (has_ssp(zi) .eq. 0) then
+          call ssp(zi)
+       endif
+    enddo
+
+    ssp_spec_out = spec_ssp_zz
+
+  end subroutine
+
+
+  subroutine interp_ssp(ns,zpos,tpos,spec,mass,lbol)
+
+    ! Return the SSPs interpolated to the target metallicity 
+    !(zpos) and target age (tpos)
+    
+    implicit none
+
+    integer, intent(in) :: ns
+    double precision, intent(in) :: zpos
+    double precision, intent(in) :: tpos
+
+    double precision, dimension(ns,1), intent(inout) :: spec
+    double precision, dimension(1), intent(inout) :: mass,lbol
+
+    integer :: zlo,zmet
+
+    zlo = MAX(MIN(locate(LOG10(zlegend/0.0190),zpos),nz-1),1)
+    do zmet=zlo,zlo+1
+       if (has_ssp(zmet) .eq. 0) then
+          call ssp(zmet)
+       endif
+    enddo
+
+    call ztinterp(zpos,spec,lbol,mass,tpos)
+
+    end subroutine
+
+  subroutine smooth_spectrum(ns,wave,spec,sigma_broad,minw,maxw)
+    
+    ! Smooth the spectrum by a gaussian of width sigma_broad
+    
+    implicit none
+    integer, intent(in) :: ns
+    double precision, intent(in) :: sigma_broad,minw,maxw
+    double precision, dimension(ns), intent(in) :: wave
+    double precision, dimension(ns), intent(inout) :: spec
+    
+    call smoothspec(wave,spec,sigma_broad,minw,maxw)
 
   end subroutine
 
@@ -155,14 +228,16 @@ contains
 
     implicit none
     integer :: zmet
+    character(100) :: outfile
     zmet = pset%zmet
     if (has_ssp(zmet) .eq. 0) then
       call ssp(zmet)
     endif
-    call compsp(0,1,'',mass_ssp_zz(zmet,:),lbol_ssp_zz(zmet,:),&
-                spec_ssp_zz(zmet,:,:),pset,ocompsp)
+    call compsp(0,1,outfile,mass_ssp_zz(:,zmet),lbol_ssp_zz(:,zmet),&
+                spec_ssp_zz(:,:,zmet),pset,ocompsp)
 
   end subroutine
+
 
   subroutine get_spec(ns,n_age,spec_out)
 
@@ -193,13 +268,17 @@ contains
 
   end subroutine
 
-  subroutine get_setup_vars(cvms, rcolors, svel)
+  subroutine get_setup_vars(cvms, rcolors, svel, asr, ane, ade, agbd)
 
     implicit none
-    integer, intent(out) :: cvms, rcolors, svel
+    integer, intent(out) :: cvms, rcolors, svel, asr, ane, ade, agbd
     cvms = compute_vega_mags
     rcolors = redshift_colors
     svel = smooth_velocity
+    asr = add_stellar_remnants
+    ane = add_neb_emission 
+    ade = add_dust_emission
+    agbd = add_agb_dust_model
 
   end subroutine
 
@@ -211,6 +290,29 @@ contains
     n_z = nz
 
   end subroutine
+
+
+  subroutine get_zlegend(n_z,z_legend)
+
+    ! Get the available metallicity values.
+    implicit none
+    integer, intent(in) :: n_z
+    double precision, dimension(n_z), intent(out) :: z_legend
+    z_legend = zlegend
+
+  end subroutine
+
+  subroutine get_timefull(n_age,timefull)
+
+    ! Get the actual time steps of the SSPs.
+    implicit none
+    integer, intent(in) :: n_age
+    double precision, dimension(n_age), intent(out) :: timefull
+
+    timefull = time_full
+
+  end subroutine
+
 
   subroutine get_ntfull(n_age)
 

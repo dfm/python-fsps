@@ -40,4 +40,5 @@ if not accepted:
                       "{1}".format(out[0].rstrip('\n'), ACCEPTED_FSPS_REVISIONS))
     
 
-from .fsps import StellarPopulation, find_filter
+from .fsps import StellarPopulation  # NOQA
+from .filters import find_filter  # NOQA

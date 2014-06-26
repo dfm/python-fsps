@@ -62,6 +62,7 @@ setup(
     packages=["fsps"],
     # package_data={".": ["README.rst"]},
     include_package_data=True,
+    scripts=glob.glob("scripts/*.py"),
     install_requires="numpy",
     cmdclass={"build_fsps": build_fsps},
     classifiers=[

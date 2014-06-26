@@ -23,6 +23,10 @@ MSUN_TABLE = None
 # Cache for $SPS_HOME/data/filter_lambda_eff.dat parsed by numpy
 LAMBDA_EFF_TABLE = None
 
+# Cache for bandpass transmission listings: a dictionary keyed by bandpass
+# name with values of wavelength, transmission tuples.
+TRANS_CACHE = None
+
 
 class Filter(object):
 
@@ -71,6 +75,21 @@ class Filter(object):
         else:
             return np.nan
 
+    @property
+    def transmission(self):
+        """Returns filter transmission: a tuple of wavelength (Angstroms) and
+        an un-normalized transmission arrays.
+        """
+        if TRANS_CACHE is None:
+            # Load the cache for all filters.
+            self._load_transmission_cache()
+        try:
+            return TRANS_CACHE[self.name]
+        except KeyError, e:
+            e.args += ("Could not find transmission data "
+                       "for {0}".format(self.name))
+            raise
+
     def _load_msun_table(self):
         global MSUN_TABLE
         MSUN_TABLE = np.loadtxt(
@@ -80,6 +99,30 @@ class Filter(object):
         global LAMBDA_EFF_TABLE
         LAMBDA_EFF_TABLE = np.loadtxt(
             os.path.expandvars("$SPS_HOME/data/filter_lambda_eff.dat"))
+
+    def _load_transmission_cache(self):
+        """Parse the allfilters.dat file into the TRANS_CACHE."""
+        global TRANS_CACHE
+        path = os.path.expandvars("$SPS_HOME/data/allfilters.dat")
+        names = list_filters()
+        TRANS_CACHE = {}
+        filter_index = -1
+        lambdas, trans = [], []
+        with open(path) as f:
+            for line in f:
+                line.strip()
+                if line[0].startswith("#"):
+                    # Close out filter
+                    if filter_index > -1:
+                        TRANS_CACHE[names[filter_index]] = (
+                            np.array(lambdas), np.array(trans))
+                    # Start new filter
+                    filter_index += 1
+                    lambdas, trans = [], []
+                else:
+                    l, t = line.split()
+                    lambdas.append(float(l))
+                    trans.append(float(t))
 
 
 def _load_filter_dict():

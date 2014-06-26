@@ -43,21 +43,33 @@ class Filter(object):
         # if self._msun_ab is None:
         if MSUN_TABLE is None:
             self._load_msun_table()
-        return float(MSUN_TABLE[self.index, 1])
+        if self.index < MSUN_TABLE.shape[0]:
+            assert MSUN_TABLE[self.index, 0] == self.index + 1
+            return float(MSUN_TABLE[self.index, 1])
+        else:
+            return np.nan
 
     @property
     def msun_vega(self):
         """Solar absolute magnitude in Filter, VEGAMAG zeropoint."""
         if MSUN_TABLE is None:
             self._load_msun_table()
-        return float(MSUN_TABLE[self.index, 2])
+        if self.index < MSUN_TABLE.shape[0]:
+            assert MSUN_TABLE[self.index, 0] == self.index + 1
+            return float(MSUN_TABLE[self.index, 2])
+        else:
+            return np.nan
 
     @property
     def lambda_eff(self):
         """Effective wavelength of Filter, in Angstroms."""
         if LAMBDA_EFF_TABLE is None:
             self._load_lambda_eff_table()
-        return float(LAMBDA_EFF_TABLE[self.index, 1])
+        if self.index < LAMBDA_EFF_TABLE.shape[0]:
+            assert LAMBDA_EFF_TABLE[self.index, 0] == self.index + 1
+            return float(LAMBDA_EFF_TABLE[self.index, 1])
+        else:
+            return np.nan
 
     def _load_msun_table(self):
         global MSUN_TABLE
@@ -80,7 +92,7 @@ def load_filter_dict():
     fsps_ids, comments = [], []
     with open(filter_list_path) as f:
         for line in f:
-            fsps_id, comment = line.split('\t')
+            fsps_id, comment = line.strip().split('\t')
             fsps_ids.append(int(fsps_id))
             comments.append(comment)
 
@@ -89,7 +101,7 @@ def load_filter_dict():
     keys_path = "data/filter_keys.txt"
     assert resource_exists(__name__, keys_path)
     for line in resource_stream(__name__, keys_path):
-        _id, key = line.split()
+        _id, key = line.strip().split()
         our_ids.append(int(_id))
         keys.append(key)
 

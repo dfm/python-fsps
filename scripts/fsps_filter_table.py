@@ -10,16 +10,17 @@ Sphinx documentation.
 from __future__ import print_function, absolute_import
 
 import re
-import fsps.fsps
+import fsps
 
 # Pattern via https://gist.github.com/uogbuji/705383
 URL_P = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')  # NOQA
 
 
 def main():
-    colnames = ("ID", "Name", "M_sun Vega", "M_sun AB", "lambda_eff (A)",
+    colnames = ("ID", "Name", "M_sun Vega", "M_sun AB", "lambda_eff (Å)",
                 "Description")
-    filter_list = make_filter_list(fsps.filters.FILTERS)
+    filters = [fsps.get_filter(name) for name in fsps.list_filters()]
+    filter_list = make_filter_list(filters)
     txt = make_table(filter_list, colnames)
     print(txt)
 
@@ -28,14 +29,15 @@ def make_filter_list(filters):
     """Transform filters into list of table rows."""
     filter_list = []
     filter_ids = []
-    for fn, f in filters.iteritems():
+    for f in filters:
         filter_ids.append(f.index)
         fullname = URL_P.sub(r'`<\1>`_', f.fullname)
         filter_list.append((str(f.index + 1),
+                            f.name,
                             "{0:.2f}".format(f.msun_vega),
                             "{0:.2f}".format(f.msun_ab),
                             "{0:.1f}".format(f.lambda_eff),
-                            f.name, fullname))
+                            fullname))
     sortf = lambda item: int(item[0])
     filter_list.sort(key=sortf)
     return filter_list

@@ -47,4 +47,4 @@ if not accepted:
 
 
 from .fsps import StellarPopulation  # NOQA
-from .filters import find_filter  # NOQA
+from .filters import find_filter, get_filter, list_filters  # NOQA

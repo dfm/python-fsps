@@ -11,7 +11,7 @@ This module uses filter information shipped with FSPS itself in
 from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 
-__all__ = ["find_filter", "FILTERS"]
+__all__ = ["find_filter", "FILTERS", "get_filter", "list_filters"]
 
 import os
 import numpy as np
@@ -82,7 +82,7 @@ class Filter(object):
             os.path.expandvars("$SPS_HOME/data/filter_lambda_eff.dat"))
 
 
-def load_filter_dict():
+def _load_filter_dict():
     """
     Load the filter list, creating a dictionary of :class:`Filter` instances.
     """
@@ -113,7 +113,7 @@ def load_filter_dict():
     return filters
 
 
-FILTERS = load_filter_dict()
+FILTERS = _load_filter_dict()
 
 
 def find_filter(band):
@@ -138,3 +138,28 @@ def find_filter(band):
         if b in k:
             possible.append(k)
     return possible
+
+
+def get_filter(name):
+    """Returns the :class:`fsps.filters.Filter` instance associated with the
+    filter name.
+
+    :param name:
+        Name of the filter, as found with :func:`find_filter`.
+    """
+    try:
+        return FILTERS[name.lower()]
+    except KeyError, e:
+        e.args += ("Filter {0} does not exist. "
+                   "Try using fsps.find_filter('{0}').".format(name),)
+        raise
+
+
+def list_filters():
+    """Returns a list of all FSPS filter names.
+
+    Filters are sorted by their FSPS index.
+    """
+    lst = [(name, f.index) for name, f in FILTERS.iteritems()]
+    lst.sort(key=lambda x: x[1])
+    return [l[0] for l in lst]

@@ -524,8 +524,9 @@ class StellarPopulation(object):
             The magnitude grid. If an age was was provided by the ``tage``
             parameter then the result is a 1D array with ``NBANDS`` values.
             Otherwise, it is a 2D array with shape ``(NTFULL, NBANDS)``. If
-            a particular band was requested then this return value will be
-            properly compressed along that axis.
+            a particular set of bands was requested then this return value
+            will be properly compressed along that axis, ordered according
+            to the ``bands`` argument.
 
         """
         self.params["tage"] = tage
@@ -540,16 +541,25 @@ class StellarPopulation(object):
 
         band_array = np.ones(NBANDS, dtype=bool)
         if bands is not None:
-            inds = [FILTERS[band.lower()].index for band in bands]
-            band_array[np.array([i not in inds for i in range(NBANDS)],
+            user_sorted_inds = np.array([FILTERS[band.lower()].index
+                                         for band in bands])
+            band_array[np.array([i not in user_sorted_inds
+                                 for i in range(NBANDS)],
                                 dtype=bool)] = False
 
         inds = np.array(band_array, dtype=int)
         mags = driver.get_mags(NTFULL, redshift, inds)
 
         if tage > 0.0:
-            return mags[0, band_array]
-        return mags[:, band_array]
+            if bands is not None:
+                return mags[0, user_sorted_inds]
+            else:
+                return mags[0, :]
+        else:
+            if bands is not None:
+                return mags[:, user_sorted_inds]
+            else:
+                return mags
 
     def ztinterp(self, zpos, tpos, peraa=False):
         """Return an SSP spectrum, mass, and luminosity interpolated

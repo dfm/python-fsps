@@ -10,11 +10,9 @@ import subprocess as sp
 try:
     from setuptools import setup
     from setuptools.command.build_ext import build_ext
-    setup, build_ext = setup, build_ext
 except ImportError:
     from distutils.core import setup
     from distutils.command.build_ext import build_ext
-    setup, build_ext = setup, build_ext
 
 
 class build_fsps(build_ext):
@@ -44,6 +42,20 @@ class build_fsps(build_ext):
         print("Running: {0}".format(cmd))
         sp.call(cmd, shell=True)
 
+        # Move the compiled object to the correct path.
+        infn = self.get_ext_filename("fsps._fsps")
+        outfn = self.get_ext_fullpath("fsps._fsps")
+        try:
+            os.makedirs(os.path.split(outfn)[0])
+        except os.error:
+            pass
+        cmd = "mv {0} {1}".format(infn, outfn)
+        print("Running: {0}".format(cmd))
+        sp.call(cmd, shell=True)
+
+    def get_outputs(self):
+        return [self.get_ext_fullpath("fsps._fsps")]
+
 
 if "publish" in sys.argv[-1]:
     os.system("git rev-parse --short HEAD > COMMIT")
@@ -69,11 +81,14 @@ setup(
     description="Python bindings for Charlie Conroy's FSPS.",
     long_description=open("README.rst").read(),
     packages=["fsps"],
-    # package_data={".": ["README.rst"]},
+    package_data={"": ["README.rst", "LICENSE.rst"],
+                  "fsps": ["_fsps.so"]},
     include_package_data=True,
     scripts=glob.glob("scripts/*.py"),
     install_requires="numpy",
-    cmdclass={"build_fsps": build_fsps},
+    cmdclass={
+        "build_ext": build_fsps,
+    },
     classifiers=[
         # "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",

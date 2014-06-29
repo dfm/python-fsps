@@ -7,6 +7,10 @@ from __future__ import (division, print_function, absolute_import,
 import os
 import sys
 
+# Patch the path to get the local version.
+d = os.path.dirname
+sys.path.insert(0, d(d(os.path.abspath(__file__))))
+
 extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx",
               "sphinx.ext.mathjax"]
 
@@ -34,5 +38,5 @@ html_theme = 'dfm'
 html_sidebars = {
     'index':    ['sidebarintro.html', 'searchbox.html'],
     '**':       ['sidebarlogo.html', 'localtoc.html', 'relations.html',
-                        'searchbox.html']
+                 'searchbox.html']
 }

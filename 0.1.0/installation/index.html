@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Python FSPS  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Python FSPS  documentation" href="../" />
+    <link rel="next" title="Modelling Stellar Populations" href="../stellarpop_api/" />
+    <link rel="prev" title="Flexible Stellar Population Synthesis for Python" href="../" />
+     
+    
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+    <!-- https://www.google.com/fonts#UsePlace:use/Collection:Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro -->
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro' rel='stylesheet' type='text/css'>
+
+    <link rel="shortcut icon" href="../_static/favicon.png">
+
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../stellarpop_api/" title="Modelling Stellar Populations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Flexible Stellar Population Synthesis for Python"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../">Python FSPS  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>There are only two required dependencies for building this package: <a class="reference external" href="http://people.ucsc.edu/~conroy/FSPS.html">FSPS</a> (obviously) and <a class="reference external" href="http://www.numpy.org/">NumPy</a>.
+First, make sure that you have NumPy installed (using your favorite method) and access to the <tt class="docutils literal"><span class="pre">f2py</span></tt> executable (this should be installed along with NumPy).</p>
+<p>Then, you need to follow the directions on <a class="reference external" href="http://people.ucsc.edu/~conroy/FSPS.html">the FSPS page</a> to checkout and compile the FSPS
+package. Note that Python-FSPS is built against specific versions of the FSPS
+Fortran API so it may be necessary to checkout a slightly older revision.
+Currently, revision 143 should be used:</p>
+<div class="highlight-python"><div class="highlight"><pre>svn update -r 143
+</pre></div>
+</div>
+<p>Once checked out, modify the Makefile as needed and compile FSPS.
+These bindings rely on the value of the <tt class="docutils literal"><span class="pre">SPS_HOME</span></tt> environment variable
+being correctly set and the compiled <tt class="docutils literal"><span class="pre">.o</span></tt> and <tt class="docutils literal"><span class="pre">.mod</span></tt> files be available in
+the <tt class="docutils literal"><span class="pre">${SPS_HOME}/src</span></tt> directory.</p>
+<p>Finally, clone the <a class="reference external" href="https://github.com/dfm/python-fsps">python-fsps repository</a> and build:</p>
+<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/dfm/python-fsps.git
+cd python-fsps
+python setup.py build_fsps
+python setup.py develop
+</pre></div>
+</div>
+<p>To test the installation, run (this doesn&#8217;t actually work yet):</p>
+<div class="highlight-python"><div class="highlight"><pre>python -c &#39;import fsps;fsps.test()&#39;
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><p class="logo">
+    <a href="../">
+        <img class="logo" src="../_static/pyfsps_logo.svg" alt="Logo"/>
+    </a>
+</p>
+
+<p>
+    Python-FSPS is a set of bindings to Charlie Conroy's
+    <a href="http://msp.berkeley.edu/camcos/2010/5-1/p04.xhtml">
+      Flexible Stellar Population Synthesis</a> Fortran library.
+</p><h3>Related Topics</h3>
+<ul>
+  <li><a href="../">Documentation overview</a><ul>
+      <li>Previous: <a href="../" title="previous chapter">Flexible Stellar Population Synthesis for Python</a></li>
+      <li>Next: <a href="../stellarpop_api/" title="next chapter">Modelling Stellar Populations</a></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2013-2014 Dan Foreman-Mackey & contributors.
+    </div>
+    <!-- http://aralbalkan.com/scribbles/fork-me-on-github-retina-ribbons/ -->
+    <a href="https://github.com/dfm/python-fsps"><img style="position: absolute; top: 0; right: 0; border: 0; width: 149px; height: 149px;" src="http://aral.github.com/fork-me-on-github-retina-ribbons/right-cerulean@2x.png" alt="Fork me on GitHub"></a>
+
+    <!-- <script type="text/javascript"> -->
+    <!--     var _gaq = _gaq || []; -->
+    <!--     _gaq.push(['_setAccount', 'UA-22909046-1']); -->
+    <!--     _gaq.push(['_trackPageview']); -->
+    <!--     (function() { -->
+    <!--         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; -->
+    <!--         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; -->
+    <!--         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); -->
+    <!--         })(); -->
+    <!-- </script> -->
+
+    <!-- <script type="text/javascript"> -->
+    <!--     var _gauges = _gauges || []; -->
+    <!--     (function() { -->
+    <!--      var t   = document.createElement('script'); -->
+    <!--      t.type  = 'text/javascript'; -->
+    <!--      t.async = true; -->
+    <!--      t.id    = 'gauges-tracker'; -->
+    <!--      t.setAttribute('data-site-id', '510fb7df613f5d10200000c4'); -->
+    <!--      t.src = '//secure.gaug.es/track.js'; -->
+    <!--      var s = document.getElementsByTagName('script')[0]; -->
+    <!--      s.parentNode.insertBefore(t, s); -->
+    <!--     })(); -->
+    <!-- </script> -->
+  </body>
+</html>

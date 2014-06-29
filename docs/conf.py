@@ -23,7 +23,7 @@ templates_path = ["_templates"]
 
 # General information about the project.
 project = "Python FSPS"
-copyright = "2013, Dan Foreman-Mackey"
+copyright = "2013-2014 Dan Foreman-Mackey & contributors"
 # version =
 # release =
 

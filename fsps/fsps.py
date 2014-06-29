@@ -318,6 +318,7 @@ class StellarPopulation(object):
                  smooth_velocity=True, add_stellar_remnants=True,
                  add_dust_emission=True, add_agb_dust_model=False,
                  add_neb_emission=False, **kwargs):
+
         # Set up the parameters to their default values.
         self.params = ParameterSet(
             dust_type=0,

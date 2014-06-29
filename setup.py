@@ -51,10 +51,19 @@ if "publish" in sys.argv[-1]:
     sys.exit()
 
 
+# Hackishly inject a constant into builtins to enable importing of the
+# package before the library is built.
+if sys.version_info[0] < 3:
+    import __builtin__ as builtins
+else:
+    import builtins
+builtins.__FSPS_SETUP__ = True
+from fsps import __version__
+
 setup(
     name="fsps",
     url="https://github.com/dfm/python-fsps",
-    version="0.0.1",
+    version=__version__,
     author="Dan Foreman-Mackey",
     author_email="danfm@nyu.edu",
     description="Python bindings for Charlie Conroy's FSPS.",

@@ -22,6 +22,12 @@ User Guide
    filters
 
 
+Contributors
+------------
+
+.. include:: ../AUTHORS.rst
+
+
 License
 -------
 

@@ -7,6 +7,10 @@ from __future__ import (division, print_function, absolute_import,
 import os
 import sys
 
+# Patch the path to get the local version.
+d = os.path.dirname
+sys.path.insert(0, d(d(os.path.abspath(__file__))))
+
 extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx",
               "sphinx.ext.mathjax"]
 
@@ -19,7 +23,7 @@ templates_path = ["_templates"]
 
 # General information about the project.
 project = "Python FSPS"
-copyright = "2013, Dan Foreman-Mackey"
+copyright = "2013-2014 Dan Foreman-Mackey & contributors"
 # version =
 # release =
 
@@ -27,15 +31,12 @@ html_show_sphinx = True
 html_show_sourcelink = False
 html_use_smartypants = True
 pygments_style = "sphinx"
-# html_theme = "daftish"
-# html_theme_options = {
-#         "tagline": "Rapid exoplanet transit modeling in Python.",
-#         "github": "https://github.com/dfm/bart",
-#         "license_name": "MIT License",
-#         "license_link": "https://raw.github.com/dfm/bart/master/LICENSE.rst",
-#         "google_analytics": "UA-22909046-1",
-#     }
-# html_sidebars = {
-#             "**": ["relations.html", "searchbox.html"]
-#         }
-# html_additional_pages = {}
+sys.path.append(os.path.abspath('_themes'))
+html_theme_path = ['_themes']
+html_theme = 'dfm'
+# Custom sidebar templates, maps document names to template names.
+html_sidebars = {
+    'index':    ['sidebarintro.html', 'searchbox.html'],
+    '**':       ['sidebarlogo.html', 'localtoc.html', 'relations.html',
+                 'searchbox.html']
+}

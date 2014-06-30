@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Search &mdash; Python FSPS  documentation</title>
+    <title>Building the documentation &mdash; Python FSPS  documentation</title>
     
     <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -24,14 +24,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="../_static/searchtools.js"></script>
     <link rel="top" title="Python FSPS  documentation" href="../" />
-  <script type="text/javascript">
-    jQuery(function() { Search.loadIndex("../searchindex.js"); });
-  </script>
-  
-  <script type="text/javascript" id="searchindexloader"></script>
-  
      
     
     <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
@@ -40,7 +33,6 @@
     <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro' rel='stylesheet' type='text/css'>
 
     <link rel="shortcut icon" href="../_static/favicon.png">
-
 
 
   </head>
@@ -60,29 +52,41 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <h1 id="search-documentation">Search</h1>
-  <div id="fallback" class="admonition warning">
-  <script type="text/javascript">$('#fallback').hide();</script>
-  <p>
-    Please activate JavaScript to enable the search
-    functionality.
-  </p>
-  </div>
-  <p>
-    From here you can search these documents. Enter your search
-    words into the box below and click "search". Note that the search
-    function will automatically search for all of the words. Pages
-    containing fewer words won't appear in the result list.
-  </p>
-  <form action="" method="get">
-    <input type="text" name="q" value="" />
-    <input type="submit" value="search" />
-    <span id="search-progress" style="padding-left: 10px"></span>
-  </form>
-  
-  <div id="search-results">
-  
-  </div>
+  <div class="section" id="building-the-documentation">
+<h1>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline">¶</a></h1>
+<p>To build and deploy the documentation, follow these steps:</p>
+<ol class="arabic">
+<li><p class="first">In this directory, run:</p>
+<div class="highlight-python"><div class="highlight"><pre>make clean
+make dirhtml
+</pre></div>
+</div>
+</li>
+<li><p class="first">Confirm that the results in <tt class="docutils literal"><span class="pre">_build/dirhtml</span></tt> look sensible.</p>
+</li>
+<li><p class="first">Change to the root directory of the repository and run (changing
+<tt class="docutils literal"><span class="pre">VERSION</span></tt> to the correct version number):</p>
+<div class="highlight-python"><div class="highlight"><pre>git checkout gh-pages
+mkdir VERSION
+cp -r docs/_build/dirhtml/* VERSION/
+git add VERSION
+git commit -m &quot;Updated docs for version VERSION&quot;
+git push
+</pre></div>
+</div>
+</li>
+<li><p class="first">If you want to release this version as the default (stable) version, run:</p>
+<div class="highlight-python"><div class="highlight"><pre>rm current
+ln -s VERSION current
+git add current
+git commit -m &quot;Updating stable version to VERSION&quot;
+git push
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+
 
           </div>
         </div>
@@ -103,6 +107,19 @@
   <li><a href="../">Documentation overview</a><ul>
   </ul></li>
 </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -6,13 +6,8 @@ import sys
 import glob
 import subprocess as sp
 
-
-try:
-    from setuptools import setup
-    from setuptools.command.build_ext import build_ext
-except ImportError:
-    from distutils.core import setup
-    from distutils.command.build_ext import build_ext
+from distutils.core import setup, Extension
+from distutils.command.build_ext import build_ext
 
 
 class build_fsps(build_ext):
@@ -42,20 +37,6 @@ class build_fsps(build_ext):
         print("Running: {0}".format(cmd))
         sp.call(cmd, shell=True)
 
-        # Move the compiled object to the correct path.
-        infn = self.get_ext_filename("fsps._fsps")
-        outfn = self.get_ext_fullpath("fsps._fsps")
-        try:
-            os.makedirs(os.path.split(outfn)[0])
-        except os.error:
-            pass
-        cmd = "mv {0} {1}".format(infn, outfn)
-        print("Running: {0}".format(cmd))
-        sp.call(cmd, shell=True)
-
-    def get_outputs(self):
-        return [self.get_ext_fullpath("fsps._fsps")]
-
 
 if "publish" in sys.argv[-1]:
     os.system("git rev-parse --short HEAD > COMMIT")
@@ -72,6 +53,13 @@ else:
 builtins.__FSPS_SETUP__ = True
 from fsps import __version__
 
+# This is a fake extension that is used to trick distutils into building our
+# real library using the `build_fsps` function above even when `install` is
+# called.
+ext = Extension("fsps._fsps", sources=["fsps/fsps.90"])
+
+# The final setup command. Note: we override the `build_ext` command with our
+# custom version from above.
 setup(
     name="fsps",
     url="https://github.com/dfm/python-fsps",
@@ -81,11 +69,12 @@ setup(
     description="Python bindings for Charlie Conroy's FSPS.",
     long_description=open("README.rst").read(),
     packages=["fsps"],
-    package_data={"": ["README.rst", "LICENSE.rst"],
-                  "fsps": ["_fsps.so"]},
-    include_package_data=True,
+    package_data={
+        "": ["README.rst", "LICENSE.rst", "AUTHORS.rst"],
+        "fsps": ["_fsps.so", "data/filter_keys.txt"],
+    },
+    ext_modules=[ext],
     scripts=glob.glob("scripts/*.py"),
-    install_requires="numpy",
     cmdclass={
         "build_ext": build_fsps,
     },

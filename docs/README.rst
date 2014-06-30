@@ -5,8 +5,8 @@ To build and deploy the documentation, follow these steps:
 
 1. In this directory, run::
 
-   make clean
-   make dirhtml
+    make clean
+    make dirhtml
 
 2. Confirm that the results in ``_build/dirhtml`` look sensible.
 3. Change to the root directory of the repository and run (changing

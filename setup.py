@@ -4,10 +4,15 @@
 import os
 import sys
 import glob
+import shutil
 import subprocess as sp
 
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
+try:
+    from setuptools import setup, Extension
+    from setuptools.command.build_ext import build_ext
+except ImportError:
+    from distutils.core import setup, Extension
+    from distutils.command.build_ext import build_ext
 
 
 class build_fsps(build_ext):
@@ -36,6 +41,16 @@ class build_fsps(build_ext):
         cmd += " --f90flags=-fPIC"
         print("Running: {0}".format(cmd))
         sp.call(cmd, shell=True)
+
+        # Move the compiled library to the correct directory.
+        infn = os.path.join("fsps", "_fsps.so")
+        outfn = os.path.abspath(self.get_ext_fullpath("fsps._fsps"))
+        try:
+            os.makedirs(os.path.dirname(outfn))
+        except os.error:
+            pass
+        print("Moving {0} to {1}".format(infn, outfn))
+        shutil.copyfile(infn, outfn)
 
 
 if "publish" in sys.argv[-1]:

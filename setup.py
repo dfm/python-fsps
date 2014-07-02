@@ -31,6 +31,13 @@ class build_fsps(build_ext):
                if os.path.basename(f) not in ["autosps.o", "simple.o",
                                               "lesssimple.o"]]
 
+        # Check to make sure that all of the required modules exist.
+        flag = len(fns)
+        flag *= os.path.exists(os.path.join(fsps_dir, "sps_utils.mod"))
+        flag *= os.path.exists(os.path.join(fsps_dir, "sps_vars.mod"))
+        if not flag:
+            raise RuntimeError("You need to run make in $SPS_HOME/src first")
+
         # Add the interface source files to the file list.
         fns += ["fsps.f90", "fsps.pyf"]
 

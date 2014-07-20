@@ -62,8 +62,12 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>There are only two required dependencies for building this package: <a class="reference external" href="http://people.ucsc.edu/~conroy/FSPS.html">FSPS</a> (obviously) and <a class="reference external" href="http://www.numpy.org/">NumPy</a>.
-First, make sure that you have NumPy installed (using your favorite method) and access to the <tt class="docutils literal"><span class="pre">f2py</span></tt> executable (this should be installed along with NumPy).</p>
+First, make sure that you have NumPy installed (using your favorite method)
+and access to the <tt class="docutils literal"><span class="pre">f2py</span></tt> executable (this should be installed along with
+NumPy).</p>
 <p>Then, you need to follow the directions on <a class="reference external" href="http://people.ucsc.edu/~conroy/FSPS.html">the FSPS page</a> to checkout and compile the FSPS
 package. Note that Python-FSPS is built against specific versions of the FSPS
 Fortran API so it may be necessary to checkout a slightly older revision.
@@ -75,16 +79,28 @@ Currently, revision 143 should be used:</p>
 These bindings rely on the value of the <tt class="docutils literal"><span class="pre">SPS_HOME</span></tt> environment variable
 being correctly set and the compiled <tt class="docutils literal"><span class="pre">.o</span></tt> and <tt class="docutils literal"><span class="pre">.mod</span></tt> files be available in
 the <tt class="docutils literal"><span class="pre">${SPS_HOME}/src</span></tt> directory.</p>
-<p>Finally, clone the <a class="reference external" href="https://github.com/dfm/python-fsps">python-fsps repository</a> and build:</p>
+</div>
+<div class="section" id="installing-stable-version">
+<h2>Installing stable version<a class="headerlink" href="#installing-stable-version" title="Permalink to this headline">¶</a></h2>
+<p><em>Coming soon...</em></p>
+</div>
+<div class="section" id="installing-development-version">
+<h2>Installing development version<a class="headerlink" href="#installing-development-version" title="Permalink to this headline">¶</a></h2>
+<p>Python-FSPS is being actively developed on GitHub so it&#8217;s not a bad idea to
+use the most recent development version.
+You can to this by cloning the <a class="reference external" href="https://github.com/dfm/python-fsps">python-fsps repository</a> and building:</p>
 <div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/dfm/python-fsps.git
 cd python-fsps
-python setup.py build_fsps
-python setup.py develop
+python setup.py install
 </pre></div>
 </div>
+</div>
+<div class="section" id="testing-the-installation">
+<h2>Testing the installation<a class="headerlink" href="#testing-the-installation" title="Permalink to this headline">¶</a></h2>
 <p>To test the installation, run (this doesn&#8217;t actually work yet):</p>
 <div class="highlight-python"><div class="highlight"><pre>python -c &#39;import fsps;fsps.test()&#39;
 </pre></div>
+</div>
 </div>
 </div>
 
@@ -103,7 +119,18 @@ python setup.py develop
     Python-FSPS is a set of bindings to Charlie Conroy's
     <a href="http://people.ucsc.edu/~conroy/FSPS.html">
       Flexible Stellar Population Synthesis</a> Fortran library.
-</p><h3>Related Topics</h3>
+</p>
+  <h3><a href="../">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#installing-stable-version">Installing stable version</a></li>
+<li><a class="reference internal" href="#installing-development-version">Installing development version</a></li>
+<li><a class="reference internal" href="#testing-the-installation">Testing the installation</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
 <ul>
   <li><a href="../">Documentation overview</a><ul>
       <li>Previous: <a href="../" title="previous chapter">Flexible Stellar Population Synthesis for Python</a></li>

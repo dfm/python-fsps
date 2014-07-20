@@ -50,14 +50,15 @@ class build_fsps(build_ext):
         sp.call(cmd, shell=True)
 
         # Move the compiled library to the correct directory.
-        infn = os.path.join("fsps", "_fsps.so")
+        infn = os.path.abspath(os.path.join("fsps", "_fsps.so"))
         outfn = os.path.abspath(self.get_ext_fullpath("fsps._fsps"))
-        try:
-            os.makedirs(os.path.dirname(outfn))
-        except os.error:
-            pass
-        print("Moving {0} to {1}".format(infn, outfn))
-        shutil.copyfile(infn, outfn)
+        if infn != outfn:
+            try:
+                os.makedirs(os.path.dirname(outfn))
+            except os.error:
+                pass
+            print("Moving {0} to {1}".format(infn, outfn))
+            shutil.copyfile(infn, outfn)
 
 
 if "publish" in sys.argv[-1]:

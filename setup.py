@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -62,7 +61,6 @@ class build_fsps(build_ext):
 
 
 if "publish" in sys.argv[-1]:
-    os.system("git rev-parse --short HEAD > COMMIT")
     os.system("python setup.py sdist upload")
     sys.exit()
 
@@ -79,7 +77,7 @@ from fsps import __version__
 # This is a fake extension that is used to trick distutils into building our
 # real library using the `build_fsps` function above even when `install` is
 # called.
-ext = Extension("fsps._fsps", sources=["fsps/fsps.90"])
+ext = Extension("fsps._fsps", sources=["fsps/fsps.f90"])
 
 # The final setup command. Note: we override the `build_ext` command with our
 # custom version from above.
@@ -96,6 +94,7 @@ setup(
         "": ["README.rst", "LICENSE.rst", "AUTHORS.rst"],
         "fsps": ["_fsps.so", "data/filter_keys.txt"],
     },
+    include_package_data=True,
     ext_modules=[ext],
     scripts=glob.glob("scripts/*.py"),
     cmdclass={

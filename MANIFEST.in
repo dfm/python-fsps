@@ -1,2 +1,1 @@
-recursive-include *.py *.f90
-include *.rst fsps/data/filter_keys.txt
+include *.rst fsps/fsps.f90 fsps/data/filter_keys.txt

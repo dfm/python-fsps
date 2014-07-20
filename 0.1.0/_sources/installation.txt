@@ -29,6 +29,12 @@ Installing stable version
 -------------------------
 
 *Coming soon...*
+After you have FSPS and NumPy installed, you should be able to install the
+most recent stable version of python-fsps using pip:
+
+.. code-block:: bash
+
+    pip install fsps
 
 
 Installing development version

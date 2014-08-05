@@ -587,12 +587,11 @@ class StellarPopulation(object):
         :returns lbol:
             The bolometric luminosity of the returned SSP.
         """
-
-        if self.params.dirty:
+        if self.params.dirtiness == 2:
             self._update_params()
-
+            
         NSPEC = driver.get_nspec()
-        spec, lbol, mass = np.zeros(NSPEC), np.zeros(1), np.zeros(1)
+        spec, mass, lbol = np.zeros(NSPEC), np.zeros(1), np.zeros(1)
         logt_yrs = np.log10(tpos * 1e9)
         driver.interp_ssp(zpos, logt_yrs, spec, mass, lbol)
 
@@ -615,25 +614,34 @@ class StellarPopulation(object):
             If true, return spectra in units of L_sun/AA, otherwise
             L_sun/Hz
 
-        :returns specarray:
+        :returns spec:
             The spectra of the SSPs, having shape (nspec, ntfull, nz).
-
+            
+        :returns mass:
+            The mass of the SSPs, having shape (ntfull, nz).
+            
+        :returns lbol:
+            The bolometric luminosity of the SSPs, having shape
+            (ntfull, nz).
         """
 
-        if self.params.dirty and update:
+        if (self.params.dirtiness == 2) and update:
             self._update_params()
 
         NSPEC = driver.get_nspec()
         NTFULL = driver.get_ntfull()
         NZ = driver.get_nz()
-        specarray = driver.get_ssp_spec(NSPEC, NTFULL, NZ)
-
+        spec = np.zeros([NSPEC,NTFULL,NZ], order = 'F')
+        mass, lbol = np.zeros([NTFULL,NZ], order ='F'), np.zeros([NTFULL,NZ], order = 'F')
+        driver.get_ssp_spec(spec, mass, lbol)
+                
         if peraa:
             wavegrid = self.wavelengths
             factor = 3e18 / wavegrid ** 2
-            specarray *= factor[:, None, None]
-
-        return specarray
+            spec *= factor[:,None,None]
+            
+        return spec, mass, lbol
+    
 
     def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
         """Smooth a spectrum by a gaussian with standard deviation

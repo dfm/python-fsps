@@ -199,7 +199,7 @@ contains
 
     integer :: zlo,zmet
 
-    zlo = MAX(MIN(locate(LOG10(zlegend/0.0190),zpos),nz-1),1)
+    zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
     do zmet=zlo,zlo+1
        if (has_ssp(zmet) .eq. 0) then
           call ssp(zmet)
@@ -420,23 +420,31 @@ contains
     call imf_weight(mini_isoc(zz,tt,:), wght, nmass_isoc(zz,tt))
     do i = 1, nmass_isoc(zz,tt)
     ! Compute mags on isochrone at this mass
-    call getspec(pset, mact_isoc(zz,tt,i), &
-      logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), logg_isoc(zz,tt,i), &
-      phase_isoc(zz,tt,i), ffco_isoc(zz,tt,i), spec)
-    call getmags(0.d0, spec, mags)
-    mass_init_out(i) = mini_isoc(zz,tt,i)
-    logl_out(i) = logl_isoc(zz,tt,i)
-    logt_out(i) = logt_isoc(zz,tt,i)
-    logg_out(i) = logg_isoc(zz,tt,i)
-    ffco_out(i) = ffco_isoc(zz,tt,i)
-    phase_out(i) = phase_isoc(zz,tt,i)
-    wght_out(i) = wght(i)
-    mags_out(i,:) = mags(:)
+       call getspec(pset, mact_isoc(zz,tt,i), &
+            logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), logg_isoc(zz,tt,i), &
+            phase_isoc(zz,tt,i), ffco_isoc(zz,tt,i), spec)
+       call getmags(0.d0, spec, mags)
+       mass_init_out(i) = mini_isoc(zz,tt,i)
+       logl_out(i) = logl_isoc(zz,tt,i)
+       logt_out(i) = logt_isoc(zz,tt,i)
+       logg_out(i) = logg_isoc(zz,tt,i)
+       ffco_out(i) = ffco_isoc(zz,tt,i)
+       phase_out(i) = phase_isoc(zz,tt,i)
+       wght_out(i) = wght(i)
+       mags_out(i,:) = mags(:)
     end do
 
     ! Fill in time and metallicity of this isochrone
     time_out = timestep_isoc(zz, tt)
     z_out = log10(zlegend(zz) / 0.0190) ! log(Z/Zsolar)
+
+  end subroutine
+
+  subroutine write_isoc(outfile)
+
+    character(100), intent(in)  :: outfile
+
+    call write_isochrone(outfile, pset)
 
   end subroutine
 

@@ -19,7 +19,8 @@ contains
 
   subroutine setup(compute_vega_mags0,redshift_colors0,smooth_velocity0,&
                    add_stellar_remnants0,add_neb_emission0, &
-                   add_dust_emission0,add_agb_dust_model0)
+                   add_dust_emission0,add_agb_dust_model0, &
+                   tpagb_norm_type0)
 
     ! Load all the data files/templates into memory.
 
@@ -27,7 +28,7 @@ contains
 
     integer, intent(in) :: compute_vega_mags0, redshift_colors0, &
          smooth_velocity0,add_stellar_remnants0,add_neb_emission0, &
-         add_dust_emission0,add_agb_dust_model0
+         add_dust_emission0,add_agb_dust_model0,tpagb_norm_type0
          
 
     compute_vega_mags = compute_vega_mags0
@@ -37,6 +38,7 @@ contains
     add_agb_dust_model = add_agb_dust_model0
     add_neb_emission = add_neb_emission0
     add_stellar_remnants = add_stellar_remnants0
+    tpagb_norm_type = tpagb_norm_type0
     call sps_setup(-1)
     is_setup = 1
 
@@ -270,10 +272,10 @@ contains
 
   end subroutine
 
-  subroutine get_setup_vars(cvms, rcolors, svel, asr, ane, ade, agbd)
+  subroutine get_setup_vars(cvms, rcolors, svel, asr, ane, ade, agbd, agbn)
 
     implicit none
-    integer, intent(out) :: cvms, rcolors, svel, asr, ane, ade, agbd
+    integer, intent(out) :: cvms, rcolors, svel, asr, ane, ade, agbd, agbn
     cvms = compute_vega_mags
     rcolors = redshift_colors
     svel = smooth_velocity
@@ -281,6 +283,7 @@ contains
     ane = add_neb_emission 
     ade = add_dust_emission
     agbd = add_agb_dust_model
+    agbn = tpagb_norm_type
 
   end subroutine
 

@@ -318,7 +318,7 @@ class StellarPopulation(object):
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
                  smooth_velocity=True, add_stellar_remnants=True,
                  add_dust_emission=True, add_agb_dust_model=False,
-                 add_neb_emission=False, **kwargs):
+                 add_neb_emission=False, tpagb_norm_type=2, **kwargs):
 
         # Set up the parameters to their default values.
         self.params = ParameterSet(
@@ -387,10 +387,11 @@ class StellarPopulation(object):
         if not driver.is_setup:
             driver.setup(compute_vega_mags, redshift_colors, smooth_velocity,
                          add_stellar_remnants, add_neb_emission,
-                         add_dust_emission, add_agb_dust_model)
+                         add_dust_emission, add_agb_dust_model,
+                         tpagb_norm_type)
 
         else:
-            cvms, rcolors, svel, asr, ane, ade, agbd = driver.get_setup_vars()
+            cvms, rcolors, svel, asr, ane, ade, agbd, agbn = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
             assert redshift_colors == bool(rcolors)
             assert smooth_velocity == bool(svel)
@@ -398,7 +399,8 @@ class StellarPopulation(object):
             assert add_neb_emission == bool(ane)
             assert add_dust_emission == bool(ade)
             assert add_agb_dust_model == bool(agbd)
-
+            assert tpagb_norm_type == bool(agbn)
+            
         # Caching.
         self._wavelengths = None
         self._zlegend = None
@@ -704,19 +706,18 @@ class StellarPopulation(object):
             header = f.readline().split()
         return cmd_data, header
     
-    def isochrone(self, zpos, tpos):
-        """
-        Get the isochrone data (mass, weight, phase, mags) for a
-        single age and metallicity.  Not implemented.
+    ## def isochrone(self, zpos, tpos):
+    ##     """
+    ##     Get the isochrone data (mass, weight, phase, mags) for a
+    ##     single age and metallicity.  Not implemented.
         
-        :param zpos:
-            The metallicity, in units of log(Z/Z_sun)
+    ##     :param zpos:
+    ##         The metallicity, in units of log(Z/Z_sun)
 
-        :param tpos:
-            The desired age, in Gyr.
-        """
-        pass
-        #driver.get_isochrone(zz, tt)
+    ##     :param tpos:
+    ##         The desired age, in Gyr.
+    ##     """
+    ##     driver.get_isochrone(zz, tt)
         
     @property
     def log_age(self):

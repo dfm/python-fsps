@@ -399,7 +399,7 @@ class StellarPopulation(object):
             assert add_neb_emission == bool(ane)
             assert add_dust_emission == bool(ade)
             assert add_agb_dust_model == bool(agbd)
-            assert tpagb_norm_type == bool(agbn)
+            assert tpagb_norm_type == agbn
             
         # Caching.
         self._wavelengths = None

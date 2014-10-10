@@ -47,7 +47,7 @@ class StellarPopulation(object):
         Switch to choose smoothing in velocity space (``True``) or
         wavelength space.
 
-    :param add_stellar_remanants: (default: True)
+    :param add_stellar_remnants: (default: True)
         Switch to add stellar remnnants in the stellar mass
         computation.
 
@@ -66,6 +66,12 @@ class StellarPopulation(object):
         you do use it, note that the AGB dust emission is scaled by
         the parameter `agb_dust`.
 
+    :param tpagb_norm_type: (default: 2)
+        Flag specifying TP-AGB normalization scheme:
+        * 0: default Padova 2007 isochrones
+        * 1: Conroy & Gunn 2010 normalization
+        * 2: Villaume, Conroy, Johnson 2014 normalization
+        
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old
         stars:

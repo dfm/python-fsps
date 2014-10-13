@@ -687,11 +687,15 @@ class StellarPopulation(object):
         driver.smooth_spectrum(wave, outspec, sigma, minw, maxw)
         return outspec
 
-    def cmd(self):
+    def cmd(self, outfile = 'pyfsps_tmp'):
         """Write the isochrone data (age, mass, weights, phases,
         magnitudes, etc.)  to a .cmd file, then read it into a huge
         numpy array.
 
+        :param outfile: (default: 'pyfsps_tmp')
+            The file root name of the .cmd file, which will be placed
+            in the $SPS_HOME/OUTPUTS/ directory
+            
         :returns dat:
             A huge numpy array containing information about every
             isochrone point for the current metallicity.
@@ -704,27 +708,13 @@ class StellarPopulation(object):
             filter name list.
         """
         from . import ev
-        outfile = 'pyfsps_tmp'
         absfile = os.path.join(ev,'OUTPUTS',outfile+'.cmd')
         driver.write_isoc(outfile)
         cmd_data = np.loadtxt(absfile, skiprows=1)
         with open(absfile, 'r') as f:
-            header = f.readline().split()
+            header = f.readline().split()[1:] #drop the comment hash
         return cmd_data, header
-    
-    ## def isochrone(self, zpos, tpos):
-    ##     """
-    ##     Get the isochrone data (mass, weight, phase, mags) for a
-    ##     single age and metallicity.  Not implemented.
-        
-    ##     :param zpos:
-    ##         The metallicity, in units of log(Z/Z_sun)
-
-    ##     :param tpos:
-    ##         The desired age, in Gyr.
-    ##     """
-    ##     driver.get_isochrone(zz, tt)
-        
+            
     @property
     def log_age(self):
         """log10(age/yr)."""

@@ -707,6 +707,9 @@ class StellarPopulation(object):
             as filters.  Use fsps.list_filters() to get the ordered
             filter name list.
         """
+        if self.params.dirty:
+            self._compute_csp()
+            
         from . import ev
         absfile = os.path.join(ev,'OUTPUTS',outfile+'.cmd')
         driver.write_isoc(outfile)

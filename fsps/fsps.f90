@@ -445,8 +445,10 @@ contains
 
   subroutine write_isoc(outfile)
 
-    character(100), intent(in)  :: outfile
+    implicit none
 
+    character(100), intent(in)  :: outfile
+    
     call write_isochrone(outfile, pset)
 
   end subroutine

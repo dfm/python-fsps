@@ -710,13 +710,16 @@ class StellarPopulation(object):
         if self.params.dirty:
             self._compute_csp()
             
-        from . import ev
+        from . import ev, list_filters
         absfile = os.path.join(ev,'OUTPUTS',outfile+'.cmd')
         driver.write_isoc(outfile)
-        cmd_data = np.loadtxt(absfile, skiprows=1)
+        
         with open(absfile, 'r') as f:
-            header = f.readline().split()[1:] #drop the comment hash
-        return cmd_data, header
+            header = f.readline().split()[1:-1] #drop the comment hash and mags field
+        header += list_filters()
+        cmd_data = np.loadtxt(absfile, comments='#',
+                              dtype=np.dtype([(n, np.float) for n in header]))
+        return cmd_data
             
     @property
     def log_age(self):

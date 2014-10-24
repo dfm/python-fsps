@@ -6,6 +6,7 @@ from __future__ import (division, print_function, absolute_import,
 
 __all__ = ["StellarPopulation"]
 
+import os
 import numpy as np
 from ._fsps import driver
 from .filters import FILTERS
@@ -46,7 +47,7 @@ class StellarPopulation(object):
         Switch to choose smoothing in velocity space (``True``) or
         wavelength space.
 
-    :param add_stellar_remanants: (default: True)
+    :param add_stellar_remnants: (default: True)
         Switch to add stellar remnnants in the stellar mass
         computation.
 
@@ -65,6 +66,12 @@ class StellarPopulation(object):
         you do use it, note that the AGB dust emission is scaled by
         the parameter `agb_dust`.
 
+    :param tpagb_norm_type: (default: 1)
+        Flag specifying TP-AGB normalization scheme:
+        * 0: default Padova 2007 isochrones
+        * 1: Conroy & Gunn 2010 normalization
+        * 2: Villaume, Conroy, Johnson 2014 normalization
+        
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old
         stars:
@@ -317,7 +324,7 @@ class StellarPopulation(object):
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
                  smooth_velocity=True, add_stellar_remnants=True,
                  add_dust_emission=True, add_agb_dust_model=False,
-                 add_neb_emission=False, **kwargs):
+                 add_neb_emission=False, tpagb_norm_type=1, **kwargs):
 
         # Set up the parameters to their default values.
         self.params = ParameterSet(
@@ -386,10 +393,11 @@ class StellarPopulation(object):
         if not driver.is_setup:
             driver.setup(compute_vega_mags, redshift_colors, smooth_velocity,
                          add_stellar_remnants, add_neb_emission,
-                         add_dust_emission, add_agb_dust_model)
+                         add_dust_emission, add_agb_dust_model,
+                         tpagb_norm_type)
 
         else:
-            cvms, rcolors, svel, asr, ane, ade, agbd = driver.get_setup_vars()
+            cvms, rcolors, svel, asr, ane, ade, agbd, agbn = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
             assert redshift_colors == bool(rcolors)
             assert smooth_velocity == bool(svel)
@@ -397,7 +405,8 @@ class StellarPopulation(object):
             assert add_neb_emission == bool(ane)
             assert add_dust_emission == bool(ade)
             assert add_agb_dust_model == bool(agbd)
-
+            assert tpagb_norm_type == agbn
+            
         # Caching.
         self._wavelengths = None
         self._zlegend = None
@@ -678,6 +687,40 @@ class StellarPopulation(object):
         driver.smooth_spectrum(wave, outspec, sigma, minw, maxw)
         return outspec
 
+    def isochrones(self, outfile = 'pyfsps_tmp'):
+        """Write the isochrone data (age, mass, weights, phases,
+        magnitudes, etc.)  to a .cmd file, then read it into a huge
+        numpy array.
+
+        :param outfile: (default: 'pyfsps_tmp')
+            The file root name of the .cmd file, which will be placed
+            in the $SPS_HOME/OUTPUTS/ directory
+            
+        :returns dat:
+            A huge numpy array containing information about every
+            isochrone point for the current metallicity.
+            
+        :returns header:
+            A list of the column names pulled from the header of the
+            .cmd file.  The number of column names will not match the
+            number of columns in dat since there are as many ``mags``
+            as filters.  Use fsps.list_filters() to get the ordered
+            filter name list.
+        """
+        if self.params.dirty:
+            self._compute_csp()
+            
+        from . import ev, list_filters
+        absfile = os.path.join(ev,'OUTPUTS',outfile+'.cmd')
+        driver.write_isoc(outfile)
+        
+        with open(absfile, 'r') as f:
+            header = f.readline().split()[1:-1] #drop the comment hash and mags field
+        header += list_filters()
+        cmd_data = np.loadtxt(absfile, comments='#',
+                              dtype=np.dtype([(n, np.float) for n in header]))
+        return cmd_data
+            
     @property
     def log_age(self):
         """log10(age/yr)."""

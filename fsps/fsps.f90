@@ -19,7 +19,8 @@ contains
 
   subroutine setup(compute_vega_mags0,redshift_colors0,smooth_velocity0,&
                    add_stellar_remnants0,add_neb_emission0, &
-                   add_dust_emission0,add_agb_dust_model0)
+                   add_dust_emission0,add_agb_dust_model0, &
+                   tpagb_norm_type0)
 
     ! Load all the data files/templates into memory.
 
@@ -27,7 +28,7 @@ contains
 
     integer, intent(in) :: compute_vega_mags0, redshift_colors0, &
          smooth_velocity0,add_stellar_remnants0,add_neb_emission0, &
-         add_dust_emission0,add_agb_dust_model0
+         add_dust_emission0,add_agb_dust_model0,tpagb_norm_type0
          
 
     compute_vega_mags = compute_vega_mags0
@@ -37,6 +38,7 @@ contains
     add_agb_dust_model = add_agb_dust_model0
     add_neb_emission = add_neb_emission0
     add_stellar_remnants = add_stellar_remnants0
+    tpagb_norm_type = tpagb_norm_type0
     call sps_setup(-1)
     is_setup = 1
 
@@ -199,7 +201,7 @@ contains
 
     integer :: zlo,zmet
 
-    zlo = MAX(MIN(locate(LOG10(zlegend/0.0190),zpos),nz-1),1)
+    zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
     do zmet=zlo,zlo+1
        if (has_ssp(zmet) .eq. 0) then
           call ssp(zmet)
@@ -270,10 +272,10 @@ contains
 
   end subroutine
 
-  subroutine get_setup_vars(cvms, rcolors, svel, asr, ane, ade, agbd)
+  subroutine get_setup_vars(cvms, rcolors, svel, asr, ane, ade, agbd, agbn)
 
     implicit none
-    integer, intent(out) :: cvms, rcolors, svel, asr, ane, ade, agbd
+    integer, intent(out) :: cvms, rcolors, svel, asr, ane, ade, agbd, agbn
     cvms = compute_vega_mags
     rcolors = redshift_colors
     svel = smooth_velocity
@@ -281,6 +283,7 @@ contains
     ane = add_neb_emission 
     ade = add_dust_emission
     agbd = add_agb_dust_model
+    agbn = tpagb_norm_type
 
   end subroutine
 
@@ -420,23 +423,33 @@ contains
     call imf_weight(mini_isoc(zz,tt,:), wght, nmass_isoc(zz,tt))
     do i = 1, nmass_isoc(zz,tt)
     ! Compute mags on isochrone at this mass
-    call getspec(pset, mact_isoc(zz,tt,i), &
-      logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), logg_isoc(zz,tt,i), &
-      phase_isoc(zz,tt,i), ffco_isoc(zz,tt,i), spec)
-    call getmags(0.d0, spec, mags)
-    mass_init_out(i) = mini_isoc(zz,tt,i)
-    logl_out(i) = logl_isoc(zz,tt,i)
-    logt_out(i) = logt_isoc(zz,tt,i)
-    logg_out(i) = logg_isoc(zz,tt,i)
-    ffco_out(i) = ffco_isoc(zz,tt,i)
-    phase_out(i) = phase_isoc(zz,tt,i)
-    wght_out(i) = wght(i)
-    mags_out(i,:) = mags(:)
+       call getspec(pset, mact_isoc(zz,tt,i), &
+            logt_isoc(zz,tt,i), 10**logl_isoc(zz,tt,i), logg_isoc(zz,tt,i), &
+            phase_isoc(zz,tt,i), ffco_isoc(zz,tt,i), spec)
+       call getmags(0.d0, spec, mags)
+       mass_init_out(i) = mini_isoc(zz,tt,i)
+       logl_out(i) = logl_isoc(zz,tt,i)
+       logt_out(i) = logt_isoc(zz,tt,i)
+       logg_out(i) = logg_isoc(zz,tt,i)
+       ffco_out(i) = ffco_isoc(zz,tt,i)
+       phase_out(i) = phase_isoc(zz,tt,i)
+       wght_out(i) = wght(i)
+       mags_out(i,:) = mags(:)
     end do
 
     ! Fill in time and metallicity of this isochrone
     time_out = timestep_isoc(zz, tt)
     z_out = log10(zlegend(zz) / 0.0190) ! log(Z/Zsolar)
+
+  end subroutine
+
+  subroutine write_isoc(outfile)
+
+    implicit none
+
+    character(100), intent(in)  :: outfile
+    
+    call write_isochrone(outfile, pset)
 
   end subroutine
 

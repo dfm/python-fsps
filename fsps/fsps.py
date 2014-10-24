@@ -687,7 +687,7 @@ class StellarPopulation(object):
         driver.smooth_spectrum(wave, outspec, sigma, minw, maxw)
         return outspec
 
-    def cmd(self, outfile = 'pyfsps_tmp'):
+    def isochrones(self, outfile = 'pyfsps_tmp'):
         """Write the isochrone data (age, mass, weights, phases,
         magnitudes, etc.)  to a .cmd file, then read it into a huge
         numpy array.

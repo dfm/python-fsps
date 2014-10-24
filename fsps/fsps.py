@@ -303,7 +303,7 @@ class StellarPopulation(object):
         Gordon (2000) for details.
 
     :param evtype: (default: -1)
-        Compute SSPs for only the given evolutionary type
+        Compute SSPs for only the given evolutionary type.
 
     :param sigma_smooth: (default: 0.0)
         If smooth_velocity is True, this gives the velocity dispersion in
@@ -319,6 +319,13 @@ class StellarPopulation(object):
     :param max_wave_smooth: (default: 1e4)
         Undocumented.
 
+    :param gas_logu: (default: -2)
+        Log of the gas ionization parameter, for determining the
+        nebular emission.
+
+    :param gas_logz: (default: 0)
+        Log of the gas-phase metallicity, for determining the nebular
+        emission.  In units of log10(Z/Z_sun).
     """
 
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
@@ -377,6 +384,8 @@ class StellarPopulation(object):
             agb_dust=1.0,
             min_wave_smooth=1e3,
             max_wave_smooth=1e4,
+            gas_logu=-2,
+            gas_logz=0.0,
         )
 
         # Parse any input options.
@@ -777,7 +786,8 @@ class ParameterSet(object):
                   "frac_obrun", "uvb", "mwr", "dust1_index",
                   "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
                   "duste_umin", "duste_qpah", "sigma_smooth",
-                  "min_wave_smooth", "max_wave_smooth"]
+                  "min_wave_smooth", "max_wave_smooth", "gas_logu",
+                  "gas_logz"]
 
     @property
     def all_params(self):

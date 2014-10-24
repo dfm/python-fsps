@@ -85,7 +85,7 @@ contains
                             dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,&
                             sigma_smooth,min_wave_smooth,&
-                            max_wave_smooth)
+                            max_wave_smooth,gas_logu,gas_logz)
 
     ! Set all the parameters that don't affect the SSP computation.
 
@@ -99,7 +99,7 @@ contains
                             dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,&
                             sigma_smooth,min_wave_smooth,&
-                            max_wave_smooth
+                            max_wave_smooth,gas_logu,gas_logz
 
     pset%zmet=zmet
     pset%sfh=sfh
@@ -134,6 +134,8 @@ contains
     pset%sigma_smooth=sigma_smooth
     pset%min_wave_smooth=min_wave_smooth
     pset%max_wave_smooth=max_wave_smooth
+    pset%gas_logu=gas_logu
+    pset%gas_logz=gas_logz
 
   end subroutine
 

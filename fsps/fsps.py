@@ -66,7 +66,7 @@ class StellarPopulation(object):
         you do use it, note that the AGB dust emission is scaled by
         the parameter `agb_dust`.
 
-    :param tpagb_norm_type: (default: 2)
+    :param tpagb_norm_type: (default: 1)
         Flag specifying TP-AGB normalization scheme:
         * 0: default Padova 2007 isochrones
         * 1: Conroy & Gunn 2010 normalization
@@ -324,7 +324,7 @@ class StellarPopulation(object):
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
                  smooth_velocity=True, add_stellar_remnants=True,
                  add_dust_emission=True, add_agb_dust_model=False,
-                 add_neb_emission=False, tpagb_norm_type=2, **kwargs):
+                 add_neb_emission=False, tpagb_norm_type=1, **kwargs):
 
         # Set up the parameters to their default values.
         self.params = ParameterSet(

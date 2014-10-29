@@ -5,5 +5,5 @@ If you use this code, follow the citation requirements `on the FSPS
 homepage <http://people.ucsc.edu/~conroy/FSPS.html>`_ and reference
 these Python bindings:
 
-.. image:: https://zenodo.org/badge/4729/dfm/python-fsps.png
+.. image:: http://img.shields.io/badge/DOI-10.5281/zenodo.12157-blue.svg?style=flat
   :target: http://dx.doi.org/10.5281/zenodo.12157

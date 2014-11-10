@@ -166,7 +166,8 @@ class StellarPopulation(object):
         ``zred``.
 
     :param pmetals: (default: 0.02)
-        Undocumented.
+        Metal yield for a closed box distribution.  Not used by
+        python-fsps.
 
     :param imf1: (default: 1.3)
         Logarithmic slope of the IMF over the range :math:`0.08 < M < 0.5
@@ -204,7 +205,9 @@ class StellarPopulation(object):
         are :math:`\\log (\\mathrm{yrs})`.
 
     :param frac_obrun: (default: 0.0)
-        Undocumented.
+        Fraction of the young stars (age < dust_tesc) that are not
+        attenuated by ``dust1``, representing runaway OB stars.  These
+        stars are still attenuated by ``dust2``.
 
     :param uvb: (default: 1.0)
         Parameter characterizing the strength of the 2175A extinction feature
@@ -220,7 +223,9 @@ class StellarPopulation(object):
         Weighting of red  giant branch.
 
     :param dust1_index: (default: -1.0)
-        Undocumented.
+        Power law index of the attenuation curve affecting stars
+        younger than dust_tesc corresponding to ``dust1``. Only used
+        when ``dust_type=0``.
 
     :param mdave: (default: 0.5)
         IMF parameter defined in Dave (2008). Only used if ``imf_type=4``.
@@ -314,16 +319,16 @@ class StellarPopulation(object):
         Scales the circumstellar AGB dust emission.
 
     :param min_wave_smooth: (default: 1e3)
-        Undocumented.
+        Minimum wavelength to consider when smoothing the spectrum.
 
     :param max_wave_smooth: (default: 1e4)
-        Undocumented.
+        Maximum wavelength to consider when smoothing the spectrum.
 
     :param gas_logu: (default: -2)
         Log of the gas ionization parameter, for determining the
         nebular emission.
 
-    :param gas_logz: (default: 0)
+    :param gas_logz: (default: 0.0)
         Log of the gas-phase metallicity, for determining the nebular
         emission.  In units of log10(Z/Z_sun).
     """

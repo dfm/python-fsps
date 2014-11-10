@@ -333,15 +333,22 @@ class StellarPopulation(object):
         emission.  In units of log10(Z/Z_sun).
     """
 
-    def __init__(self, compute_vega_mags=True, redshift_colors=False,
-                 smooth_velocity=True, add_stellar_remnants=True,
-                 add_dust_emission=True, add_agb_dust_model=False,
-                 add_neb_emission=False, tpagb_norm_type=1, **kwargs):
+    def __init__(self, compute_vega_mags=True, **kwargs):
 
         # Set up the parameters to their default values.
         self.params = ParameterSet(
+            smooth_velocity=True,
+            vactoair_flag=False,
+            redshift_colors=False,
             dust_type=0,
+            add_dust_emission=True,
+            add_agb_dust_model=False,
+            add_neb_emission=False,
+            add_neb_continuum=False,
+            add_igm_absorption=False,
+            add_stellar_remnants=True,
             imf_type=2,
+            tpagb_norm_type=1,
             pagb=1.0,
             dell=0.0,
             delt=0.0,
@@ -405,21 +412,11 @@ class StellarPopulation(object):
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
         if not driver.is_setup:
-            driver.setup(compute_vega_mags, redshift_colors, smooth_velocity,
-                         add_stellar_remnants, add_neb_emission,
-                         add_dust_emission, add_agb_dust_model,
-                         tpagb_norm_type)
+            driver.setup(compute_vega_mags)
 
         else:
-            cvms, rcolors, svel, asr, ane, ade, agbd, agbn = driver.get_setup_vars()
+            cvms = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
-            assert redshift_colors == bool(rcolors)
-            assert smooth_velocity == bool(svel)
-            assert add_stellar_remnants == bool(asr)
-            assert add_neb_emission == bool(ane)
-            assert add_dust_emission == bool(ade)
-            assert add_agb_dust_model == bool(agbd)
-            assert tpagb_norm_type == agbn
             
         # Caching.
         self._wavelengths = None
@@ -781,10 +778,14 @@ class StellarPopulation(object):
 class ParameterSet(object):
 
     ssp_params = ["imf_type", "imf1", "imf2", "imf3", "vdmc", "mdave",
-                  "dell", "delt", "sbss", "fbhb", "pagb", "agb_dust",
+                  "dell", "delt", "sbss", "fbhb", "pagb", "add_stellar_remnants",
+                  "tpagb_norm_type", "add_agb_dust_model", "agb_dust",
                   "redgb", "masscut", "fcstar", "evtype"]
 
-    csp_params = ["dust_type", "zmet", "sfh", "wgp1", "wgp2", "wgp3",
+    csp_params = ["smooth_velocity", "vactoair_flag","redshift_colors",
+                  "dust_type", "add_dust_emission", "add_neb_emission",
+                  "add_neb_continuum", "add_igm_absorption",
+                  "zmet", "sfh", "wgp1", "wgp2", "wgp3",
                   "tau", "const", "tage", "fburst", "tburst",
                   "dust1", "dust2", "logzsol", "zred", "pmetals",
                   "dust_clumps", "frac_nodust", "dust_index", "dust_tesc",

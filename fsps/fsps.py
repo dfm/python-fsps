@@ -324,7 +324,8 @@ class StellarPopulation(object):
     def __init__(self, compute_vega_mags=True, redshift_colors=False,
                  smooth_velocity=True, add_stellar_remnants=True,
                  add_dust_emission=True, add_agb_dust_model=False,
-                 add_neb_emission=False, tpagb_norm_type=1, **kwargs):
+                 add_neb_emission=False, tpagb_norm_type=1,
+                 zcontinuous=False,**kwargs):
 
         # Set up the parameters to their default values.
         self.params = ParameterSet(
@@ -406,13 +407,16 @@ class StellarPopulation(object):
             assert add_dust_emission == bool(ade)
             assert add_agb_dust_model == bool(agbd)
             assert tpagb_norm_type == agbn
+
+        self._zcontinuous = zcontinuous
             
         # Caching.
         self._wavelengths = None
         self._zlegend = None
         self._ssp_ages = None
         self._stats = None
-
+        
+        
     def _update_params(self):
         if self.params.dirtiness == 2:
             driver.set_ssp_params(*[self.params[k]
@@ -424,7 +428,12 @@ class StellarPopulation(object):
 
     def _compute_csp(self):
         self._update_params()
-        driver.compute()
+        if self._zcontinuous:
+            NSPEC = driver.get_nspec()
+            NTFULL = driver.get_ntfull()
+            driver.compute_zdep(NSPEC, NTFULL)
+        else:
+            driver.compute()
         self._stats = None
 
     def get_spectrum(self, zmet=None, tage=0.0, peraa=False):

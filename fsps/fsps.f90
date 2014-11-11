@@ -243,6 +243,34 @@ contains
   end subroutine
 
 
+  subroutine compute_zdep(ns,n_age)
+
+    ! Compute the full CSP (and the SSPs if they aren't already cached).
+    ! After interpolation in metallicity
+
+    implicit none
+    integer, intent(in) :: ns,n_age
+    double precision, dimension(ns,n_age) :: spec
+    double precision, dimension(n_age) :: mass,lbol
+    integer :: zlo,zmet
+    double precision :: dz,zpos
+    character(100) :: outfile
+
+    ! Find the bracketing metallicity indices and generate ssps if
+    ! necessary, then interpolate.
+    zpos = pset%logzsol
+    zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
+    do zmet=zlo,zlo+1
+       if (has_ssp(zmet) .eq. 0) then
+          call ssp(zmet)
+       endif
+    enddo
+    call ztinterp(zpos,spec,lbol,mass)
+    call compsp(0,1,outfile,mass,lbol,spec,pset,ocompsp)
+
+  end subroutine
+
+  
   subroutine get_spec(ns,n_age,spec_out)
 
     ! Get the grid of spectra for the computed CSP at all ages.

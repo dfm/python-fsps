@@ -33,6 +33,13 @@ class StellarPopulation(object):
         A switch that sets the zero points of the magnitude system: ``True``
         uses Vega magnitudes versus AB magnitudes.
 
+    :param zcontinuous: (default: False)
+        A switch that controls whether interpolation in metallicity is
+        performed before computing composite models.  If ``True`` then
+        the SSPs are interpolated to the value of ``logzsol`` before
+        the spectra and magnitudes are computed, and the value of
+        ``zmet`` is ignored.
+        
     :param redshift_colors: (default: False)
 
         * ``False``: Magnitudes are computed at a fixed redshift specified
@@ -158,7 +165,8 @@ class StellarPopulation(object):
         i.e. where ``t > dust_tesc`` (for details, see Conroy et al. 2009a).
 
     :param logzsol: (default: -0.2)
-        Undocumented.
+        Parameter describing the metallicity, given in units of
+        log(Z/Z_sun).  Only used if ``zontinuous=True``.
 
     :param zred: (default: 0.0)
         Redshift. If this value is non-zero and if ``redshift_colors=1``,
@@ -261,7 +269,7 @@ class StellarPopulation(object):
         Truncate the IMF above this value.
 
     :param zmet: (default: 1)
-        The metallicity is specified as an integer ranging between 1 and 22.
+        The metallicity is specified as an integer ranging between 1 and nz.
 
     :param sfh: (default: 0)
         Defines the type of star formation history, normalized such that one
@@ -415,7 +423,6 @@ class StellarPopulation(object):
         self._zlegend = None
         self._ssp_ages = None
         self._stats = None
-        
         
     def _update_params(self):
         if self.params.dirtiness == 2:

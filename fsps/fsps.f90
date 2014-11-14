@@ -282,18 +282,11 @@ contains
 
   end subroutine
 
-  subroutine get_setup_vars(cvms, rcolors, svel, asr, ane, ade, agbd, agbn)
+  subroutine get_setup_vars(cvms)
 
     implicit none
-    integer, intent(out) :: cvms, rcolors, svel, asr, ane, ade, agbd, agbn
+    integer, intent(out) :: cvms
     cvms = compute_vega_mags
-    rcolors = redshift_colors
-    svel = smooth_velocity
-    asr = add_stellar_remnants
-    ane = add_neb_emission 
-    ade = add_dust_emission
-    agbd = add_agb_dust_model
-    agbn = tpagb_norm_type
 
   end subroutine
 

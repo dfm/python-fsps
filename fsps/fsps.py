@@ -166,7 +166,8 @@ class StellarPopulation(object):
         ``zred``.
 
     :param pmetals: (default: 0.02)
-        Undocumented.
+        Metal yield for a closed box distribution.  Not used by
+        python-fsps.
 
     :param imf1: (default: 1.3)
         Logarithmic slope of the IMF over the range :math:`0.08 < M < 0.5
@@ -204,7 +205,9 @@ class StellarPopulation(object):
         are :math:`\\log (\\mathrm{yrs})`.
 
     :param frac_obrun: (default: 0.0)
-        Undocumented.
+        Fraction of the young stars (age < dust_tesc) that are not
+        attenuated by ``dust1``, representing runaway OB stars.  These
+        stars are still attenuated by ``dust2``.
 
     :param uvb: (default: 1.0)
         Parameter characterizing the strength of the 2175A extinction feature
@@ -220,7 +223,9 @@ class StellarPopulation(object):
         Weighting of red  giant branch.
 
     :param dust1_index: (default: -1.0)
-        Undocumented.
+        Power law index of the attenuation curve affecting stars
+        younger than dust_tesc corresponding to ``dust1``. Only used
+        when ``dust_type=0``.
 
     :param mdave: (default: 0.5)
         IMF parameter defined in Dave (2008). Only used if ``imf_type=4``.
@@ -303,7 +308,7 @@ class StellarPopulation(object):
         Gordon (2000) for details.
 
     :param evtype: (default: -1)
-        Compute SSPs for only the given evolutionary type
+        Compute SSPs for only the given evolutionary type.
 
     :param sigma_smooth: (default: 0.0)
         If smooth_velocity is True, this gives the velocity dispersion in
@@ -314,22 +319,36 @@ class StellarPopulation(object):
         Scales the circumstellar AGB dust emission.
 
     :param min_wave_smooth: (default: 1e3)
-        Undocumented.
+        Minimum wavelength to consider when smoothing the spectrum.
 
     :param max_wave_smooth: (default: 1e4)
-        Undocumented.
+        Maximum wavelength to consider when smoothing the spectrum.
 
+    :param gas_logu: (default: -2)
+        Log of the gas ionization parameter, for determining the
+        nebular emission.
+
+    :param gas_logz: (default: 0.0)
+        Log of the gas-phase metallicity, for determining the nebular
+        emission.  In units of log10(Z/Z_sun).
     """
 
-    def __init__(self, compute_vega_mags=True, redshift_colors=False,
-                 smooth_velocity=True, add_stellar_remnants=True,
-                 add_dust_emission=True, add_agb_dust_model=False,
-                 add_neb_emission=False, tpagb_norm_type=1, **kwargs):
+    def __init__(self, compute_vega_mags=True, **kwargs):
 
         # Set up the parameters to their default values.
         self.params = ParameterSet(
+            smooth_velocity=True,
+            vactoair_flag=False,
+            redshift_colors=False,
             dust_type=0,
+            add_dust_emission=True,
+            add_agb_dust_model=False,
+            add_neb_emission=False,
+            add_neb_continuum=False,
+            add_igm_absorption=False,
+            add_stellar_remnants=True,
             imf_type=2,
+            tpagb_norm_type=1,
             pagb=1.0,
             dell=0.0,
             delt=0.0,
@@ -377,6 +396,8 @@ class StellarPopulation(object):
             agb_dust=1.0,
             min_wave_smooth=1e3,
             max_wave_smooth=1e4,
+            gas_logu=-2,
+            gas_logz=0.0,
         )
 
         # Parse any input options.
@@ -391,21 +412,11 @@ class StellarPopulation(object):
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
         if not driver.is_setup:
-            driver.setup(compute_vega_mags, redshift_colors, smooth_velocity,
-                         add_stellar_remnants, add_neb_emission,
-                         add_dust_emission, add_agb_dust_model,
-                         tpagb_norm_type)
+            driver.setup(compute_vega_mags)
 
         else:
-            cvms, rcolors, svel, asr, ane, ade, agbd, agbn = driver.get_setup_vars()
+            cvms = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
-            assert redshift_colors == bool(rcolors)
-            assert smooth_velocity == bool(svel)
-            assert add_stellar_remnants == bool(asr)
-            assert add_neb_emission == bool(ane)
-            assert add_dust_emission == bool(ade)
-            assert add_agb_dust_model == bool(agbd)
-            assert tpagb_norm_type == agbn
             
         # Caching.
         self._wavelengths = None
@@ -767,17 +778,22 @@ class StellarPopulation(object):
 class ParameterSet(object):
 
     ssp_params = ["imf_type", "imf1", "imf2", "imf3", "vdmc", "mdave",
-                  "dell", "delt", "sbss", "fbhb", "pagb", "agb_dust",
+                  "dell", "delt", "sbss", "fbhb", "pagb", "add_stellar_remnants",
+                  "tpagb_norm_type", "add_agb_dust_model", "agb_dust",
                   "redgb", "masscut", "fcstar", "evtype"]
 
-    csp_params = ["dust_type", "zmet", "sfh", "wgp1", "wgp2", "wgp3",
+    csp_params = ["smooth_velocity", "vactoair_flag","redshift_colors",
+                  "dust_type", "add_dust_emission", "add_neb_emission",
+                  "add_neb_continuum", "add_igm_absorption",
+                  "zmet", "sfh", "wgp1", "wgp2", "wgp3",
                   "tau", "const", "tage", "fburst", "tburst",
                   "dust1", "dust2", "logzsol", "zred", "pmetals",
                   "dust_clumps", "frac_nodust", "dust_index", "dust_tesc",
                   "frac_obrun", "uvb", "mwr", "dust1_index",
                   "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
                   "duste_umin", "duste_qpah", "sigma_smooth",
-                  "min_wave_smooth", "max_wave_smooth"]
+                  "min_wave_smooth", "max_wave_smooth", "gas_logu",
+                  "gas_logz"]
 
     @property
     def all_params(self):

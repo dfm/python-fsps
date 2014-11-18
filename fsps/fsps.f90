@@ -17,47 +17,40 @@ module driver
 
 contains
 
-  subroutine setup(compute_vega_mags0,redshift_colors0,smooth_velocity0,&
-                   add_stellar_remnants0,add_neb_emission0, &
-                   add_dust_emission0,add_agb_dust_model0, &
-                   tpagb_norm_type0)
+  subroutine setup(compute_vega_mags0)
 
     ! Load all the data files/templates into memory.
 
     implicit none
 
-    integer, intent(in) :: compute_vega_mags0, redshift_colors0, &
-         smooth_velocity0,add_stellar_remnants0,add_neb_emission0, &
-         add_dust_emission0,add_agb_dust_model0,tpagb_norm_type0
+    integer, intent(in) :: compute_vega_mags0
          
 
     compute_vega_mags = compute_vega_mags0
-    redshift_colors = redshift_colors0
-    smooth_velocity = smooth_velocity0
-    add_dust_emission = add_dust_emission0
-    add_agb_dust_model = add_agb_dust_model0
-    add_neb_emission = add_neb_emission0
-    add_stellar_remnants = add_stellar_remnants0
-    tpagb_norm_type = tpagb_norm_type0
     call sps_setup(-1)
     is_setup = 1
 
   end subroutine
 
   subroutine set_ssp_params(imf_type0,imf1,imf2,imf3,vdmc,mdave,dell,&
-                            delt,sbss,fbhb,pagb,agb_dust,redgb,&
-                            masscut,fcstar,evtype)
-
+                            delt,sbss,fbhb,pagb,add_stellar_remnants0,&
+                            tpagb_norm_type0,add_agb_dust_model0,agb_dust,&
+                            redgb,masscut,fcstar,evtype)
+ 
     ! Set the parameters that affect the SSP computation.
 
     implicit none
 
-    integer, intent(in) :: imf_type0
+    integer, intent(in) :: imf_type0,add_stellar_remnants0,tpagb_norm_type0,&
+                           add_agb_dust_model0
     double precision, intent(in) :: imf1,imf2,imf3,vdmc,mdave,dell,&
                                     delt,sbss,fbhb,pagb,agb_dust,&
                                     redgb,masscut,fcstar,evtype
 
     imf_type=imf_type0
+    add_stellar_remnants=add_stellar_remnants0
+    tpagb_norm_type=tpagb_norm_type0
+    add_agb_dust_model=add_agb_dust_model0
     pset%imf1=imf1
     pset%imf2=imf2
     pset%imf3=imf3
@@ -78,20 +71,26 @@ contains
 
   end subroutine
 
-  subroutine set_csp_params(dust_type0,zmet,sfh,wgp1,wgp2,wgp3,tau,&
+  subroutine set_csp_params(smooth_velocity0,vactoair_flag0,redshift_colors0,&
+                            dust_type0,add_dust_emission0,add_neb_emission0,&
+                            add_neb_continuum0,add_igm_absorption0,&
+                            zmet,sfh,wgp1,wgp2,wgp3,tau,&
                             const,tage,fburst,tburst,dust1,dust2,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,&
                             sigma_smooth,min_wave_smooth,&
-                            max_wave_smooth)
+                            max_wave_smooth,gas_logu,gas_logz,igm_factor)
 
     ! Set all the parameters that don't affect the SSP computation.
 
     implicit none
-
-    integer, intent(in) :: dust_type0,zmet,sfh,wgp1,wgp2,wgp3
+    
+    integer, intent(in) :: smooth_velocity0,vactoair_flag0,redshift_colors0,&
+                           dust_type0,add_dust_emission0,add_neb_emission0,&
+                           add_neb_continuum0,add_igm_absorption0,&
+                           zmet,sfh,wgp1,wgp2,wgp3
     double precision, intent(in) :: tau,&
                             const,tage,fburst,tburst,dust1,dust2,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
@@ -99,7 +98,16 @@ contains
                             dust1_index,sf_start,sf_trunc,sf_theta,&
                             duste_gamma,duste_umin,duste_qpah,&
                             sigma_smooth,min_wave_smooth,&
-                            max_wave_smooth
+                            max_wave_smooth,gas_logu,gas_logz,igm_factor
+
+    smooth_velocity=smooth_velocity0
+    vactoair_flag=vactoair_flag0
+    redshift_colors=redshift_colors0
+    dust_type=dust_type0
+    add_dust_emission=add_dust_emission0
+    add_neb_emission=add_neb_emission0
+    add_neb_continuum=add_neb_continuum0
+    add_igm_absorption=add_igm_absorption0
 
     pset%zmet=zmet
     pset%sfh=sfh
@@ -134,7 +142,10 @@ contains
     pset%sigma_smooth=sigma_smooth
     pset%min_wave_smooth=min_wave_smooth
     pset%max_wave_smooth=max_wave_smooth
-
+    pset%gas_logu=gas_logu
+    pset%gas_logz=gas_logz
+    pset%igm_factor=igm_factor
+    
   end subroutine
 
   subroutine ssps
@@ -300,18 +311,11 @@ contains
 
   end subroutine
 
-  subroutine get_setup_vars(cvms, rcolors, svel, asr, ane, ade, agbd, agbn)
+  subroutine get_setup_vars(cvms)
 
     implicit none
-    integer, intent(out) :: cvms, rcolors, svel, asr, ane, ade, agbd, agbn
+    integer, intent(out) :: cvms
     cvms = compute_vega_mags
-    rcolors = redshift_colors
-    svel = smooth_velocity
-    asr = add_stellar_remnants
-    ane = add_neb_emission 
-    ade = add_dust_emission
-    agbd = add_agb_dust_model
-    agbn = tpagb_norm_type
 
   end subroutine
 

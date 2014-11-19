@@ -404,6 +404,18 @@ contains
 
   end subroutine
 
+  subroutine get_filter_data(nb, wave_eff, mag_vega, mag_sun)
+
+    !get info about the filters
+    implicit none
+    integer, intent(in) :: nb
+    double precision, dimension(nb), intent(out) :: wave_eff,mag_vega,mag_sun
+    wave_eff = filter_leff
+    mag_vega = magvega
+    mag_sun = magsun
+
+  end subroutine
+
   subroutine get_timefull(n_age,timefull)
 
     ! Get the actual time steps of the SSPs.

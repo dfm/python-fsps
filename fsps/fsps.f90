@@ -327,18 +327,20 @@ contains
 
   end subroutine
 
-  subroutine get_mags(n_age,n_bands,z_red,mc,mags)
+  subroutine get_mags(ns,n_age,n_bands,z_red,mc,mags)
 
     ! Get the photometric magnitudes in all the recognized bands.
     
     implicit none
     integer :: i
-    integer, intent(in) :: n_age, n_bands
+    integer, intent(in) :: ns, n_age, n_bands
     double precision, intent(in) :: z_red
     integer, dimension(n_bands), intent(in) :: mc
     double precision, dimension(n_age,n_bands), intent(out) :: mags
+    double precision, dimension(ns) :: tspec
     do i=1,n_age
-      call getmags(z_red,ocompsp(i)%spec,mags(i,:),mc)
+      tspec = ocompsp(i)%spec
+      call getmags(z_red,tspec,mags(i,:),mc)
     enddo
 
   end subroutine

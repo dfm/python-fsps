@@ -809,9 +809,9 @@ class ParameterSet(object):
         self.iteritems = self._params.iteritems
 
     def check_params(self):
-        NZ = driver.get_nz()
-        assert self._params["zmet"] in range(1, NZ + 1), \
-            "zmet={0} out of range [1, {1}]".format(self._params["zmet"], NZ)
+        #NZ = driver.get_nz()
+        #assert self._params["zmet"] in range(1, NZ + 1), \
+        #    "zmet={0} out of range [1, {1}]".format(self._params["zmet"], NZ)
         assert self._params["dust_type"] in range(4), \
             "dust_type={0} out of range [0, 3]".format(
                 self._params["dust_type"])

@@ -33,16 +33,23 @@ class StellarPopulation(object):
         A switch that sets the zero points of the magnitude system: ``True``
         uses Vega magnitudes versus AB magnitudes.
 
-    :param zcontinuous: (default: False)
-        A switch that controls whether interpolation in metallicity is
-        performed before computing composite models.  If ``True`` then
-        the SSPs are interpolated to the value of ``logzsol`` before
-        the spectra and magnitudes are computed, and the value of
-        ``zmet`` is ignored.
 
     :param vactoair_flag: (default: False)
         If ``True``, output wavelengths in air (rather than vac).
+
+    :param zcontinuous: (default: 0)
+        Flag specifying how interpolation in metallicity is
+        performed before computing composite models:
         
+        * 0: No interpolation, use the metallicity index specified by
+          ``zmet``.
+        * 1: The SSPs are interpolated to the value of ``logzsol``
+          before the spectra and magnitudes are computed, and the
+          value of ``zmet`` is ignored.
+        * 2: The SSPs are convolved with a metallicity distribution
+          function specified by the ``logzsol`` and ``pmetals``
+          parameters. The value of ``zmet`` is ignored.
+
     :param redshift_colors: (default: False)
         * ``False``: Magnitudes are computed at a fixed redshift specified
           by ``zred``.
@@ -181,16 +188,19 @@ class StellarPopulation(object):
 
     :param logzsol: (default: 0.0)
         Parameter describing the metallicity, given in units of
-        log(Z/Z_sun).  Only used if ``zontinuous=True``.
+        log(Z/Z_sun).  Only used if ``zcontinuous=1`` or
+        ``zcontinuous=2``.
 
     :param zred: (default: 0.0)
         Redshift. If this value is non-zero and if ``redshift_colors=1``,
         the magnitudes will be computed for the spectrum placed at redshift
         ``zred``.
 
-    :param pmetals: (default: 0.02)
-        Metal yield for a closed box distribution.  Not used by
-        python-fsps.
+    :param pmetals: (default: 2.0)
+       The power for the metallicty distribution function.  The MDF is
+       given by :math:`(Z \\, e^{{-Z}})^{{pmetals}}` where :math:`Z =
+       z/(z_\\odot \\, 10^{{logzsol}})` and z is the metallicity in
+       linear units (i.e., :math:`z_\odot = 0.019`)
 
     :param imf1: (default: 1.3)
         Logarithmic slope of the IMF over the range :math:`0.08 < M < 0.5
@@ -360,7 +370,7 @@ class StellarPopulation(object):
         Fudge factor used to scale the IGM optical depth.
     """
 
-    def __init__(self, compute_vega_mags=False, zcontinuous=False,
+    def __init__(self, compute_vega_mags=False, zcontinuous=0,
                  **kwargs):
 
         # Set up the parameters to their default values.
@@ -392,7 +402,7 @@ class StellarPopulation(object):
             dust2=0.0,
             logzsol=0.0,
             zred=0.0,
-            pmetals=0.02,
+            pmetals=2.0,
             imf1=1.3,
             imf2=2.3,
             imf3=2.3,
@@ -466,12 +476,11 @@ class StellarPopulation(object):
 
     def _compute_csp(self):
         self._update_params()
-        if self._zcontinuous:
-            NSPEC = driver.get_nspec()
-            NTFULL = driver.get_ntfull()
-            driver.compute_zdep(NSPEC, NTFULL)
-        else:
-            driver.compute()
+
+        NSPEC = driver.get_nspec()
+        NTFULL = driver.get_ntfull()
+        driver.compute_zdep(NSPEC, NTFULL, self._zcontinuous)
+                
         self._stats = None
 
     def get_spectrum(self, zmet=None, tage=0.0, peraa=False):

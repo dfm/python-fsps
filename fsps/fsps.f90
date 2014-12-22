@@ -220,7 +220,7 @@ contains
        endif
     enddo
 
-    call ztinterp(zpos,spec,lbol,mass,tpos)
+    call ztinterp(zpos,spec,lbol,mass,tpos=tpos)
 
     end subroutine
 
@@ -255,30 +255,60 @@ contains
   end subroutine
 
 
-  subroutine compute_zdep(ns,n_age)
+  subroutine compute_zdep(ns,n_age,ztype)
 
     ! Compute the full CSP (and the SSPs if they aren't already cached).
     ! After interpolation in metallicity
 
     implicit none
-    integer, intent(in) :: ns,n_age
+    integer, intent(in) :: ns,n_age,ztype
     double precision, dimension(ns,n_age) :: spec
     double precision, dimension(n_age) :: mass,lbol
     integer :: zlo,zmet
-    double precision :: dz,zpos
+    double precision :: zpos
     character(100) :: outfile
 
-    ! Find the bracketing metallicity indices and generate ssps if
-    ! necessary, then interpolate.
-    zpos = pset%logzsol
-    zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
-    do zmet=zlo,zlo+1
+    if (ztype .eq. 0) then
+       ! Build the SSP for one metallicity, then feed to compsp
+       zmet = pset%zmet
        if (has_ssp(zmet) .eq. 0) then
           call ssp(zmet)
        endif
-    enddo
-    call ztinterp(zpos,spec,lbol,mass)
-    call compsp(0,1,outfile,mass,lbol,spec,pset,ocompsp)
+       !mass = mass_ssp_zz(:,zmet)
+       !lbol = lbol_ssp_zz(:,zmet)
+       !spec = spec_ssp_zz(:,:,zmet)
+       call compsp(0,1,outfile,mass_ssp_zz(:,zmet),lbol_ssp_zz(:,zmet),&
+            spec_ssp_zz(:,:,zmet),pset,ocompsp)
+    endif
+
+    if (ztype .eq. 1) then
+       zpos = pset%logzsol
+       ! Find the bracketing metallicity indices and generate ssps if
+       ! necessary, then interpolate, and feed the result to compsp
+       zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
+       do zmet=zlo,zlo+1
+          if (has_ssp(zmet) .eq. 0) then
+             call ssp(zmet)
+          endif
+       enddo
+       call ztinterp(zpos,spec,lbol,mass)
+       call compsp(0,1,outfile,mass,lbol,spec,pset,ocompsp)
+    endif
+    
+    if (ztype .eq. 2) then
+       zpos = pset%logzsol
+       ! Build the SSPs for *every* metallicity if necessary, then
+       ! comvolve with the MDF, and then feed to compsp
+       do zmet=1,nz
+          if (has_ssp(zmet) .eq. 0) then
+             call ssp(zmet)
+          endif
+       enddo
+       call ztinterp(zpos,spec,lbol,mass,zpow=pset%pmetals)
+       call compsp(0,1,outfile,mass,lbol,spec,pset,ocompsp)
+    endif
+     
+    
 
   end subroutine
 

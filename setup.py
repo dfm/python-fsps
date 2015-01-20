@@ -13,16 +13,31 @@ except ImportError:
     from distutils.core import setup, Extension
     from distutils.command.build_ext import build_ext
 
+def invoke_f2py(files, flags=[], wd=None):
+    from numpy.f2py import main
+
+    olddir = os.path.abspath(os.curdir)
+    oldargv = list(sys.argv)
+    try:
+        if wd is not None:
+            os.chdir(wd)
+        sys.argv = ['f2py']
+        sys.argv.extend(files)
+        sys.argv.extend(flags)
+
+        main()
+    finally:
+        sys.argv = oldargv
+        os.chdir(olddir)
 
 class build_fsps(build_ext):
 
     def run(self):
         # Generate the Fortran signature/interface.
-        cmd = "cd fsps;f2py fsps.f90"
-        cmd += " -m _fsps -h fsps.pyf"
-        cmd += " --overwrite-signature"
-        print("Running: {0}".format(cmd))
-        sp.call(cmd, shell=True)
+        files = ['fsps.f90']
+        flags = " -m _fsps -h fsps.pyf --overwrite-signature".split()
+        print("Running f2py on {0} with flags {1}".format(files, flags))
+        invoke_f2py(['fsps.f90'], flags, wd='fsps')
 
         # Find the FSPS source files.
         fsps_dir = os.path.join(os.environ["SPS_HOME"], "src")
@@ -41,12 +56,9 @@ class build_fsps(build_ext):
         fns += ["fsps.f90", "fsps.pyf"]
 
         # Compile the library.
-        cmd = "cd fsps;f2py -c -I{0} ".format(fsps_dir)
-        cmd += " ".join(fns)
-        cmd += " --f90flags=-cpp"
-        cmd += " --f90flags=-fPIC"
-        print("Running: {0}".format(cmd))
-        sp.call(cmd, shell=True)
+        flags = '-c -I{0} --f90flags=-cpp --f90flags=-fPIC'.format(fsps_dir).split()
+        print("Running f2py on {0} with flags {1}".format(fns, flags))
+        invoke_f2py(fns, flags, wd='fsps')
 
         # Move the compiled library to the correct directory.
         infn = os.path.abspath(os.path.join("fsps", "_fsps.so"))

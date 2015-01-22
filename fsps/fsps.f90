@@ -15,6 +15,10 @@ module driver
   !f2py intent(hide) has_ssp
   integer, dimension(nz) :: has_ssp=0
 
+  !f2py intent(hide) has_ssp_age
+  integer, dimension(nz,nt) :: has_ssp_age=0
+
+  
 contains
 
   subroutine setup(compute_vega_mags0)
@@ -68,7 +72,8 @@ contains
     pset%evtype=evtype
 
     has_ssp(:) = 0
-
+    has_ssp_age(:,:) = 0
+    
   end subroutine
 
   subroutine set_csp_params(smooth_velocity0,vactoair_flag0,redshift_colors0,&
@@ -169,9 +174,12 @@ contains
     integer, intent(in) :: zi
     pset%zmet = zi
     call ssp_gen(pset, mass_ssp_zz(:,zi),lbol_ssp_zz(:,zi),&
-                 spec_ssp_zz(:,:,zi))
-    has_ssp(zi) = 1
-
+         spec_ssp_zz(:,:,zi))
+    if (minval(pset%ssp_gen_age) .eq. 1) then
+       has_ssp(zi) = 1
+    endif
+    has_ssp_age(zi,:) = pset%ssp_gen_age
+    
   end subroutine
 
   subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
@@ -211,12 +219,20 @@ contains
     double precision, dimension(ns,1), intent(inout) :: spec
     double precision, dimension(1), intent(inout) :: mass,lbol
 
-    integer :: zlo,zmet
+    double precision, dimension(nt) :: time
+    
+    integer :: zlo,zmet,tlo
 
     zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
+    time = timestep_isoc(zlo,:)
+    tlo = max(min(locate(time,tpos),nt-1),1)
+
     do zmet=zlo,zlo+1
-       if (has_ssp(zmet) .eq. 0) then
+       if ((has_ssp_age(zmet,tlo) .eq. 0) .or. (has_ssp_age(zmet,tlo+1) .eq. 0)) then
+          pset%ssp_gen_age = 0
+          pset%ssp_gen_age(tlo:tlo+1) = 1
           call ssp(zmet)
+          pset%ssp_gen_age = 1
        endif
     enddo
 

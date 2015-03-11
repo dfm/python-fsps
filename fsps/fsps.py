@@ -200,7 +200,10 @@ class StellarPopulation(object):
        The power for the metallicty distribution function.  The MDF is
        given by :math:`(Z \\, e^{{-Z}})^{{pmetals}}` where :math:`Z =
        z/(z_\\odot \\, 10^{{logzsol}})` and z is the metallicity in
-       linear units (i.e., :math:`z_\odot = 0.019`)
+       linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative
+       value will result in smoothing of the SSPs by a three-point
+       triangular kernel before linear interpolation (in logZ) to the
+       requested metallicity.
 
     :param imf1: (default: 1.3)
         Logarithmic slope of the IMF over the range :math:`0.08 < M < 0.5

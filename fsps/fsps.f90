@@ -330,6 +330,7 @@ contains
   subroutine get_mags(n_age,n_bands,z_red,mc,mags)
 
     ! Get the photometric magnitudes in all the recognized bands.
+    
     implicit none
     integer :: i
     integer, intent(in) :: n_age, n_bands
@@ -342,6 +343,21 @@ contains
 
   end subroutine
 
+  subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,spec_out)
+    
+    ! Get a stellar spectrum for a given set of parameters
+    
+    implicit none
+    integer :: i
+    integer, intent(in) :: ns
+    double precision, intent(in) :: mact, logt, lbol, logg, phase, ffco
+    double precision, dimension(ns), intent(inout) :: spec_out
+
+    call getspec(pset,mact,logt,lbol,logg,phase,ffco,spec_out)
+    
+  end subroutine 
+  
+  
   subroutine get_setup_vars(cvms)
 
     implicit none

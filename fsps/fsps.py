@@ -746,6 +746,50 @@ class StellarPopulation(object):
         driver.smooth_spectrum(wave, outspec, sigma, minw, maxw)
         return outspec
 
+    def get_starspec(self, mact, logt, lbol, logg, phase, comp,
+                     zmet=None, peraa=True):
+        """Get the spectrum of a star with a given set of physical
+        parameters.  This uses the metallicity given by the
+        current value of ``zmet``.
+
+        :param mact:
+            Actual stellar mass (after taking into account mass loss)
+            
+        :param logt:
+            The log of the effective temperature
+            
+        :param lbol:
+            log L_star/L_\sun
+            
+        :param logg:
+            Log of g
+            
+        :param phase:
+            The evolutionary phase
+            
+        :param comp:
+            Composition, in terms of C/O ratio
+            
+        :returns outspec:
+            The spectrum of the star, in L_sun/Hz
+        """
+        if zmet is not None:
+            self.params["zmet"] = zmet
+        
+        if self.params.dirty:
+            self._update_params()
+
+        NSPEC = driver.get_nspec()
+        outspec = np.zeros(NSPEC)
+        driver.stellar_spectrum(mact, logt, lbol, logg, phase, comp, outspec)
+        if peraa:
+            wavegrid = self.wavelengths
+            factor = 3e18 / wavegrid ** 2
+            outspec *= factor
+
+        return outspec
+
+    
     def isochrones(self, outfile = 'pyfsps_tmp'):
         """Write the isochrone data (age, mass, weights, phases,
         magnitudes, etc.)  to a .cmd file, then read it into a huge

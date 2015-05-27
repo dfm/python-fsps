@@ -19,8 +19,9 @@ def run_command(cmd):
     child = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE,
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out = [s for s in child.stdout]
+    err = [s for s in child.stderr]
     w = child.wait()
-    return os.WEXITSTATUS(w), out
+    return os.WEXITSTATUS(w), out, err
 
 
 # Check to make sure that the required environment variable is present.
@@ -31,8 +32,9 @@ except KeyError:
 
 # Check the githash, and if there is none check the SVN version
 cmd = 'cd {0}; git log --format="format:%h"'.format(ev)
-stat, out = run_command(" ".join(cmd))
-if len(out) == 0:
+stat, out, err = run_command(" ".join(cmd))
+accepted = (len(out) > 0) an (len(err) == 0)
+if not accepted:
     warnings.warn("Your FSPS version is not under git version "
                   "control. FSPS is now available on github at "
                   "https://github.com/cconroy20/fsps")
@@ -40,7 +42,7 @@ if len(out) == 0:
     # Check the SVN revision number.
     ACCEPTED_FSPS_REVISIONS = [158, 160, 166, 168, 170]
     cmd = ["svnversion", ev]
-    stat, out = run_command(" ".join(cmd))
+    stat, out, err = run_command(" ".join(cmd))
     fsps_vers = int(re.match("^([0-9])+", out[0]).group(0))
 
     # Make sure you don't have some weird mixed version.

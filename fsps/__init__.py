@@ -9,6 +9,7 @@ __version__ = "0.1.1"
 import os
 import re
 import subprocess
+import warnings
 
 def run_command(cmd):
     """
@@ -28,26 +29,38 @@ try:
 except KeyError:
     raise ImportError("You need to have the SPS_HOME environment variable")
 
-# Check the SVN revision number.
-ACCEPTED_FSPS_REVISIONS = [158, 160, 166, 168, 170]
-cmd = ["svnversion", ev]
+# Check the githash, and if there is none check the SVN version
+cmd = 'cd {0}; git log --format="format:%h"'.format(ev)
 stat, out = run_command(" ".join(cmd))
-fsps_vers = int(re.match("^([0-9])+", out[0]).group(0))
+if len(out) == 0:
+    warnings.warn("Your FSPS version is not under git version "
+                  "control. FSPS is now available on github at "
+                  "https://github.com/cconroy20/fsps")
+    
+    # Check the SVN revision number.
+    ACCEPTED_FSPS_REVISIONS = [158, 160, 166, 168, 170]
+    cmd = ["svnversion", ev]
+    stat, out = run_command(" ".join(cmd))
+    fsps_vers = int(re.match("^([0-9])+", out[0]).group(0))
 
-# Make sure you don't have some weird mixed version.
-accepted = ((fsps_vers in ACCEPTED_FSPS_REVISIONS) and
-            (len(out[0].split(':')) == 1) and
-            stat == 0)
+    # Make sure you don't have some weird mixed version.
+    accepted = ((fsps_vers in ACCEPTED_FSPS_REVISIONS) and
+                (len(out[0].split(':')) == 1) and
+                stat == 0)
 
-if not accepted:
-    raise ImportError("Your FSPS revision, {0}, is not known to work with "
-                      "this version of python-fsps. You can checkout an "
-                      "accepted FSPS revision with "
-                      "'svn update -r rev_number'. "
-                      "The accepted FSPS rev_numbers are: "
-                      "{1}".format(out[0].rstrip('\n'),
-                                   ACCEPTED_FSPS_REVISIONS))
-
+    if not accepted:
+        raise ImportError("Your FSPS revision, {0}, is not known to work with "
+                        "this version of python-fsps. You can checkout an "
+                        "accepted FSPS revision with "
+                        "'svn update -r rev_number'. "
+                        "The accepted FSPS rev_numbers are: "
+                        "{1}".format(out[0].rstrip('\n'),
+                                    ACCEPTED_FSPS_REVISIONS))
+else:
+    # Store the githash.  If any version checking is going to happen,
+    # it should happen here
+    fsps_vers = out[0]
+    
 # Only import the module if not run from the setup script.
 try:
     __FSPS_SETUP__

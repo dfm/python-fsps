@@ -33,7 +33,7 @@ except KeyError:
 # Check the githash, and if there is none check the SVN version
 cmd = 'cd {0}; git log --format="format:%h"'.format(ev)
 stat, out, err = run_command(" ".join(cmd))
-accepted = (len(out) > 0) an (len(err) == 0)
+accepted = (len(out) > 0) and (len(err) == 0)
 if not accepted:
     warnings.warn("Your FSPS version is not under git version "
                   "control. FSPS is now available on github at "

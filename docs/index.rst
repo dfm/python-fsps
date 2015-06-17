@@ -3,11 +3,11 @@ Flexible Stellar Population Synthesis for Python
 
 These are a set of Python bindings to `Charlie Conroy's Flexible Stellar
 Population Synthesis (FSPS) Fortran library
-<http://people.ucsc.edu/~conroy/FSPS.html>`_.
+<https://github.com/cconroy20/fsps>`_.
 Python-FSPS makes it easy to generate spectra and magnitudes for arbitrary
 stellar populations.
 These bindings are updated in conjunction with FSPS, and are known to work with
-FSPS svn revision 143.
+FSPS v2.5.
 
 
 User Guide
@@ -35,5 +35,5 @@ License
 
 These bindings are available under the `MIT License
 <https://raw.github.com/dfm/python-fsps/master/LICENSE.rst>`_. See the `FSPS
-homepage <http://people.ucsc.edu/~conroy/FSPS.html>`_ for usage
+homepage <https://github.com/cconroy20/fsps>`_ for usage
 restrictions and citation requirements.

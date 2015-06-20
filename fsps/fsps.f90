@@ -78,7 +78,7 @@ contains
                             const,tage,fburst,tburst,dust1,dust2,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
-                            dust1_index,sf_start,sf_trunc,sf_theta,&
+                            dust1_index,sf_start,sf_trunc,sf_slope,&
                             duste_gamma,duste_umin,duste_qpah,&
                             sigma_smooth,min_wave_smooth,&
                             max_wave_smooth,gas_logu,gas_logz,igm_factor)
@@ -95,7 +95,7 @@ contains
                             const,tage,fburst,tburst,dust1,dust2,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
-                            dust1_index,sf_start,sf_trunc,sf_theta,&
+                            dust1_index,sf_start,sf_trunc,sf_slope,&
                             duste_gamma,duste_umin,duste_qpah,&
                             sigma_smooth,min_wave_smooth,&
                             max_wave_smooth,gas_logu,gas_logz,igm_factor
@@ -136,7 +136,7 @@ contains
     pset%dust1_index=dust1_index
     pset%sf_start=sf_start
     pset%sf_trunc=sf_trunc
-    pset%sf_theta=sf_theta
+    pset%sf_slope=sf_slope
     pset%duste_gamma=duste_gamma
     pset%duste_umin=duste_umin
     pset%duste_qpah=duste_qpah

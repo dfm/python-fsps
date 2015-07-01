@@ -40,7 +40,7 @@ if not accepted:
                   "https://github.com/cconroy20/fsps")
     
     # Check the SVN revision number.
-    ACCEPTED_FSPS_REVISIONS = [189, 190, 191]
+    ACCEPTED_FSPS_REVISIONS = [191]
     cmd = ["svnversion", ev]
     stat, out, err = run_command(" ".join(cmd))
     fsps_vers = int(re.match("^([0-9])+", out[0]).group(0))

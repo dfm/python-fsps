@@ -272,7 +272,7 @@ class StellarPopulation(object):
     :param sf_trunc: (default: 0.0)
         Undocumented.
 
-    :param sf_theta: (default: 0.0)
+    :param sf_slope: (default: 0.0)
         Undocumented.
 
     :param duste_gamma: (default: 0.01)
@@ -422,7 +422,7 @@ class StellarPopulation(object):
             mdave=0.5,
             sf_start=0.0,
             sf_trunc=0.0,
-            sf_theta=0.0,
+            sf_slope=0.0,
             duste_gamma=0.01,
             duste_umin=1.0,
             duste_qpah=3.5,
@@ -886,7 +886,7 @@ class ParameterSet(object):
                   "dust1", "dust2", "logzsol", "zred", "pmetals",
                   "dust_clumps", "frac_nodust", "dust_index", "dust_tesc",
                   "frac_obrun", "uvb", "mwr", "dust1_index",
-                  "sf_start", "sf_trunc", "sf_theta", "duste_gamma",
+                  "sf_start", "sf_trunc", "sf_slope", "duste_gamma",
                   "duste_umin", "duste_qpah", "sigma_smooth",
                   "min_wave_smooth", "max_wave_smooth", "gas_logu",
                   "gas_logz", "igm_factor"]

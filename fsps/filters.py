@@ -4,8 +4,7 @@
 Tools for working with the FSPS filter set.
 
 This module uses filter information shipped with FSPS itself in
-``$SPS_HOME/data``. Filter names (dictionary keys) are unique to
-``python-fsps`` and are defined in ``fsps/data/filter_keys.txt``.
+``$SPS_HOME/data``.
 """
 
 from __future__ import (division, print_function, absolute_import,
@@ -132,27 +131,14 @@ def _load_filter_dict():
     # Load filter table from FSPS
     filter_list_path = os.path.expandvars(
         os.path.join("$SPS_HOME", "data", "FILTER_LIST"))
-    fsps_ids, comments = [], []
+    filters = {}
     with open(filter_list_path) as f:
         for line in f:
-            fsps_id, comment = line.strip().split('\t')
-            fsps_ids.append(int(fsps_id))
-            comments.append(comment)
+            columns = line.strip().split()
+            fsps_id, key = columns[:2]
+            comment = ' '.join(columns[2:])
+            filters[key.lower()] = Filter(int(fsps_id), key, comment)
 
-    # Load our own table of filter keys
-    our_ids, keys = [], []
-    keys_path = "data/filter_keys.txt"
-    assert resource_exists(__name__, keys_path)
-    for line in resource_stream(__name__, keys_path):
-        _id, key = line.strip().split()
-        our_ids.append(int(_id))
-        keys.append(key)
-
-    # Merge tables
-    assert len(fsps_ids) == len(our_ids)
-    filters = {}
-    for fsps_id, filter_key, comment in zip(fsps_ids, keys, comments):
-        filters[filter_key.lower()] = Filter(fsps_id, filter_key, comment)
     return filters
 
 

@@ -906,7 +906,10 @@ class ParameterSet(object):
     def __init__(self, **kwargs):
         self.dirtiness = 2
         self._params = kwargs
-        self.iteritems = self._params.iteritems
+        try:
+            self.iteritems = self._params.iteritems
+        except AttributeError:
+            self.iteritems = self._params.items
 
     def check_params(self):
         NZ = driver.get_nz()

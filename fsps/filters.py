@@ -203,6 +203,6 @@ def list_filters():
 
     Filters are sorted by their FSPS index.
     """
-    lst = [(name, f.index) for name, f in FILTERS.iteritems()]
+    lst = [(name, f.index) for name, f in FILTERS.items()]
     lst.sort(key=lambda x: x[1])
     return [l[0] for l in lst]

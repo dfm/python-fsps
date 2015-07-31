@@ -85,7 +85,7 @@ class Filter(object):
             self._load_transmission_cache()
         try:
             return TRANS_CACHE[self.name]
-        except KeyError, e:
+        except KeyError as e:
             e.args += ("Could not find transmission data "
                        "for {0}".format(self.name))
             raise
@@ -192,7 +192,7 @@ def get_filter(name):
     """
     try:
         return FILTERS[name.lower()]
-    except KeyError, e:
+    except KeyError as e:
         e.args += ("Filter {0} does not exist. "
                    "Try using fsps.find_filter('{0}').".format(name),)
         raise

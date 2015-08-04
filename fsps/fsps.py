@@ -529,10 +529,10 @@ class StellarPopulation(object):
             factor = np.ones_like(wavegrid)
 
         NSPEC = driver.get_nspec()
-        NTFULL = driver.get_ntfull()
         if tage > 0.0:
-            return wavegrid, driver.get_spec(NSPEC, NTFULL)[0] * factor
-
+            return wavegrid, driver.get_spec(NSPEC, 1)[0] * factor
+        
+        NTFULL = driver.get_ntfull()
         return wavegrid, driver.get_spec(NSPEC, NTFULL) * factor[None, :]
 
     @property
@@ -601,13 +601,17 @@ class StellarPopulation(object):
         self.params["tage"] = tage
         if zmet is not None:
             self.params["zmet"] = zmet
-
+        
         if self.params.dirty:
             self._compute_csp()
-
-        NTFULL = driver.get_ntfull()
+        
+        if tage > 0.0:
+            NTFULL = 1
+        else:
+            NTFULL = driver.get_ntfull()
         NBANDS = driver.get_nbands()
-
+        NSPEC = driver.get_nspec()
+        
         band_array = np.ones(NBANDS, dtype=bool)
         if bands is not None:
             user_sorted_inds = np.array([FILTERS[band.lower()].index
@@ -617,7 +621,7 @@ class StellarPopulation(object):
                                 dtype=bool)] = False
 
         inds = np.array(band_array, dtype=int)
-        mags = driver.get_mags(NTFULL, redshift, inds)
+        mags = driver.get_mags(NSPEC, NTFULL, redshift, inds)
 
         if tage > 0.0:
             if bands is not None:

@@ -759,7 +759,7 @@ class StellarPopulation(object):
         return outspec
 
     def get_stellar_spectrum(self, mact, logt, lbol, logg, phase, comp,
-                             weight=1, zmet=None, peraa=True):
+                             mdot=0, weight=1, zmet=None, peraa=True):
         """Get the spectrum of a star with a given set of physical
         parameters.  This uses the metallicity given by the
         current value of ``zmet``.
@@ -787,6 +787,12 @@ class StellarPopulation(object):
             stars (phase=5), where the division between carbon and
             oxyygen rich stars is C/O = 1.
 
+        :param mdot:
+            The log of the mass loss rate.
+
+        :param weight:
+            The IMF weight
+
         :returns outspec:
             The spectrum of the star, in L_sun/Hz
         """
@@ -798,7 +804,7 @@ class StellarPopulation(object):
 
         NSPEC = driver.get_nspec()
         outspec = np.zeros(NSPEC)
-        driver.stellar_spectrum(mact, logt, lbol, logg, phase, comp, weight, outspec)
+        driver.stellar_spectrum(mact, logt, lbol, logg, phase, comp, mdot, weight, outspec)
         if peraa:
             wavegrid = self.wavelengths
             factor = 3e18 / wavegrid ** 2

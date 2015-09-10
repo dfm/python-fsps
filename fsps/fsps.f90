@@ -361,17 +361,17 @@ contains
 
   end subroutine
 
-  subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,wght,spec_out)
+  subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,lmdot,wght,spec_out)
     
     ! Get a stellar spectrum for a given set of parameters
     
     implicit none
     integer :: i
     integer, intent(in) :: ns
-    double precision, intent(in) :: mact, logt, lbol, logg, phase, ffco, wght
+    double precision, intent(in) :: mact, logt, lbol, logg, phase, ffco, lmdot, wght
     double precision, dimension(ns), intent(inout) :: spec_out
 
-    call getspec(pset,mact,logt,lbol,logg,phase,ffco,wght,spec_out)
+    call getspec(pset,mact,logt,lbol,logg,phase,ffco,lmdot,wght,spec_out)
     
   end subroutine 
   

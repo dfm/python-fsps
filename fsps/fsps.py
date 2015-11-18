@@ -20,7 +20,7 @@ class StellarPopulation(object):
     of the parameters of the system using keyword arguments. Below, you'll
     find a list of the options that you can include (with the comments taken
     directly from the `FSPS docs
-    <http://www.ucolick.org/~cconroy/FSPS_files/MANUAL.pdf>`_. To change
+    <https://github.com/cconroy20/fsps/blob/master/doc/MANUAL.pdf>`_. To change
     these values later, use the ``params`` property—which is ``dict``-like.
     For example:
 
@@ -32,7 +32,6 @@ class StellarPopulation(object):
     :param compute_vega_mags: (default: False)
         A switch that sets the zero points of the magnitude system: ``True``
         uses Vega magnitudes versus AB magnitudes.
-
 
     :param vactoair_flag: (default: False)
         If ``True``, output wavelengths in air (rather than vac).
@@ -51,6 +50,8 @@ class StellarPopulation(object):
           parameters. The value of ``zmet`` is ignored.
 
     :param redshift_colors: (default: False)
+        Flag specifying how to compute magnitudes:
+        
         * ``False``: Magnitudes are computed at a fixed redshift specified
           by ``zred``.
         * ``True``: Magnitudes are computed at a redshift that corresponds
@@ -97,6 +98,7 @@ class StellarPopulation(object):
 
     :param tpagb_norm_type: (default: 2)
         Flag specifying TP-AGB normalization scheme:
+        
         * 0: default Padova 2007 isochrones
         * 1: Conroy & Gunn 2010 normalization
         * 2: Villaume, Conroy, Johnson 2015 normalization
@@ -538,7 +540,7 @@ class StellarPopulation(object):
     @property
     def wavelengths(self):
         """
-        The wavelength scale for the computed spectra.
+        The wavelength scale for the computed spectra, in :math:`\AA`
 
         """
         if self._wavelengths is None:
@@ -649,14 +651,14 @@ class StellarPopulation(object):
         metallicity will be regenerated, if parameters are dirty.
 
         :param zpos:
-            The metallicity, in units of log(Z/Z_sun)
+            The metallicity, in units of :math:`log(Z/Z_\odot)`
 
         :param tpos:
             The desired age, in Gyr.
 
         :param peraa: (default: False)
-            If true, return spectra in units of L_sun/AA, otherwise
-            L_sun/Hz
+            If true, return spectra in units of :math:`L_\odot/\AA`, otherwise
+            :math:`L_\odot/\mathrm{Hz}`
 
         :returns spec:
             The SSP spectrum, interpolated to zpos and tpos.
@@ -688,11 +690,11 @@ class StellarPopulation(object):
         :param update: (default: True)
             If True, forces an update of the SSPs if the ssp
             parameters have changed. Otherwise simply dumps the
-            current contents of the ssp_spec_zz array.
+            current contents of the ``ssp_spec_zz`` array.
 
         :param peraa: (default: False)
-            If true, return spectra in units of L_sun/AA, otherwise
-            L_sun/Hz
+            If true, return spectra in units of :math:`L_\odot/\AA`, otherwise
+            :math:`L_\odot/\mathrm{Hz}`
 
         :returns spec:
             The spectra of the SSPs, having shape (nspec, ntfull, nz).
@@ -772,7 +774,7 @@ class StellarPopulation(object):
             The log of the effective temperature.
 
         :param lbol:
-            Stellar luminosity, L_star/L_\sun
+            Stellar luminosity, in units of :math:`L_\odot`
 
         :param logg:
             Log of the surface gravity g.  Note that this variable is
@@ -794,7 +796,7 @@ class StellarPopulation(object):
             The IMF weight
 
         :returns outspec:
-            The spectrum of the star, in L_sun/Hz
+            The spectrum of the star, in :math:`L_\odot/\mathrm{Hz}`
         """
         if zmet is not None:
             self.params["zmet"] = zmet
@@ -829,7 +831,7 @@ class StellarPopulation(object):
             A list of the column names pulled from the header of the
             .cmd file.  The number of column names will not match the
             number of columns in dat since there are as many ``mags``
-            as filters.  Use fsps.list_filters() to get the ordered
+            as filters.  Use ``fsps.list_filters()`` to get the ordered
             filter name list.
         """
         if self.params.dirty:
@@ -860,7 +862,7 @@ class StellarPopulation(object):
 
     @property
     def log_lbol(self):
-        """log(bolometric luminosity / L_solar)."""
+        """log(bolometric luminosity / :math:`L_\odot/`)."""
         return self._stat(2)
 
     @property

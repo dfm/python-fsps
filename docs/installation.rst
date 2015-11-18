@@ -9,7 +9,8 @@ There are only two required dependencies for building this package: `FSPS
 <http://www.numpy.org/>`_.
 First, make sure that you have NumPy installed (using your favorite method)
 and access to the ``f2py`` executable (this should be installed along with
-NumPy).
+NumPy).  Note that ``f2py`` versions packaged with numpy v1.10.x do
+not work, please use numpy v1.9.x or lower.
 
 Then, you need to follow the directions on `the FSPS page
 <https://github.com/cconroy20/fsps>`_ to clone and compile the FSPS
@@ -19,35 +20,37 @@ older commit - you will be notified of this and how to do it when you
 try to import the fsps module.
 
 Once checked out, modify the Makefile as needed and compile FSPS.  For
-some compilers (e.g. intel) it is necessary to set the ``-fPIC`` flag
+some compilers (e.g. Intel) it is necessary to set the ``-fPIC`` flag
 when compiling FSPS. These bindings rely on the value of the
 ``SPS_HOME`` environment variable being correctly set and the compiled
 ``.o`` and ``.mod`` files be available in the ``${SPS_HOME}/src``
 directory.
 
 
+Installing development version
+------------------------------
+
+Python-FSPS is being actively developed on GitHub so it's usually best
+to use the most recent development version.
+You can do this by cloning the `python-fsps repository
+<https://github.com/dfm/python-fsps>`_ and building::
+
+    git clone https://github.com/dfm/python-fsps.git
+    cd python-fsps
+    python setup.py install
+
 Installing stable version
 -------------------------
 
-After you have FSPS and NumPy installed, you should be able to install the
+After you have FSPS and NumPy installed, you might be able to install the
 most recent stable version of python-fsps using pip:
 
 .. code-block:: bash
 
     pip install fsps
 
-
-Installing development version
-------------------------------
-
-Python-FSPS is being actively developed on GitHub so it's not a bad idea to
-use the most recent development version.
-You can to this by cloning the `python-fsps repository
-<https://github.com/dfm/python-fsps>`_ and building::
-
-    git clone https://github.com/dfm/python-fsps.git
-    cd python-fsps
-    python setup.py install
+If this does not work, please follow the instruction above for
+installing the development version.
 
 
 Testing the installation

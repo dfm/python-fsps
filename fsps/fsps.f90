@@ -361,17 +361,17 @@ contains
 
   end subroutine
 
-  subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,wght,spec_out)
+  subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,lmdot,wght,spec_out)
     
     ! Get a stellar spectrum for a given set of parameters
     
     implicit none
     integer :: i
     integer, intent(in) :: ns
-    double precision, intent(in) :: mact, logt, lbol, logg, phase, ffco, wght
+    double precision, intent(in) :: mact, logt, lbol, logg, phase, ffco, lmdot, wght
     double precision, dimension(ns), intent(inout) :: spec_out
 
-    call getspec(pset,mact,logt,lbol,logg,phase,ffco,wght,spec_out)
+    call getspec(pset,mact,logt,lbol,logg,phase,ffco,lmdot,wght,spec_out)
     
   end subroutine 
   
@@ -401,6 +401,18 @@ contains
     integer, intent(in) :: n_z
     double precision, dimension(n_z), intent(out) :: z_legend
     z_legend = zlegend
+
+  end subroutine
+
+  subroutine get_filter_data(nb, wave_eff, mag_vega, mag_sun)
+
+    !get info about the filters
+    implicit none
+    integer, intent(in) :: nb
+    double precision, dimension(nb), intent(out) :: wave_eff,mag_vega,mag_sun
+    wave_eff = filter_leff
+    mag_vega = magvega
+    mag_sun = magsun
 
   end subroutine
 

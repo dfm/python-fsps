@@ -104,7 +104,7 @@ setup(
     packages=["fsps"],
     package_data={
         "": ["README.rst", "LICENSE.rst", "AUTHORS.rst"],
-        "fsps": ["_fsps.so", "data/filter_keys.txt"],
+        "fsps": ["_fsps.so"],
     },
     include_package_data=True,
     ext_modules=[ext],

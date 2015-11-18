@@ -4,7 +4,7 @@
 from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"
 
 import os
 import re
@@ -39,15 +39,16 @@ stat, githashes, err = run_command(cmd)
 accepted = (len(githashes) > 0) and (len(err) == 0)
 if not accepted:
     raise ImportError("Your FSPS version does not seem to be under git version "
-                      "control. FSPS is now available on github at "
+                      "control. FSPS is available on github at "
                       "https://github.com/cconroy20/fsps and should be cloned from there")
 accepted = [req in githashes for req in REQUIRED_GITHASHES]
-if not accepted:
+if False in accepted:
     reqs = ",".join([r[:-2] for r in REQUIRED_GITHASHES])
     raise ImportError("Your FSPS version does not have correct history.  "
                       "Perhaps you need to pull the most up-to-date FSPS version. "
                       "Please make sure that you have the following commits "
-                      "in your git history: {0}".format(reqs))
+                      "in your git history, preferably with the last listed commit "
+                      "the same as your current FSPS commit githash: {0}".format(reqs))
 else:
     # Store the githash.  If any version checking is going to happen,
     # it should happen here

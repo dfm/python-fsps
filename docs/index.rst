@@ -7,7 +7,7 @@ Population Synthesis (FSPS) Fortran library
 Python-FSPS makes it easy to generate spectra and magnitudes for arbitrary
 stellar populations.
 These bindings are updated in conjunction with FSPS, and are known to work with
-FSPS v2.5.
+FSPS v2.6.
 
 
 User Guide
@@ -31,7 +31,7 @@ Contributors
 License
 -------
 
-*Copyright 2013-2014 Dan Foreman-Mackey and contributors.*
+*Copyright 2013-2015 Dan Foreman-Mackey and contributors.*
 
 These bindings are available under the `MIT License
 <https://raw.github.com/dfm/python-fsps/master/LICENSE.rst>`_. See the `FSPS

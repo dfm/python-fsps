@@ -20,8 +20,9 @@ older commit - you will be notified of this and how to do it when you
 try to import the fsps module.
 
 Once checked out, modify the Makefile as needed and compile FSPS.  For
-some compilers (e.g. Intel) it is necessary to set the ``-fPIC`` flag
-when compiling FSPS. These bindings rely on the value of the
+some compilers (e.g. Intel) it may be necessary to set the ``-fPIC``
+flag when compiling FSPS -- please try this if you encounter
+python-FSPS build errors.  These bindings rely on the value of the
 ``SPS_HOME`` environment variable being correctly set and the compiled
 ``.o`` and ``.mod`` files be available in the ``${SPS_HOME}/src``
 directory.

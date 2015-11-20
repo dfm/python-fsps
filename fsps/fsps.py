@@ -37,86 +37,78 @@ class StellarPopulation(object):
         If ``True``, output wavelengths in air (rather than vac).
 
     :param zcontinuous: (default: 0)
-        Flag specifying how interpolation in metallicity is
-        performed before computing composite models:
-        
-        * 0: No interpolation, use the metallicity index specified by
-          ``zmet``.
-        * 1: The SSPs are interpolated to the value of ``logzsol``
-          before the spectra and magnitudes are computed, and the
-          value of ``zmet`` is ignored.
-        * 2: The SSPs are convolved with a metallicity distribution
-          function specified by the ``logzsol`` and ``pmetals``
-          parameters. The value of ``zmet`` is ignored.
+        Flag specifying how interpolation in metallicity is performed before
+        computing composite models:
+
+        * 0: No interpolation, use the metallicity index specified by ``zmet``.
+        * 1: The SSPs are interpolated to the value of ``logzsol`` before the
+          spectra and magnitudes are computed, and the value of ``zmet`` is
+          ignored.
+        * 2: The SSPs are convolved with a metallicity distribution function
+          specified by the ``logzsol`` and ``pmetals`` parameters. The value of
+          ``zmet`` is ignored.
 
     :param redshift_colors: (default: False)
         Flag specifying how to compute magnitudes:
-        
-        * ``False``: Magnitudes are computed at a fixed redshift specified
-          by ``zred``.
-        * ``True``: Magnitudes are computed at a redshift that corresponds
-          to the age of the output SSP/CSP (assuming a redshift–age relation
-          appropriate for a WMAP5 cosmology). This switch is useful if
-          the user wants to compute the evolution in observed colors of a
-          SSP/CSP.
+
+        * ``False``: Magnitudes are computed at a fixed redshift specified by
+          ``zred``.
+        * ``True``: Magnitudes are computed at a redshift that corresponds to
+          the age of the output SSP/CSP (assuming a redshift–age relation
+          appropriate for a WMAP5 cosmology). This switch is useful if the user
+          wants to compute the evolution in observed colors of a SSP/CSP.
 
     :param smooth_velocity: (default: True)
-        Switch to choose smoothing in velocity space (``True``) or
-        wavelength space.
+        Switch to choose smoothing in velocity space (``True``) or wavelength
+        space.
 
     :param add_stellar_remnants: (default: True)
-        Switch to add stellar remnants in the stellar mass
-        computation.
+        Switch to add stellar remnants in the stellar mass computation.
 
     :param add_igm_absorption: (default: False)
-        Switch to include IGM absorption via Madau (1995).  The
-        ``zred`` parameter must be non-zero for this switch to have
-        any effect. The optical depth can be scaled using the
-        ``igm_factor`` parameter.
-        
+        Switch to include IGM absorption via Madau (1995).  The ``zred``
+        parameter must be non-zero for this switch to have any effect. The
+        optical depth can be scaled using the ``igm_factor`` parameter.
+
     :param add_neb_emission: (default: False)
-        Switch to turn on/off a Cloudy-based nebular emission
-        model. 
+        Switch to turn on/off a Cloudy-based nebular emission model.
 
     :param add_neb_continuum: (default: True)
-        Switch to turn on/off the nebular continuum component
-        (automatically turned off if ``add_neb_emission`` is
-        ``False``).
+        Switch to turn on/off the nebular continuum component (automatically
+        turned off if ``add_neb_emission`` is ``False``).
 
     :param cloudy_dust: (default: False)
         Switch to include dust in the Cloudy tables.
-        
+
     :param add_dust_emission: (default: True)
-        Switch to turn on/off the Draine & Li 2007 dust emission
-        model.
+        Switch to turn on/off the Draine & Li 2007 dust emission model.
 
     :param add_agb_dust_model: (default: True)
-        Switch to turn on/off the AGB circumstellar dust model. NB:
-        this feature is currently under development, do not use!  If
-        you do use it, note that the AGB dust emission is scaled by
-        the parameter `agb_dust`.
+        Switch to turn on/off the AGB circumstellar dust model. NB: The AGB
+        dust emission is scaled by the parameter `agb_dust`.
 
     :param tpagb_norm_type: (default: 2)
         Flag specifying TP-AGB normalization scheme:
-        
+
         * 0: default Padova 2007 isochrones
         * 1: Conroy & Gunn 2010 normalization
         * 2: Villaume, Conroy, Johnson 2015 normalization
-        
+
     :param dust_type: (default: 0)
-        Common variable deﬁning the extinction curve for dust around old
-        stars:
+        Common variable deﬁning the extinction curve for dust around old stars:
 
         * 0: power law with index dust index set by ``dust_index``.
-        * 1: Milky Way extinction law (with :math:`R = A_V /E(B - V)` value
-          ``mwr``) parameterized by Cardelli et al. (1989).
-        * 2: Calzetti et al. (2000) attenuation curve. Note that if this
-          value is set then the dust attenuation is applied to all starlight
-          equally (not split by age), and therefore the only relevant
-          parameter is ``dust2``, which sets the overall normalization.
+        * 1: Milky Way extinction law (with the :math:`R = A_V /E(B - V)` value
+          given by ``mwr``) parameterized by Cardelli et al. (1989).
+        * 2: Calzetti et al. (2000) attenuation curve. Note that if this value
+          is set then the dust attenuation is applied to all starlight equally
+          (not split by age), and therefore the only relevant parameter is
+          ``dust2``, which sets the overall normalization.
         * 3: allows the user to access a variety of attenuation curve models
-          from Witt & Gordon (2000) using the parameters ``wgp1`` and
-          ``wgp2``.
+          from Witt & Gordon (2000) using the parameters ``wgp1`` and ``wgp2``.
+        * 4: Kriek & Conroy 2013 attenuation curve.  In this model the slope of
+          the curve, set by the parameter ``dust_index``, is linked to the
+          strength of the UV bump.
 
     :param imf_type: (default: 2)
         Common variable defining the IMF type:
@@ -126,13 +118,13 @@ class StellarPopulation(object):
         * 2: Kroupa (2001)
         * 3: van Dokkum (2008)
         * 4: Dave (2008)
-        * 5: tabulated piece-wise power law IMF, specified in ``imf.dat``
-          file located in the data directory
+        * 5: tabulated piece-wise power law IMF, specified in ``imf.dat`` file
+          located in the data directory
 
     :param pagb: (default: 1.0)
         Weight given to the post–AGB phase. A value of 0.0 turns off post-AGB
-        stars; a value of 1.0 implies that the Vassiliadis & Wood (1994)
-        tracks are implemented as–is.
+        stars; a value of 1.0 implies that the Vassiliadis & Wood (1994) tracks
+        are implemented as–is.
 
     :param dell: (default: 0.0)
         Shift in :math:`\log L_\mathrm{bol}` of the TP-AGB isochrones. Note
@@ -146,8 +138,8 @@ class StellarPopulation(object):
 
     :param fbhb: (default: 0.0)
         Fraction of horizontal branch stars that are blue. The blue HB stars
-        are uniformly spread in :math:`\log T_\mathrm{eff}` to `10^4` K. See
-        Conroy et al. (2009a) for details and a plausible range.
+        are uniformly spread in :math:`\log T_\mathrm{eff}` to :math:`10^4`
+        K. See Conroy et al. (2009a) for details and a plausible range.
 
     :param sbss: (default: 0.0)
         Specific frequency of blue straggler stars. See Conroy et al. (2009a)
@@ -161,24 +153,23 @@ class StellarPopulation(object):
         Defines the constant component of the SFH. This quantity is defined
         as the fraction of mass formed in a constant mode of SF; the range
         is therefore :math:`0 \le C \le 1`. Only used if ``sfh=1`` or
-        ``sf=4``.
+        ``sfh=4``.
 
     :param tage: (default: 0.0)
         If set to a non-zero value, the
         :func:`fsps.StellarPopulation.compute_csp` method will compute the
-        spectra and magnitudes only at this age, and will therefore only
-        output one age result. The units are Gyr. (The default is to compute
-        and return results from :math:`t \\approx 0` to the maximum age in
-        the isochrones).
+        spectra and magnitudes only at this age, and will therefore only output
+        one age result. The units are Gyr. (The default is to compute and
+        return results from :math:`t \\approx 0` to the maximum age in the
+        isochrones).
 
     :param fburst: (default: 0.0)
         Deﬁnes the fraction of mass formed in an instantaneous burst of star
         formation. Only used if ``sfh=1`` or ``sfh=4``.
 
     :param tburst: (default: 11.0)
-        Defines the age of the Universe when the burst occurs. If
-        ``tburst > tage`` then there is no burst. Only used if ``sfh=1`` or
-        ``sfh=4``.
+        Defines the age of the Universe when the burst occurs. If ``tburst >
+        tage`` then there is no burst. Only used if ``sfh=1`` or ``sfh=4``.
 
     :param dust1: (default: 0.0)
         Dust parameter describing the attenuation of young stellar light,
@@ -189,23 +180,22 @@ class StellarPopulation(object):
         i.e. where ``t > dust_tesc`` (for details, see Conroy et al. 2009a).
 
     :param logzsol: (default: 0.0)
-        Parameter describing the metallicity, given in units of
-        log(Z/Z_sun).  Only used if ``zcontinuous=1`` or
-        ``zcontinuous=2``.
+        Parameter describing the metallicity, given in units of :math:`\log
+        (Z/Z_\odot)`.  Only used if ``zcontinuous > 0``.
 
     :param zred: (default: 0.0)
-        Redshift. If this value is non-zero and if ``redshift_colors=1``,
-        the magnitudes will be computed for the spectrum placed at redshift
+        Redshift. If this value is non-zero and if ``redshift_colors=1``, the
+        magnitudes will be computed for the spectrum placed at redshift
         ``zred``.
 
     :param pmetals: (default: 2.0)
-       The power for the metallicty distribution function.  The MDF is
-       given by :math:`(Z \\, e^{{-Z}})^{{pmetals}}` where :math:`Z =
-       z/(z_\\odot \\, 10^{{logzsol}})` and z is the metallicity in
-       linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative
-       value will result in smoothing of the SSPs by a three-point
-       triangular kernel before linear interpolation (in logZ) to the
-       requested metallicity.
+       The power for the metallicty distribution function.  The MDF is given by
+       :math:`(Z \\, e^{{-Z}})^{{\mathrm{pmetals}}}` where :math:`Z =
+       z/(z_\\odot \\, 10^{{\mathrm{logzsol}}})` and z is the metallicity in
+       linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative value
+       will result in smoothing of the SSPs by a three-point triangular kernel
+       before linear interpolation (in :math:`\log Z`) to the requested
+       metallicity.
 
     :param imf1: (default: 1.3)
         Logarithmic slope of the IMF over the range :math:`0.08 < M < 0.5
@@ -243,9 +233,9 @@ class StellarPopulation(object):
         are :math:`\\log (\\mathrm{yrs})`.
 
     :param frac_obrun: (default: 0.0)
-        Fraction of the young stars (age < dust_tesc) that are not
-        attenuated by ``dust1``, representing runaway OB stars.  These
-        stars are still attenuated by ``dust2``.
+        Fraction of the young stars (age < dust_tesc) that are not attenuated
+        by ``dust1``, representing runaway OB stars.  These stars are still
+        attenuated by ``dust2``.
 
     :param uvb: (default: 1.0)
         Parameter characterizing the strength of the 2175A extinction feature
@@ -261,9 +251,8 @@ class StellarPopulation(object):
         Weighting of red  giant branch.
 
     :param dust1_index: (default: -1.0)
-        Power law index of the attenuation curve affecting stars
-        younger than dust_tesc corresponding to ``dust1``. Only used
-        when ``dust_type=0``.
+        Power law index of the attenuation curve affecting stars younger than
+        dust_tesc corresponding to ``dust1``. Only used when ``dust_type=0``.
 
     :param mdave: (default: 0.5)
         IMF parameter defined in Dave (2008). Only used if ``imf_type=4``.
@@ -278,20 +267,19 @@ class StellarPopulation(object):
         Undocumented.
 
     :param duste_gamma: (default: 0.01)
-        Parameter of the Draine & Li (2007) dust emission model. Specifies
-        the relative contribution of dust heated at a radiation field
-        strength of :math:`U_\mathrm{min}` and dust heated at
-        :math:`U_\mathrm{min} < U \le U_\mathrm{max}`. Allowable range is 0.0
-        – 1.0.
+        Parameter of the Draine & Li (2007) dust emission model. Specifies the
+        relative contribution of dust heated at a radiation field strength of
+        :math:`U_\mathrm{min}` and dust heated at :math:`U_\mathrm{min} < U \le
+        U_\mathrm{max}`. Allowable range is 0.0 – 1.0.
 
     :param duste_umin: (default: 1.0)
-        Parameter of the Draine & Li (2007) dust emission model. Specifies
-        the minimum radiation field strength in units of the MW value. Valid
-        range is 0.1 – 25.0.
+        Parameter of the Draine & Li (2007) dust emission model. Specifies the
+        minimum radiation field strength in units of the MW value. Valid range
+        is 0.1 – 25.0.
 
     :param duste_qpah: (default: 3.5)
-        Parameter of the Draine & Li (2007) dust emission model. Specifies
-        the grain size distribution through the fraction of grain mass in
+        Parameter of the Draine & Li (2007) dust emission model. Specifies the
+        grain size distribution through the fraction of grain mass in
         PAHs. This parameter has units of % and a valid range of 0.0 − 10.0.
 
     :param fcstar: (default: 1.0)
@@ -304,8 +292,8 @@ class StellarPopulation(object):
         Truncate the IMF above this value.
 
     :param zmet: (default: 1)
-        The metallicity is specified as an integer ranging between 1
-        and nz. If ``zcontinuous > 0`` then this parameter is ignored.
+        The metallicity is specified as an integer ranging between 1 and nz. If
+        ``zcontinuous > 0`` then this parameter is ignored.
 
     :param sfh: (default: 0)
         Defines the type of star formation history, normalized such that one
@@ -313,15 +301,16 @@ class StellarPopulation(object):
 
         * 0: Compute an SSP
         * 1: Compute a five parameter SFH (see below).
-        * 2: Compute a tabulated SFH defined in a file called ``sfh.dat``
-          that must reside in the data directory. The file must contain three
-          rows. The first column is time since the Big Bang in Gyr, the
-          second is the SFR in units of solar masses per year, the third is
-          the absolute metallicity. An example is provided in the data
+        * 2: Compute a tabulated SFH defined in a file called ``sfh.dat`` that
+          must reside in the data directory. The file must contain three
+          rows. The first column is time since the Big Bang in Gyr, the second
+          is the SFR in units of solar masses per year, the third is the
+          absolute metallicity. An example is provided in the data
           directory. The time grid in this file can be arbitrary (so long as
           the units are correct), but it is up to the user to ensure that the
           tabulated SFH is well-sampled so that the outputs are stable.
-          Obviously, highly oscillatory data require dense sampling.
+          Obviously, highly oscillatory data require dense sampling.  This
+          option is not supported in Python-FSPS.
         * 4: Delayed tau-model. This is the same as option 1 except that the
           tau-model component takes the form :math:`t\,e^{−t/\\tau}`.
 
@@ -350,9 +339,9 @@ class StellarPopulation(object):
         Compute SSPs for only the given evolutionary type.
 
     :param sigma_smooth: (default: 0.0)
-        If smooth_velocity is True, this gives the velocity dispersion in
-        km/s.  Otherwise, it gives the width of the gaussian wavelength
-        smoothing in Angstroms.
+        If smooth_velocity is True, this gives the velocity dispersion in km/s.
+        Otherwise, it gives the width of the gaussian wavelength smoothing in
+        Angstroms.  These widths are in terms of :math:`\sigma`, *not* FWHM.
 
     :param agb_dust: (default: 1.0)
         Scales the circumstellar AGB dust emission.
@@ -364,15 +353,15 @@ class StellarPopulation(object):
         Maximum wavelength to consider when smoothing the spectrum.
 
     :param gas_logu: (default: -2)
-        Log of the gas ionization parameter, for determining the
-        nebular emission.
- 
+        Log of the gas ionization parameter, for determining the nebular
+        emission.
+
     :param gas_logz: (default: 0.0)
-        Log of the gas-phase metallicity, for determining the nebular
-        emission.  In units of log10(Z/Z_sun).
+        Log of the gas-phase metallicity, for determining the nebular emission.
+        In units of :math:`\log (Z/Z_\odot)`.
 
     :param igm_factor: (default: 1.0)
-        Fudge factor used to scale the IGM optical depth.
+        Factor used to scale the IGM optical depth.
     """
 
     def __init__(self, compute_vega_mags=False, zcontinuous=0,
@@ -458,11 +447,10 @@ class StellarPopulation(object):
         # run the ``setup`` method.
         if not driver.is_setup:
             driver.setup(compute_vega_mags)
-
         else:
             cvms = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
-            
+
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
@@ -485,21 +473,21 @@ class StellarPopulation(object):
         NSPEC = driver.get_nspec()
         NTFULL = driver.get_ntfull()
         driver.compute_zdep(NSPEC, NTFULL, self._zcontinuous)
-                
+
         self._stats = None
 
     def get_spectrum(self, zmet=None, tage=0.0, peraa=False):
         """
-        A grid (in age) of the spectra for the current CSP.
+        Return spectra for the current CSP.
 
         :param zmet: (default: None)
             The (integer) index of the metallicity to use. By default, use
             the current value of ``self.params["zmet"]``.
 
         :param tage: (default: 0.0)
-            The age of the stellar population. By default, this will compute
-            a grid of ages from :math:`t \approx 0` to the maximum age in the
-            isochrones.
+            The age of the stellar population for which to obtain a spectrum. By
+            default, this will compute a grid of ages from :math:`t \\approx 0`
+            to the maximum age in the isochrones.
 
         :param peraa: (default: False)
             If ``True``, return the spectrum in :math:`L_\odot/\AA`.
@@ -514,7 +502,6 @@ class StellarPopulation(object):
             If an age was provided by the ``tage`` parameter then the result
             is a 1D array with ``NSPEC`` values. Otherwise, it is a 2D array
             with shape ``(NTFULL, NSPEC)``.
-
         """
         self.params["tage"] = tage
         if zmet is not None:
@@ -533,7 +520,7 @@ class StellarPopulation(object):
         NSPEC = driver.get_nspec()
         if tage > 0.0:
             return wavegrid, driver.get_spec(NSPEC, 1)[0] * factor
-        
+
         NTFULL = driver.get_ntfull()
         return wavegrid, driver.get_spec(NSPEC, NTFULL) * factor[None, :]
 
@@ -561,26 +548,24 @@ class StellarPopulation(object):
         :returns mags:
             The magnitude grid. If an age was was provided by the ``tage``
             parameter then the result is a 1D array with ``NBANDS`` values.
-            Otherwise, it is a 2D array with shape ``(NTFULL, NBANDS)``. If
-            a particular set of bands was requested then this return value
-            will be properly compressed along that axis, ordered according
-            to the ``bands`` argument.
-
+            Otherwise, it is a 2D array with shape ``(NTFULL, NBANDS)``. If a
+            particular set of bands was requested then this return value will
+            be properly compressed along that axis, ordered according to the
+            ``bands`` argument.
         """
         self.params["tage"] = tage
         if zmet is not None:
             self.params["zmet"] = zmet
-        
+
         if self.params.dirty:
             self._compute_csp()
-        
+
         if tage > 0.0:
             NTFULL = 1
         else:
             NTFULL = driver.get_ntfull()
         NBANDS = driver.get_nbands()
         NSPEC = driver.get_nspec()
-        
         band_array = np.ones(NBANDS, dtype=bool)
         if bands is not None:
             user_sorted_inds = np.array([FILTERS[band.lower()].index
@@ -604,13 +589,14 @@ class StellarPopulation(object):
                 return mags
 
     def ztinterp(self, zpos, tpos, peraa=False):
-        """Return an SSP spectrum, mass, and luminosity interpolated
-        to a target metallicity and age.  This effectively wraps the
-        ZTINTERP subroutine.  Only the SSPs bracketing a given
-        metallicity will be regenerated, if parameters are dirty.
+        """
+        Return an SSP spectrum, mass, and luminosity interpolated to a target
+        metallicity and age.  This effectively wraps the ZTINTERP subroutine.
+        Only the SSPs bracketing a given metallicity will be regenerated, if
+        parameters are dirty.
 
         :param zpos:
-            The metallicity, in units of :math:`log(Z/Z_\odot)`
+            The metallicity, in units of :math:`\log(Z/Z_\odot)`
 
         :param tpos:
             The desired age, in Gyr.
@@ -644,12 +630,13 @@ class StellarPopulation(object):
         return spec, mass, lbol
 
     def _all_ssp_spec(self, update=True, peraa=False):
-        """Return the contents of the ssp_spec_zz array.
+        """
+        Return the contents of the ssp_spec_zz array.
 
         :param update: (default: True)
-            If True, forces an update of the SSPs if the ssp
-            parameters have changed. Otherwise simply dumps the
-            current contents of the ``ssp_spec_zz`` array.
+            If True, forces an update of the SSPs if the ssp parameters have
+            changed. Otherwise simply dumps the current contents of the
+            ``ssp_spec_zz`` array.
 
         :param peraa: (default: False)
             If true, return spectra in units of :math:`L_\odot/\AA`, otherwise
@@ -662,8 +649,7 @@ class StellarPopulation(object):
             The mass of the SSPs, having shape (ntfull, nz).
 
         :returns lbol:
-            The bolometric luminosity of the SSPs, having shape
-            (ntfull, nz).
+            The bolometric luminosity of the SSPs, having shape (ntfull, nz).
         """
 
         if (self.params.dirtiness == 2) and update:
@@ -686,13 +672,13 @@ class StellarPopulation(object):
 
     def get_stellar_spectrum(self, mact, logt, lbol, logg, phase, comp,
                              mdot=0, weight=1, zmet=None, peraa=True):
-        """Get the spectrum of a star with a given set of physical
-        parameters.  This uses the metallicity given by the
-        current value of ``zmet``.
+        """
+        Get the spectrum of a star with a given set of physical parameters.
+        This uses the metallicity given by the current value of ``zmet``.
 
         :param mact:
-            Actual stellar mass (after taking into account mass loss).
-            Used to calculate surface gravity.
+            Actual stellar mass (after taking into account mass loss).  Used to
+            calculate surface gravity.
 
         :param logt:
             The log of the effective temperature.
@@ -701,17 +687,17 @@ class StellarPopulation(object):
             Stellar luminosity, in units of :math:`L_\odot`
 
         :param logg:
-            Log of the surface gravity g.  Note that this variable is
-            actually ignored, and logg is calculated internally using
-            ``mact``, ``lbol``, and ``logt``.
+            Log of the surface gravity g.  Note that this variable is actually
+            ignored, and logg is calculated internally using ``mact``,
+            ``lbol``, and ``logt``.
 
         :param phase:
             The evolutionary phase, 0 through 6.
 
         :param comp:
-            Composition, in terms of C/O ratio.  Only used for AGB
-            stars (phase=5), where the division between carbon and
-            oxyygen rich stars is C/O = 1.
+            Composition, in terms of C/O ratio.  Only used for AGB stars
+            (phase=5), where the division between carbon and oxyygen rich stars
+            is :math:`C/O = 1`.
 
         :param mdot:
             The log of the mass loss rate.
@@ -730,53 +716,54 @@ class StellarPopulation(object):
 
         NSPEC = driver.get_nspec()
         outspec = np.zeros(NSPEC)
-        driver.stellar_spectrum(mact, logt, lbol, logg, phase, comp, mdot, weight, outspec)
+        driver.stellar_spectrum(mact, logt, lbol, logg, phase,
+                                comp, mdot, weight, outspec)
         if peraa:
             wavegrid = self.wavelengths
             factor = 3e18 / wavegrid ** 2
             outspec *= factor
 
         return outspec
-    
-    def isochrones(self, outfile = 'pyfsps_tmp'):
-        """Write the isochrone data (age, mass, weights, phases,
-        magnitudes, etc.)  to a .cmd file, then read it into a huge
-        numpy array.
+
+    def isochrones(self, outfile='pyfsps_tmp'):
+        """
+        Write the isochrone data (age, mass, weights, phases, magnitudes, etc.)
+        to a .cmd file, then read it into a huge numpy array.
 
         :param outfile: (default: 'pyfsps_tmp')
-            The file root name of the .cmd file, which will be placed
-            in the $SPS_HOME/OUTPUTS/ directory
-            
+            The file root name of the .cmd file, which will be placed in the
+            $SPS_HOME/OUTPUTS/ directory
+
         :returns dat:
-            A huge numpy array containing information about every
-            isochrone point for the current metallicity.
-            
+            A huge numpy array containing information about every isochrone
+            point for the current metallicity.
+
         :returns header:
-            A list of the column names pulled from the header of the
-            .cmd file.  The number of column names will not match the
-            number of columns in dat since there are as many ``mags``
-            as filters.  Use ``fsps.list_filters()`` to get the ordered
-            filter name list.
+            A list of the column names pulled from the header of the .cmd file.
+            The number of column names will not match the number of columns in
+            dat since there are as many ``mags`` as filters.  Use
+            ``fsps.list_filters()`` to get the ordered filter name list.
         """
         if self.params.dirty:
             self._compute_csp()
-            
+
         from . import ev, list_filters
-        absfile = os.path.join(ev,'OUTPUTS',outfile+'.cmd')
+        absfile = os.path.join(ev, 'OUTPUTS', outfile+'.cmd')
         driver.write_isoc(outfile)
-        
+
         with open(absfile, 'r') as f:
-            header = f.readline().split()[1:-1] #drop the comment hash and mags field
+            # drop the comment hash and mags field
+            header = f.readline().split()[1:-1]
         header += list_filters()
         cmd_data = np.loadtxt(absfile, comments='#',
                               dtype=np.dtype([(n, np.float) for n in header]))
         return cmd_data
-            
+
     def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
-        """Smooth a spectrum by a gaussian with standard deviation
-        given by sigma.  Whether the smoothing is in velocity space or
-        in wavelength space depends on the value of the value of
-        smooth_velocity.
+        """
+        Smooth a spectrum by a gaussian with standard deviation given by sigma.
+        Whether the smoothing is in velocity space or in wavelength space
+        depends on the value of the value of smooth_velocity.
 
         :param wave:
             The input wavelength grid.
@@ -855,8 +842,8 @@ class StellarPopulation(object):
 
     @property
     def stellar_mass(self):
-        """Stellar mass (including remants if the FSPS parameters
-        `add_stellar_remants=1`) in solar masses.
+        """Stellar mass in solar masses (including remants if the FSPS
+        parameter `add_stellar_remants=1`).
         """
         return self._stat(1)
 
@@ -894,9 +881,10 @@ class StellarPopulation(object):
 class ParameterSet(object):
 
     ssp_params = ["imf_type", "imf1", "imf2", "imf3", "vdmc", "mdave",
-                  "dell", "delt", "sbss", "fbhb", "pagb", "add_stellar_remnants",
-                  "tpagb_norm_type", "add_agb_dust_model", "agb_dust",
-                  "redgb", "masscut", "fcstar", "evtype"]
+                  "dell", "delt", "sbss", "fbhb", "pagb",
+                  "add_stellar_remnants", "tpagb_norm_type",
+                  "add_agb_dust_model", "agb_dust", "redgb", "masscut",
+                  "fcstar", "evtype"]
 
     csp_params = ["smooth_velocity", "vactoair_flag", "redshift_colors",
                   "dust_type", "add_dust_emission", "add_neb_emission",

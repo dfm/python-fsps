@@ -182,95 +182,6 @@ contains
     
   end subroutine
 
-  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
-
-    ! Return the contents of the ssp spectral array,
-    ! regenerating the ssps if necessary
-
-    implicit none
-    integer, intent(in) :: ns,n_age,n_z
-    integer :: zi
-    double precision, dimension(ns,n_age,n_z), intent(inout) :: ssp_spec_out
-    double precision, dimension(n_age,n_z), intent(inout) :: ssp_mass_out, ssp_lbol_out
-    do zi=1,nz
-       if (has_ssp(zi) .eq. 0) then
-          call ssp(zi)
-       endif
-    enddo
-
-    ssp_spec_out = spec_ssp_zz
-    ssp_mass_out = mass_ssp_zz
-    ssp_lbol_out = lbol_ssp_zz
-
-  end subroutine
-
-
-  subroutine interp_ssp(ns,zpos,tpos,spec,mass,lbol)
-
-    ! Return the SSPs interpolated to the target metallicity 
-    !(zpos) and target age (tpos)
-    
-    implicit none
-
-    integer, intent(in) :: ns
-    double precision, intent(in) :: zpos
-    double precision, intent(in) :: tpos
-
-    double precision, dimension(ns,1), intent(inout) :: spec
-    double precision, dimension(1), intent(inout) :: mass,lbol
-
-    double precision, dimension(nt) :: time
-    
-    integer :: zlo,zmet,tlo
-
-    zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
-    time = timestep_isoc(zlo,:)
-    tlo = max(min(locate(time,tpos),nt-1),1)
-
-    do zmet=zlo,zlo+1
-       if ((has_ssp_age(zmet,tlo) .eq. 0) .or. (has_ssp_age(zmet,tlo+1) .eq. 0)) then
-          pset%ssp_gen_age = 0
-          pset%ssp_gen_age(tlo:tlo+1) = 1
-          call ssp(zmet)
-          pset%ssp_gen_age = 1
-       endif
-    enddo
-
-    call ztinterp(zpos,spec,lbol,mass,tpos=tpos)
-
-    end subroutine
-
-  subroutine smooth_spectrum(ns,wave,spec,sigma_broad,minw,maxw)
-    
-    ! Smooth the spectrum by a gaussian of width sigma_broad
-    
-    implicit none
-    integer, intent(in) :: ns
-    double precision, intent(in) :: sigma_broad,minw,maxw
-    double precision, dimension(ns), intent(in) :: wave
-    double precision, dimension(ns), intent(inout) :: spec
-    
-    call smoothspec(wave,spec,sigma_broad,minw,maxw)
-
-  end subroutine
-
-  subroutine compute
-
-    ! Compute the full CSP (and the SSP if it isn't already cached).
-
-    implicit none
-    integer :: zmet
-    character(100) :: outfile
-    zmet = pset%zmet
-    if (has_ssp(zmet) .eq. 0) then
-      call ssp(zmet)
-    endif
-    call compsp(0,1,outfile,mass_ssp_zz(:,zmet),lbol_ssp_zz(:,zmet),&
-                spec_ssp_zz(:,:,zmet),pset,ocompsp)
-
-  end subroutine
-
-
   subroutine compute_zdep(ns,n_age,ztype)
 
     ! Compute the full CSP (and the SSPs if they aren't already cached).
@@ -323,12 +234,9 @@ contains
        call ztinterp(zpos,spec,lbol,mass,zpow=pset%pmetals)
        call compsp(0,1,outfile,mass,lbol,spec,pset,ocompsp)
     endif
-     
-    
 
   end subroutine
 
-  
   subroutine get_spec(ns,n_age,spec_out)
 
     ! Get the grid of spectra for the computed CSP at all ages.
@@ -361,6 +269,55 @@ contains
 
   end subroutine
 
+  subroutine interp_ssp(ns,zpos,tpos,spec,mass,lbol)
+
+    ! Return the SSPs interpolated to the target metallicity 
+    !(zpos) and target age (tpos)
+    
+    implicit none
+
+    integer, intent(in) :: ns
+    double precision, intent(in) :: zpos
+    double precision, intent(in) :: tpos
+
+    double precision, dimension(ns,1), intent(inout) :: spec
+    double precision, dimension(1), intent(inout) :: mass,lbol
+
+    double precision, dimension(nt) :: time
+    
+    integer :: zlo,zmet,tlo
+
+    zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
+    time = timestep_isoc(zlo,:)
+    tlo = max(min(locate(time,tpos),nt-1),1)
+
+    do zmet=zlo,zlo+1
+       if ((has_ssp_age(zmet,tlo) .eq. 0) .or. (has_ssp_age(zmet,tlo+1) .eq. 0)) then
+          pset%ssp_gen_age = 0
+          pset%ssp_gen_age(tlo:tlo+1) = 1
+          call ssp(zmet)
+          pset%ssp_gen_age = 1
+       endif
+    enddo
+
+    call ztinterp(zpos,spec,lbol,mass,tpos=tpos)
+
+    end subroutine
+
+  subroutine smooth_spectrum(ns,wave,spec,sigma_broad,minw,maxw)
+    
+    ! Smooth the spectrum by a gaussian of width sigma_broad
+    
+    implicit none
+    integer, intent(in) :: ns
+    double precision, intent(in) :: sigma_broad,minw,maxw
+    double precision, dimension(ns), intent(in) :: wave
+    double precision, dimension(ns), intent(inout) :: spec
+    
+    call smoothspec(wave,spec,sigma_broad,minw,maxw)
+
+  end subroutine
+
   subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,lmdot,wght,spec_out)
     
     ! Get a stellar spectrum for a given set of parameters
@@ -375,6 +332,27 @@ contains
     
   end subroutine 
   
+  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
+
+    ! Return the contents of the ssp spectral array,
+    ! regenerating the ssps if necessary
+
+    implicit none
+    integer, intent(in) :: ns,n_age,n_z
+    integer :: zi
+    double precision, dimension(ns,n_age,n_z), intent(inout) :: ssp_spec_out
+    double precision, dimension(n_age,n_z), intent(inout) :: ssp_mass_out, ssp_lbol_out
+    do zi=1,nz
+       if (has_ssp(zi) .eq. 0) then
+          call ssp(zi)
+       endif
+    enddo
+
+    ssp_spec_out = spec_ssp_zz
+    ssp_mass_out = mass_ssp_zz
+    ssp_lbol_out = lbol_ssp_zz
+
+  end subroutine
   
   subroutine get_setup_vars(cvms)
 
@@ -393,7 +371,6 @@ contains
 
   end subroutine
 
-
   subroutine get_zlegend(n_z,z_legend)
 
     ! Get the available metallicity values.
@@ -401,18 +378,6 @@ contains
     integer, intent(in) :: n_z
     double precision, dimension(n_z), intent(out) :: z_legend
     z_legend = zlegend
-
-  end subroutine
-
-  subroutine get_filter_data(nb, wave_eff, mag_vega, mag_sun)
-
-    !get info about the filters
-    implicit none
-    integer, intent(in) :: nb
-    double precision, dimension(nb), intent(out) :: wave_eff,mag_vega,mag_sun
-    wave_eff = filter_leff
-    mag_vega = magvega
-    mag_sun = magsun
 
   end subroutine
 
@@ -426,7 +391,6 @@ contains
     timefull = time_full
 
   end subroutine
-
 
   subroutine get_ntfull(n_age)
 
@@ -508,6 +472,17 @@ contains
 
   end subroutine
 
+  subroutine get_filter_data(nb, wave_eff, mag_vega, mag_sun)
+
+    !get info about the filters
+    implicit none
+    integer, intent(in) :: nb
+    double precision, dimension(nb), intent(out) :: wave_eff,mag_vega,mag_sun
+    wave_eff = filter_leff
+    mag_vega = magvega
+    mag_sun = magsun
+
+  end subroutine
 
   subroutine write_isoc(outfile)
 

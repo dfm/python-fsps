@@ -119,10 +119,12 @@ class Filter(object):
                     filter_index += 1
                     lambdas, trans = [], []
                 else:
-                    l, t = line.split()
-                    lambdas.append(float(l))
-                    trans.append(float(t))
-
+                    try:
+                        l, t = line.split()
+                        lambdas.append(float(l))
+                        trans.append(float(t))
+                    except(ValueError):
+                        pass
 
 def _load_filter_dict():
     """

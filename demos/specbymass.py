@@ -66,7 +66,7 @@ def specplots(tage=10.0, const=1.0, tau=1.0, neb=False, z=0.0, savefig=True,
     sps.params['masscut'] = 120
     sps.params['logzsol'] = z
     # Try to set any extra params
-    for k, v in kwargs:
+    for k, v in kwargs.items():
         try:
             sps.params[k] = v
         except(KeyError):

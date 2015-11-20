@@ -537,47 +537,6 @@ class StellarPopulation(object):
         NTFULL = driver.get_ntfull()
         return wavegrid, driver.get_spec(NSPEC, NTFULL) * factor[None, :]
 
-    @property
-    def wavelengths(self):
-        """
-        The wavelength scale for the computed spectra, in :math:`\AA`
-
-        """
-        if self._wavelengths is None:
-            NSPEC = driver.get_nspec()
-            self._wavelengths = driver.get_lambda(NSPEC)
-        return self._wavelengths
-
-    @property
-    def zlegend(self):
-        """
-        The available metallicities.
-
-        """
-        if self._zlegend is None:
-            NZ = driver.get_nz()
-            self._zlegend = driver.get_zlegend(NZ)
-        return self._zlegend
-
-    @property
-    def ssp_ages(self):
-        """
-        The age grid of the SSPs, in log(years), used by FSPS.
-
-        """
-        if self._ssp_ages is None:
-            NTFULL = driver.get_ntfull()
-            self._ssp_ages = driver.get_timefull(NTFULL)
-        return self._ssp_ages
-
-    def filter_data(self):
-        """Return effective wavelengths, and vega and solar magnitudes
-        of all filters.
-        """
-        NBANDS = driver.get_nbands()
-        lambda_eff, magvega, magsun = driver.get_filter_data(NBANDS)
-        return lambda_eff, magvega, magsun
-
     def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None):
         """
         Get the magnitude of the CSP.
@@ -684,7 +643,7 @@ class StellarPopulation(object):
 
         return spec, mass, lbol
 
-    def all_ssp_spec(self, update=True, peraa=False):
+    def _all_ssp_spec(self, update=True, peraa=False):
         """Return the contents of the ssp_spec_zz array.
 
         :param update: (default: True)
@@ -724,41 +683,6 @@ class StellarPopulation(object):
             spec *= factor[:, None, None]
 
         return spec, mass, lbol
-
-    def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
-        """Smooth a spectrum by a gaussian with standard deviation
-        given by sigma.  Whether the smoothing is in velocity space or
-        in wavelength space depends on the value of the value of
-        smooth_velocity.
-
-        :param wave:
-            The input wavelength grid.
-
-        :param spec:
-            The input spectrum.
-
-        :param sigma:
-            The standard deviation of the gaussian broadening function.
-
-        :param minw:
-            Optionally set the minimum wavelength to consider when
-            broadening.
-
-        :param maxw:
-            Optionally set the maximum wavelength to consider when
-            broadening.
-
-        :returns outspec:
-            The smoothed spectrum, on the same wavelength grid as the input.
-        """
-        if maxw is None:
-            maxw = np.max(wave)
-        if minw is None:
-            minw = np.min(wave)
-        assert len(wave) == len(spec)
-        outspec = np.array(spec)
-        driver.smooth_spectrum(wave, outspec, sigma, minw, maxw)
-        return outspec
 
     def get_stellar_spectrum(self, mact, logt, lbol, logg, phase, comp,
                              mdot=0, weight=1, zmet=None, peraa=True):
@@ -848,6 +772,82 @@ class StellarPopulation(object):
                               dtype=np.dtype([(n, np.float) for n in header]))
         return cmd_data
             
+    def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
+        """Smooth a spectrum by a gaussian with standard deviation
+        given by sigma.  Whether the smoothing is in velocity space or
+        in wavelength space depends on the value of the value of
+        smooth_velocity.
+
+        :param wave:
+            The input wavelength grid.
+
+        :param spec:
+            The input spectrum.
+
+        :param sigma:
+            The standard deviation of the gaussian broadening function.
+
+        :param minw:
+            Optionally set the minimum wavelength to consider when
+            broadening.
+
+        :param maxw:
+            Optionally set the maximum wavelength to consider when
+            broadening.
+
+        :returns outspec:
+            The smoothed spectrum, on the same wavelength grid as the input.
+        """
+        if maxw is None:
+            maxw = np.max(wave)
+        if minw is None:
+            minw = np.min(wave)
+        assert len(wave) == len(spec)
+        outspec = np.array(spec)
+        driver.smooth_spectrum(wave, outspec, sigma, minw, maxw)
+        return outspec
+
+    def filter_data(self):
+        """Return effective wavelengths, and vega and solar magnitudes
+        of all filters.
+        """
+        NBANDS = driver.get_nbands()
+        lambda_eff, magvega, magsun = driver.get_filter_data(NBANDS)
+        return lambda_eff, magvega, magsun
+
+    @property
+    def wavelengths(self):
+        """
+        The wavelength scale for the computed spectra, in :math:`\AA`
+
+        """
+        if self._wavelengths is None:
+            NSPEC = driver.get_nspec()
+            self._wavelengths = driver.get_lambda(NSPEC)
+        return self._wavelengths
+
+    @property
+    def zlegend(self):
+        """
+        The available metallicities.
+
+        """
+        if self._zlegend is None:
+            NZ = driver.get_nz()
+            self._zlegend = driver.get_zlegend(NZ)
+        return self._zlegend
+
+    @property
+    def ssp_ages(self):
+        """
+        The age grid of the SSPs, in log(years), used by FSPS.
+
+        """
+        if self._ssp_ages is None:
+            NTFULL = driver.get_ntfull()
+            self._ssp_ages = driver.get_timefull(NTFULL)
+        return self._ssp_ages
+
     @property
     def log_age(self):
         """log10(age/yr)."""

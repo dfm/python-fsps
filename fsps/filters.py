@@ -137,7 +137,10 @@ def _load_filter_dict():
     with open(filter_list_path) as f:
         for line in f:
             columns = line.strip().split()
-            fsps_id, key = columns[:2]
+            if len(columns) > 1
+                fsps_id, key = columns[:2]
+            else:
+                continue
             comment = ' '.join(columns[2:])
             filters[key.lower()] = Filter(int(fsps_id), key, comment)
 

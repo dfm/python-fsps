@@ -137,7 +137,7 @@ def _load_filter_dict():
     with open(filter_list_path) as f:
         for line in f:
             columns = line.strip().split()
-            if len(columns) > 1
+            if len(columns) > 1:
                 fsps_id, key = columns[:2]
             else:
                 continue

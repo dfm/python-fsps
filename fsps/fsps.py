@@ -362,6 +362,16 @@ class StellarPopulation(object):
 
     :param igm_factor: (default: 1.0)
         Factor used to scale the IGM optical depth.
+
+    :param fagn: (default: 0.0)
+        The total luminosity of the AGN, expressed as a fraction of the
+        bolometric stellar luminosity (so it can be greater than 1). The shape
+        of the AGN SED is from the Nenkova et al. 2008 templates.
+
+    :param agn_tau: (default: 10)
+        Optical depth of the AGN dust torus, which affects the shape of the AGN
+        SED.  Outside the range (5, 150) the AGN SED is an
+        extrapolation.
     """
 
     def __init__(self, compute_vega_mags=False, zcontinuous=0,
@@ -432,6 +442,8 @@ class StellarPopulation(object):
             gas_logu=-2,
             gas_logz=0.0,
             igm_factor=1.0,
+            fagn=0.0,
+            agn_tau=10.0
         )
 
         # Parse any input options.
@@ -897,7 +909,7 @@ class ParameterSet(object):
                   "sf_start", "sf_trunc", "sf_slope", "duste_gamma",
                   "duste_umin", "duste_qpah", "sigma_smooth",
                   "min_wave_smooth", "max_wave_smooth", "gas_logu",
-                  "gas_logz", "igm_factor"]
+                  "gas_logz", "igm_factor", "fagn", "agn_tau"]
 
     @property
     def all_params(self):

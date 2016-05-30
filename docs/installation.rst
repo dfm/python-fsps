@@ -9,26 +9,21 @@ There are only two required dependencies for building this package: `FSPS
 <http://www.numpy.org/>`_.
 First, make sure that you have NumPy installed (using your favorite method)
 and access to the ``f2py`` executable (this should be installed along with
-NumPy).  Note that ``f2py`` versions packaged with ``numpy`` v1.10.x do
-not work with python-FSPS, please use ``numpy`` v1.9.3 or lower.
+NumPy).
 
 Then, you need to follow the directions on `the FSPS page
 <https://github.com/cconroy20/fsps>`_ to clone and compile the FSPS
-package. Note that Python-FSPS is built against specific versions of
-the FSPS Fortran API, so it is important that you have a recent tagged
-release version of FSPS.  If you are missing required updates to FSPS
-you will be notified of this when you try to build Python-FSPS.
-Currently Python-FSPS is built against FSPS v2.6.
-
-Once FSPS is checked out, modify the Makefile as needed and compile
-FSPS.  For some compilers (e.g. Intel) it may be necessary to set the
-``-fPIC`` flag when compiling FSPS -- please try this if you encounter
-Python-FSPS build errors.
+package. Python-FSPS is built against specific versions of the FSPS Fortran
+API, so it is important that you have a recent version of FSPS through
+git. Currently Python-FSPS is built against FSPS v3.0.
 
 These bindings rely on the value of the ``SPS_HOME`` environment
 variable being correctly set and the compiled ``.o`` and ``.mod``
-files be available in the ``${SPS_HOME}/src`` directory.
+files being available in the ``${SPS_HOME}/src`` directory.
 
+Python-FSPS is developed using python2.7.  We have attempted to maintain
+python3 compatability, but if you encounter compatibility problems, please open
+an issue on `GitHub <https://github.com/dfm/python-fsps>`_.
 
 Installing development version
 ------------------------------
@@ -45,7 +40,7 @@ You can do this by cloning the `python-fsps repository
 Installing stable version
 -------------------------
 
-After you have FSPS and NumPy installed, you might be able to install the
+After you have FSPS and NumPy installed, you _might_ be able to install the
 most recent stable version of python-fsps using pip:
 
 .. code-block:: bash
@@ -55,10 +50,43 @@ most recent stable version of python-fsps using pip:
 If this does not work, please ``pip uninstall fsps`` and follow the
 instructions above for installing the development version.
 
+Troubleshooting
+-----------------------
+Here are possible fixes for the most common installation issues:
 
-Testing the installation
-------------------------
+* Version mismatch.  Python-FSPS is built against specific versions of FSPS.
+  This can cause problems if you have a different version of FSPS.  Python-FSPS
+  attempts to check that you have a compatible version of FSPS during
+  installation, and if you do not it will print an error.  This requires that
+  you have `git` and that FSPS be under git version control.  If you do not
+  have the correct version, try::
+  
+      cd $SPS_HOME
+      git pull
+      cd src
+      make clean
+      make all
+   
+  to get and compile the most recent version.  Then try to install python-FSPS again.
 
-To test the installation, run (this doesn't actually work yet)::
+* fPIC.  For some compilers (e.g. Intel) it may be necessary to set the
+  ``-fPIC`` flag in the Makefile when compiling FSPS. Please try this if you
+  encounter long python-FSPS installation errors that contain the
+  text ``can not be used when making a shared object; recompile with -fPIC``.
+  For gfortran the flag is not necesary.::
 
-    python -c 'import fsps;fsps.test()'
+    cd $SPS_HOME/src
+      
+  edit the ``F90FLAGS=`` line in the Makefile to include ``-fPIC`` and then::
+    
+    make clean
+    make all
+
+  Then try to install Python-FSPS again.
+
+* Problems with ``f2py``. The 1.10.x versions of ``numpy`` introduced some
+  compatibility problems in
+  ``f2py``.  These seem to have been fixed in 1.11.x versions and the fixes
+  retroactively added to the 1.10.x versions, but if you encounter long
+  complicated error messages that end with something like ``KeyError: 'void'``,
+  please consider upgrading your ``numpy`` installation.

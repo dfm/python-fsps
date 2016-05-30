@@ -85,8 +85,8 @@ contains
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             dust1_index,sf_start,sf_trunc,sf_slope,&
                             duste_gamma,duste_umin,duste_qpah,&
-                            sigma_smooth,min_wave_smooth,&
-                            max_wave_smooth,gas_logu,gas_logz,igm_factor)
+                            sigma_smooth,min_wave_smooth,max_wave_smooth,&
+                            gas_logu,gas_logz,igm_factor,fagn,agn_tau)
 
     ! Set all the parameters that don't affect the SSP computation.
 
@@ -102,8 +102,8 @@ contains
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             dust1_index,sf_start,sf_trunc,sf_slope,&
                             duste_gamma,duste_umin,duste_qpah,&
-                            sigma_smooth,min_wave_smooth,&
-                            max_wave_smooth,gas_logu,gas_logz,igm_factor
+                            sigma_smooth,min_wave_smooth,max_wave_smooth,&
+                            gas_logu,gas_logz,igm_factor,fagn,agn_tau
 
     smooth_velocity=smooth_velocity0
     vactoair_flag=vactoair_flag0
@@ -151,6 +151,8 @@ contains
     pset%gas_logu=gas_logu
     pset%gas_logz=gas_logz
     pset%igm_factor=igm_factor
+    pset%fagn=fagn
+    pset%agn_tau=agn_tau
     
   end subroutine
 

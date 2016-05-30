@@ -32,7 +32,7 @@ except KeyError:
 
 # Check the githashes to make sure the required FSPS updates are
 # present, and if not or there are no githashes, raise an error
-REQUIRED_GITHASHES = ['6ad1058\n', 'b5250ab\n']
+REQUIRED_GITHASHES = ['6ad1058\n', 'b5250ab\n', 'a23e409\n']
 
 cmd = 'cd {0}; git log --format="format:%h"'.format(ev)
 stat, githashes, err = run_command(cmd)

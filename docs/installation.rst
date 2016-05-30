@@ -22,7 +22,7 @@ variable being correctly set and the compiled ``.o`` and ``.mod``
 files being available in the ``${SPS_HOME}/src`` directory.
 
 Python-FSPS is developed using python2.7.  We have attempted to maintain
-python3 compatability, but if you encounter compatibility problems please open
+python3 compatability, but if you encounter compatibility problems, please open
 an issue on `GitHub <https://github.com/dfm/python-fsps>`_.
 
 Installing development version
@@ -52,7 +52,7 @@ instructions above for installing the development version.
 
 Troubleshooting
 -----------------------
-Here are some possible fixes for common installation issues:
+Here are possible fixes for the most common installation issues:
 
 * Version mismatch.  Python-FSPS is built against specific versions of FSPS.
   This can cause problems if you have a different version of FSPS.  Python-FSPS
@@ -71,21 +71,22 @@ Here are some possible fixes for common installation issues:
 
 * fPIC.  For some compilers (e.g. Intel) it may be necessary to set the
   ``-fPIC`` flag in the Makefile when compiling FSPS. Please try this if you
-  encounter long confusing Python-FSPS installation errors that contain the
+  encounter long python-FSPS installation errors that contain the
   text ``can not be used when making a shared object; recompile with -fPIC``.
   For gfortran the flag is not necesary.::
 
     cd $SPS_HOME/src
       
-  edit ``F90FLAGS=`` to include ``-fPIC`` and then::
+  edit the ``F90FLAGS=`` line in the Makefile to include ``-fPIC`` and then::
     
     make clean
     make all
 
   Then try to install Python-FSPS again.
 
-* Bad ``f2py``. The 1.10.x versions of ``numpy`` introduced some bugs in
+* Problems with ``f2py``. The 1.10.x versions of ``numpy`` introduced some
+  compatibility problems in
   ``f2py``.  These seem to have been fixed in 1.11.x versions and the fixes
   retroactively added to the 1.10.x versions, but if you encounter long
-  complicated error messages that end with something like ``KeyError: 'void'``
+  complicated error messages that end with something like ``KeyError: 'void'``,
   please consider upgrading your ``numpy`` installation.

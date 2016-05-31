@@ -19,7 +19,7 @@ install:
     # FSPS
     - git clone https://github.com/cconroy20/fsps libfsps
     - cd libfsps/src
-    - F90FLAGS="-O -cpp -fPIC" make all
+    - alias gfortran="gfortran -fPIC"; make all
     - cd ../..
     - export SPS_HOME=`pwd`/libfsps
     - echo $SPS_HOME

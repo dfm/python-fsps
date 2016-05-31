@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Python FSPS  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Python FSPS  documentation" href="../" />
+    <link rel="next" title="Modelling Stellar Populations" href="../stellarpop_api/" />
+    <link rel="prev" title="Flexible Stellar Population Synthesis for Python" href="../" />
+     
+    
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+    <!-- https://www.google.com/fonts#UsePlace:use/Collection:Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro -->
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro' rel='stylesheet' type='text/css'>
+
+    <link rel="shortcut icon" href="../_static/favicon.png">
+
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../stellarpop_api/" title="Modelling Stellar Populations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../" title="Flexible Stellar Population Synthesis for Python"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Python FSPS  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>There are only two required dependencies for building this package: <a class="reference external" href="https://github.com/cconroy20/fsps">FSPS</a> (obviously) and <a class="reference external" href="http://www.numpy.org/">NumPy</a>.
+First, make sure that you have NumPy installed (using your favorite method)
+and access to the <code class="docutils literal"><span class="pre">f2py</span></code> executable (this should be installed along with
+NumPy).</p>
+<p>Then, you need to follow the directions on <a class="reference external" href="https://github.com/cconroy20/fsps">the FSPS page</a> to clone and compile the FSPS
+package. Python-FSPS is built against specific versions of the FSPS Fortran
+API, so it is important that you have a recent version of FSPS through
+git. Currently Python-FSPS is built against FSPS v3.0.</p>
+<p>These bindings rely on the value of the <code class="docutils literal"><span class="pre">SPS_HOME</span></code> environment
+variable being correctly set and the compiled <code class="docutils literal"><span class="pre">.o</span></code> and <code class="docutils literal"><span class="pre">.mod</span></code>
+files being available in the <code class="docutils literal"><span class="pre">${SPS_HOME}/src</span></code> directory.</p>
+<p>Python-FSPS is developed using python2.7.  We have attempted to maintain
+python3 compatability, but if you encounter compatibility problems, please open
+an issue on <a class="reference external" href="https://github.com/dfm/python-fsps">GitHub</a>.</p>
+</div>
+<div class="section" id="installing-development-version">
+<h2>Installing development version<a class="headerlink" href="#installing-development-version" title="Permalink to this headline">¶</a></h2>
+<p>Python-FSPS is being actively developed on GitHub so it&#8217;s usually best
+to use the most recent development version.
+You can do this by cloning the <a class="reference external" href="https://github.com/dfm/python-fsps">python-fsps repository</a> and building:</p>
+<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/dfm/python-fsps.git
+cd python-fsps
+python setup.py install
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-stable-version">
+<h2>Installing stable version<a class="headerlink" href="#installing-stable-version" title="Permalink to this headline">¶</a></h2>
+<p>After you have FSPS and NumPy installed, you _might_ be able to install the
+most recent stable version of python-fsps using pip:</p>
+<div class="highlight-bash"><div class="highlight"><pre>pip install fsps
+</pre></div>
+</div>
+<p>If this does not work, please <code class="docutils literal"><span class="pre">pip</span> <span class="pre">uninstall</span> <span class="pre">fsps</span></code> and follow the
+instructions above for installing the development version.</p>
+</div>
+<div class="section" id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<p>Here are possible fixes for the most common installation issues:</p>
+<ul>
+<li><p class="first">Version mismatch.  Python-FSPS is built against specific versions of FSPS.
+This can cause problems if you have a different version of FSPS.  Python-FSPS
+attempts to check that you have a compatible version of FSPS during
+installation, and if you do not it will print an error.  This requires that
+you have <cite>git</cite> and that FSPS be under git version control.  If you do not
+have the correct version, try:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd $SPS_HOME
+git pull
+cd src
+make clean
+make all
+</pre></div>
+</div>
+<p>to get and compile the most recent version.  Then try to install python-FSPS again.</p>
+</li>
+<li><p class="first">fPIC.  For some compilers (e.g. Intel) it may be necessary to set the
+<code class="docutils literal"><span class="pre">-fPIC</span></code> flag in the Makefile when compiling FSPS. Please try this if you
+encounter long python-FSPS installation errors that contain the
+text <code class="docutils literal"><span class="pre">can</span> <span class="pre">not</span> <span class="pre">be</span> <span class="pre">used</span> <span class="pre">when</span> <span class="pre">making</span> <span class="pre">a</span> <span class="pre">shared</span> <span class="pre">object;</span> <span class="pre">recompile</span> <span class="pre">with</span> <span class="pre">-fPIC</span></code>.
+For gfortran the flag is not necesary.:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd $SPS_HOME/src
+</pre></div>
+</div>
+<p>edit the <code class="docutils literal"><span class="pre">F90FLAGS=</span></code> line in the Makefile to include <code class="docutils literal"><span class="pre">-fPIC</span></code> and then:</p>
+<div class="highlight-python"><div class="highlight"><pre>make clean
+make all
+</pre></div>
+</div>
+<p>Then try to install Python-FSPS again.</p>
+</li>
+<li><p class="first">Problems with <code class="docutils literal"><span class="pre">f2py</span></code>. The 1.10.x versions of <code class="docutils literal"><span class="pre">numpy</span></code> introduced some
+compatibility problems in
+<code class="docutils literal"><span class="pre">f2py</span></code>.  These seem to have been fixed in 1.11.x versions and the fixes
+retroactively added to the 1.10.x versions, but if you encounter long
+complicated error messages that end with something like <code class="docutils literal"><span class="pre">KeyError:</span> <span class="pre">'void'</span></code>,
+please consider upgrading your <code class="docutils literal"><span class="pre">numpy</span></code> installation.</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo">
+    <a href="../">
+        <img class="logo" src="../_static/pyfsps_logo.svg" alt="Logo"/>
+    </a>
+</p>
+
+<p>
+    Python-FSPS is a set of bindings to Charlie Conroy's
+    <a href="https://github.com/cconroy20/fsps">
+      Flexible Stellar Population Synthesis</a> Fortran library.
+</p>
+  <h3><a href="../">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#installing-development-version">Installing development version</a></li>
+<li><a class="reference internal" href="#installing-stable-version">Installing stable version</a></li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../">Documentation overview</a><ul>
+      <li>Previous: <a href="../" title="previous chapter">Flexible Stellar Population Synthesis for Python</a></li>
+      <li>Next: <a href="../stellarpop_api/" title="next chapter">Modelling Stellar Populations</a></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2013-2016 Dan Foreman-Mackey & contributors.
+    </div>
+    <!-- http://aralbalkan.com/scribbles/fork-me-on-github-retina-ribbons/ -->
+    <a href="https://github.com/dfm/python-fsps"><img style="position: absolute; top: 0; right: 0; border: 0; width: 149px; height: 149px;" src="http://aral.github.com/fork-me-on-github-retina-ribbons/right-cerulean@2x.png" alt="Fork me on GitHub"></a>
+
+    <!-- <script type="text/javascript"> -->
+    <!--     var _gaq = _gaq || []; -->
+    <!--     _gaq.push(['_setAccount', 'UA-22909046-1']); -->
+    <!--     _gaq.push(['_trackPageview']); -->
+    <!--     (function() { -->
+    <!--         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; -->
+    <!--         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; -->
+    <!--         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); -->
+    <!--         })(); -->
+    <!-- </script> -->
+
+    <!-- <script type="text/javascript"> -->
+    <!--     var _gauges = _gauges || []; -->
+    <!--     (function() { -->
+    <!--      var t   = document.createElement('script'); -->
+    <!--      t.type  = 'text/javascript'; -->
+    <!--      t.async = true; -->
+    <!--      t.id    = 'gauges-tracker'; -->
+    <!--      t.setAttribute('data-site-id', '510fb7df613f5d10200000c4'); -->
+    <!--      t.src = '//secure.gaug.es/track.js'; -->
+    <!--      var s = document.getElementsByTagName('script')[0]; -->
+    <!--      s.parentNode.insertBefore(t, s); -->
+    <!--     })(); -->
+    <!-- </script> -->
+  </body>
+</html>

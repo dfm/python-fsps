@@ -60,16 +60,16 @@ class build_fsps(build_ext):
         print("Running f2py on {0} with flags {1}".format(fns, flags))
         invoke_f2py(fns, flags, wd='fsps')
 
-        # # Move the compiled library to the correct directory.
-        # infn = os.path.abspath(os.path.join("fsps", "_fsps.so"))
-        # outfn = os.path.abspath(self.get_ext_fullpath("fsps._fsps"))
-        # if infn != outfn:
-        #     try:
-        #         os.makedirs(os.path.dirname(outfn))
-        #     except os.error:
-        #         pass
-        #     print("Copying {0} to {1}".format(infn, outfn))
-        #     shutil.copyfile(infn, outfn)
+        # Move the compiled library to the correct directory.
+        infn = os.path.abspath(self.get_ext_filename("fsps._fsps"))
+        outfn = os.path.abspath(self.get_ext_fullpath("fsps._fsps"))
+        if infn != outfn:
+            try:
+                os.makedirs(os.path.dirname(outfn))
+            except os.error:
+                pass
+            print("Copying {0} to {1}".format(infn, outfn))
+            shutil.copyfile(infn, outfn)
 
 
 if "publish" in sys.argv[-1]:

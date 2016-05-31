@@ -4,7 +4,6 @@ import os
 import sys
 import glob
 import shutil
-import subprocess as sp
 
 try:
     from setuptools import setup, Extension
@@ -56,7 +55,8 @@ class build_fsps(build_ext):
         fns += ["fsps.f90", "fsps.pyf"]
 
         # Compile the library.
-        flags = '-c -I{0} --f90flags=-cpp --f90flags=-fPIC'.format(fsps_dir).split()
+        flags = '-c -I{0} --f90flags=-cpp --f90flags=-fPIC'.format(fsps_dir)
+        flags = flags.split()
         print("Running f2py on {0} with flags {1}".format(fns, flags))
         invoke_f2py(fns, flags, wd='fsps')
 
@@ -84,7 +84,7 @@ if sys.version_info[0] < 3:
 else:
     import builtins
 builtins.__FSPS_SETUP__ = True
-from fsps import __version__
+from fsps import __version__  # NOQA
 
 # This is a fake extension that is used to trick distutils into building our
 # real library using the `build_fsps` function above even when `install` is

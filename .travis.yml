@@ -18,6 +18,8 @@ addons:
 install:
     - git clone https://github.com/cconroy20/fsps libfsps
     - cd libfsps/src;make all
+    - export SPS_HOME=`pwd`/libfsps
+    - echo $SPS_HOME
     # - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
     # - bash miniconda.sh -b -p $HOME/miniconda
     # - export PATH=$HOME/miniconda/bin:$PATH

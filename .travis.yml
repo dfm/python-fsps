@@ -19,7 +19,8 @@ install:
     # FSPS
     - git clone https://github.com/cconroy20/fsps libfsps
     - cd libfsps/src
-    - alias gfortran="gfortran -fPIC"; make all
+    - cp ../../.travis.Makefile Makefile
+    - make all
     - cd ../..
     - export SPS_HOME=`pwd`/libfsps
     - echo $SPS_HOME

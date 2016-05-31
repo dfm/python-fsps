@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import (division, print_function, absolute_import,
-                        unicode_literals)
-
-__version__ = "0.2.2"
+from __future__ import division, print_function
 
 import os
-import re
 import subprocess
-import warnings
+
+__version__ = "0.2.2"
 
 def run_command(cmd):
     """

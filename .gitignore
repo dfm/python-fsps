@@ -10,3 +10,4 @@ build
 fsps/_fsps*
 dist
 *.egg-info
+.cache

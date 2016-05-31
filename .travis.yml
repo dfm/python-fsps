@@ -32,11 +32,11 @@ install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda info -a
-    - conda create --yes -n test python=$PYTHON_VERSION numpy==$NUMPY_VERSION
+    - conda create --yes -n test python=$PYTHON_VERSION numpy==$NUMPY_VERSION pytest
     - source activate test
 
     # Python FSPS
     - python setup.py build_ext --inplace
 
 script:
-    - echo "hi"
+    - py.test -v fsps/tests.py

@@ -23,6 +23,7 @@ install:
     - cd ../..
     - export SPS_HOME=`pwd`/libfsps
     - echo $SPS_HOME
+    - ls $SPS_HOME
 
     # Python
     - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;

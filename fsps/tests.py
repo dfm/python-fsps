@@ -8,10 +8,18 @@ from numpy.testing import assert_allclose
 from .fsps import StellarPopulation
 
 
-pop = StellarPopulation(imf_type=2, imf3=2.3)
+pop = StellarPopulation(zcontinuous=1)
+default_params = dict([(k, pop.params[k]) for k in pop.params.all_params])
+
+
+def _reset_default_params():
+    for k in pop.params.all_params:
+        pop.params[k] = default_params[k]
 
 
 def test_imf3():
+    _reset_default_params()
+    pop.params["imf_type"] = 2
     pop.params["imf3"] = 2.3
     model1 = pop.get_spectrum(tage=0.2)[1]
     pop.params["imf3"] = 8.3
@@ -55,23 +63,53 @@ def test_get_mags():
 
 
 def test_smoothspec():
+    _reset_default_params()
     wave, spec = pop.get_spectrum(tage=1, peraa=True)
     spec2 = pop.smoothspec(wave, spec, 160., minw=1e3, maxw=1e4)
     assert (spec-spec2 == 0.).sum() > 0
 
 
-# def test_ztinterp():
-#     wave, s2 = pop.get_spectrum(tage=1, zmet=2, peraa=True)
-#     wave, s3 = pop.get_spectrum(tage=1, zmet=3, peraa=True)
-#     s, m, l = pop.ztinterp(-0.5, 1., peraa=True)
+def test_ssp():
+    _reset_default_params()
+    pop.params["sfh"] = 0
+    wave, spec = pop.get_spectrum(tage=1, peraa=True)
+    assert (wave[0] > 0) & (wave[0] < wave[-1])
+    assert (wave[-1] > 1e6) & (wave[-1] < 1e10)
+    Mv = 4.62 # AB absolute magnitude for a Zsol 1Gyr old SSP
+    mag = pop.get_mags(tage=1, bands=["v"])
+    assert np.all( abs(mag - Mv) < 1.0)
+    assert np.all( (pop.stellar_mass < 1.0) & (pop.stellar_mass >0))
 
-#     optical = ((wave > 2000) & (wave < 5e3))
-#     assert s[optical].sum() < s2[optical].sum()
-#     assert s[optical].sum() > s3[optical].sum()
-#     assert m < 1
+
+def test_csp():
+    _reset_default_params()
+    pop.params["sfh"] = 1
+    pop.params["tau"] = 1.0
+    wave, spec = pop.get_spectrum(tage=1.0)
+    pop.params["tau"] = 3.0
+    assert pop.params.dirtiness == 1
+    pop.params["sfh"] = 0
+    pop.params["tau"] = 1.0
 
 
-# def test_exposedspec():
-#     allspec = pop.all_ssp_spec(peraa=True)
-#     assert len(allspec.shape) == 3
-#     assert allspec.shape[0] == len(pop.wavelengths)
+def test_redshift():
+    _reset_default_params()
+    pop.params["sfh"] = 0
+    pop.params["zred"] = 0.0
+    v1 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
+    v2 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
+    assert np.all(v1 == v2)
+
+    pop.params["zred"] = 1.0
+    v3 = pop.get_mags(redshift=0.0, tage=1.0, bands=["v"])
+    v4 = pop.get_mags(redshift=0.0, tage=1.0, bands=["v"])
+    assert np.all(v3 == v4)
+
+    # The following fails for now, because of how redshifting and filter projection is
+    # delegated in and accessed from FSPS.  The difference will be dist. mod. - 2.5*log(1+zred)
+
+    # assert np.all(v3 == v1)
+
+    v5 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
+    assert np.all(v5 != v4)
+    

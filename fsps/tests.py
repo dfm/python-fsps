@@ -1,8 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import (division, print_function, absolute_import,
-                        unicode_literals)
+from __future__ import division, print_function
 
 from multiprocessing import Pool
 import numpy as np
@@ -37,14 +35,14 @@ def _get_model(theta):
     return pop.get_spectrum(tage=0.2)[1]
 
 
-def test_imf3_multiprocessing():
-    pool = Pool()
-    thetas = np.linspace(2.3, 8.3, 4)
+# def test_imf3_multiprocessing():
+#     pool = Pool()
+#     thetas = np.linspace(2.3, 8.3, 4)
 
-    single = map(_get_model, thetas)
-    multi = pool.map(_get_model, thetas)
+#     single = map(_get_model, thetas)
+#     multi = pool.map(_get_model, thetas)
 
-    assert_allclose(single, multi)
+#     assert_allclose(single, multi)
 
 
 def test_get_mags():
@@ -62,18 +60,18 @@ def test_smoothspec():
     assert (spec-spec2 == 0.).sum() > 0
 
 
-def test_ztinterp():
-    wave, s2 = pop.get_spectrum(tage=1, zmet=2, peraa=True)
-    wave, s3 = pop.get_spectrum(tage=1, zmet=3, peraa=True)
-    s, m, l = pop.ztinterp(-0.5, 1., peraa=True)
+# def test_ztinterp():
+#     wave, s2 = pop.get_spectrum(tage=1, zmet=2, peraa=True)
+#     wave, s3 = pop.get_spectrum(tage=1, zmet=3, peraa=True)
+#     s, m, l = pop.ztinterp(-0.5, 1., peraa=True)
 
-    optical = ((wave > 2000) & (wave < 5e3))
-    assert s[optical].sum() < s2[optical].sum()
-    assert s[optical].sum() > s3[optical].sum()
-    assert m < 1
+#     optical = ((wave > 2000) & (wave < 5e3))
+#     assert s[optical].sum() < s2[optical].sum()
+#     assert s[optical].sum() > s3[optical].sum()
+#     assert m < 1
 
 
-def test_exposedspec():
-    allspec = pop.all_ssp_spec(peraa=True)
-    assert len(allspec.shape) == 3
-    assert allspec.shape[0] == len(pop.wavelengths)
+# def test_exposedspec():
+#     allspec = pop.all_ssp_spec(peraa=True)
+#     assert len(allspec.shape) == 3
+#     assert allspec.shape[0] == len(pop.wavelengths)

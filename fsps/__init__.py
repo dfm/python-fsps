@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import (division, print_function, absolute_import,
-                        unicode_literals)
-
-__version__ = "0.2.2"
+from __future__ import division, print_function
 
 import os
-import re
 import subprocess
-import warnings
+
+__version__ = "0.2.2"
 
 def run_command(cmd):
     """
@@ -18,8 +15,8 @@ def run_command(cmd):
     """
     child = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE,
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    out = [s for s in child.stdout]
-    err = [s for s in child.stderr]
+    out = [s.decode("utf-8").strip() for s in child.stdout]
+    err = [s.decode("utf-8").strip() for s in child.stderr]
     w = child.wait()
     return os.WEXITSTATUS(w), out, err
 
@@ -32,7 +29,7 @@ except KeyError:
 
 # Check the githashes to make sure the required FSPS updates are
 # present, and if not or there are no githashes, raise an error
-REQUIRED_GITHASHES = ['6ad1058\n', 'b5250ab\n', 'a23e409\n']
+REQUIRED_GITHASHES = ['6ad1058', 'b5250ab', 'a23e409']
 
 cmd = 'cd {0}; git log --format="format:%h"'.format(ev)
 stat, githashes, err = run_command(cmd)
@@ -53,7 +50,7 @@ else:
     # Store the githash.  If any version checking is going to happen,
     # it should happen here
     fsps_vers = githashes[0]
-    
+
 # Only import the module if not run from the setup script.
 try:
     __FSPS_SETUP__

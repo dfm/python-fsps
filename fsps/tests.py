@@ -88,8 +88,6 @@ def test_csp():
     wave, spec = pop.get_spectrum(tage=1.0)
     pop.params["tau"] = 3.0
     assert pop.params.dirtiness == 1
-    pop.params["sfh"] = 0
-    pop.params["tau"] = 1.0
 
 
 def test_redshift():
@@ -108,8 +106,4 @@ def test_redshift():
     # The following fails for now, because of how redshifting and filter projection is
     # delegated in and accessed from FSPS.  The difference will be dist. mod. - 2.5*log(1+zred)
 
-    # assert np.all(v3 == v1)
-
-    v5 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
-    assert np.all(v5 != v4)
-    
+    # assert np.all(v3 == v1)    

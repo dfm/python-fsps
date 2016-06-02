@@ -21,16 +21,17 @@ module driver
   
 contains
 
-  subroutine setup(compute_vega_mags0)
+  subroutine setup(compute_vega_mags0, vactoair_flag0)
 
     ! Load all the data files/templates into memory.
 
     implicit none
 
-    integer, intent(in) :: compute_vega_mags0
+    integer, intent(in) :: compute_vega_mags0, vactoair_flag0
          
 
     compute_vega_mags = compute_vega_mags0
+    vactoair_flag = vactoair_flag0
     call sps_setup(-1)
     is_setup = 1
 
@@ -76,7 +77,7 @@ contains
     
   end subroutine
 
-  subroutine set_csp_params(smooth_velocity0,vactoair_flag0,redshift_colors0,&
+  subroutine set_csp_params(smooth_velocity0,redshift_colors0,&
                             dust_type0,add_dust_emission0,add_neb_emission0,&
                             add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                             zmet,sfh,wgp1,wgp2,wgp3,tau,&
@@ -92,7 +93,7 @@ contains
 
     implicit none
     
-    integer, intent(in) :: smooth_velocity0,vactoair_flag0,redshift_colors0,&
+    integer, intent(in) :: smooth_velocity0,redshift_colors0,&
                            dust_type0,add_dust_emission0,add_neb_emission0,&
                            add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                            zmet,sfh,wgp1,wgp2,wgp3
@@ -106,7 +107,6 @@ contains
                             gas_logu,gas_logz,igm_factor,fagn,agn_tau
 
     smooth_velocity=smooth_velocity0
-    vactoair_flag=vactoair_flag0
     redshift_colors=redshift_colors0
     dust_type=dust_type0
     add_dust_emission=add_dust_emission0
@@ -356,11 +356,12 @@ contains
 
   end subroutine
   
-  subroutine get_setup_vars(cvms)
+  subroutine get_setup_vars(cvms, vta_flag)
 
     implicit none
-    integer, intent(out) :: cvms
+    integer, intent(out) :: cvms, vta_flag
     cvms = compute_vega_mags
+    vta_flag = vactoair_flag
 
   end subroutine
 
@@ -428,8 +429,12 @@ contains
     implicit none
     integer, intent(in) :: ns
     double precision, dimension(ns), intent(out) :: lambda
-    lambda = spec_lambda
-
+    if (vactoair_flag .eq. 1) then
+       lambda = vactoair(spec_lambda)
+    else
+       lambda = spec_lambda
+    endif
+    
   end subroutine
 
   subroutine get_isochrone_dimensions(n_age,n_mass)

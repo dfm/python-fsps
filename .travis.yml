@@ -40,16 +40,16 @@ install:
 
     # Python FSPS
     - if [ "${TEST_PIP}" = "true"  ]; then
-        mkdir -p piptest
-        cd piptest
-        pip install fsps
+        mkdir -p piptest;
+        cd piptest;
+        pip install fsps;
       else
-        python setup.py build_ext --inplace
+        python setup.py build_ext --inplace;
       fi
 
 script:
     - if [ "${TEST_PIP}" = "true"  ]; then
-        py.test -v --pyargs fsps.tests
+        py.test -v --pyargs fsps.tests;
       else
-        py.test -v fsps/tests.py
+        py.test -v fsps/tests.py;
       fi

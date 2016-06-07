@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/dfm/python-fsps.svg?branch=master&style=flat
+  :target: https://travis-ci.org/dfm/python-fsps
+
 **Read the documentation:**
 `dan.iel.fm/python-fsps <http://dan.iel.fm/python-fsps>`_
 

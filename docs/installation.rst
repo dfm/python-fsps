@@ -21,10 +21,6 @@ These bindings rely on the value of the ``SPS_HOME`` environment
 variable being correctly set and the compiled ``.o`` and ``.mod``
 files being available in the ``${SPS_HOME}/src`` directory.
 
-Python-FSPS is developed using python2.7.  We have attempted to maintain
-python3 compatability, but if you encounter compatibility problems, please open
-an issue on `GitHub <https://github.com/dfm/python-fsps>`_.
-
 Installing development version
 ------------------------------
 

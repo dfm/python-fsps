@@ -34,6 +34,12 @@ License
 *Copyright 2013-2016 Dan Foreman-Mackey and contributors.*
 
 These bindings are available under the `MIT License
-<https://raw.github.com/dfm/python-fsps/master/LICENSE.rst>`_. See the `FSPS
-homepage <https://github.com/cconroy20/fsps>`_ for usage
+<https://raw.github.com/dfm/python-fsps/master/LICENSE.rst>`_.
+
+If you make use of this code, please reference these Python bindings,
+
+.. image:: http://img.shields.io/badge/DOI-10.5281/zenodo.12157-blue.svg?style=flat
+  :target: http://dx.doi.org/10.5281/zenodo.12157
+
+and see the `FSPS homepage <https://github.com/cconroy20/fsps>`_ for additional usage
 restrictions and citation requirements.

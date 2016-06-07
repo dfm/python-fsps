@@ -1,7 +1,7 @@
 Modelling Stellar Populations
 =============================
 
-:class:`fsps.StellarPopulation` drives FSPS and is generally the only API needed.
+:class:`fsps.StellarPopulation` drives FSPS and is generally the only API needed. 
 :func:`fsps.find_filter` can also be used interactively to search for a filter (see also :doc:`filters`).
 
 Example
@@ -31,6 +31,7 @@ We can also get the spectrum, here in units of :math:`L_\odot/\mathrm{Hz}`::
 
    >>> wave, spec = sp.get_spectrum(tage=13.7)
 
+ It is highly recemmended that only one instance of :class:`fsps.StellarPopulation` be used in a given program.
 
 API Reference
 -------------

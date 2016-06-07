@@ -31,10 +31,12 @@ class StellarPopulation(object):
 
     :param compute_vega_mags: (default: False)
         A switch that sets the zero points of the magnitude system: ``True``
-        uses Vega magnitudes versus AB magnitudes.
+        uses Vega magnitudes versus AB magnitudes. Can only be changed during
+        initialization.
 
     :param vactoair_flag: (default: False)
-        If ``True``, output wavelengths in air (rather than vac).
+        If ``True``, output wavelengths in air (rather than vac). Can only be
+        changed during initialization.
 
     :param zcontinuous: (default: 0)
         Flag specifying how interpolation in metallicity is performed before
@@ -374,13 +376,12 @@ class StellarPopulation(object):
         extrapolation.
     """
 
-    def __init__(self, compute_vega_mags=False, zcontinuous=0,
-                 **kwargs):
+    def __init__(self, compute_vega_mags=False, vactoair_flag=False,
+                 zcontinuous=0, **kwargs):
 
         # Set up the parameters to their default values.
         self.params = ParameterSet(
             smooth_velocity=True,
-            vactoair_flag=False,
             redshift_colors=False,
             dust_type=0,
             add_dust_emission=True,
@@ -458,11 +459,11 @@ class StellarPopulation(object):
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
         if not driver.is_setup:
-            driver.setup(compute_vega_mags)
+            driver.setup(compute_vega_mags, vactoair_flag)
         else:
-            cvms = driver.get_setup_vars()
+            cvms, vtaflag = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
-
+            assert vactoair_flag == bool(vtaflag)
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
@@ -497,13 +498,13 @@ class StellarPopulation(object):
             the current value of ``self.params["zmet"]``.
 
         :param tage: (default: 0.0)
-            The age of the stellar population for which to obtain a spectrum. By
-            default, this will compute a grid of ages from :math:`t \\approx 0`
-            to the maximum age in the isochrones.
+            The age of the stellar population for which to obtain a
+            spectrum. By default, this will compute a grid of ages from
+            :math:`t \\approx 0` to the maximum age in the isochrones.
 
         :param peraa: (default: False)
-            If ``True``, return the spectrum in :math:`L_\odot/\AA`.
-            Otherwise, return the spectrum in the FSPS standard
+            If ``True``, return the spectrum in :math:`L_\odot/\AA`. Otherwise,
+            return the spectrum in the FSPS standard
             :math:`L_\odot/\mathrm{Hz}`.
 
         :returns wavelengths:
@@ -541,16 +542,18 @@ class StellarPopulation(object):
         Get the magnitude of the CSP.
 
         :param zmet: (default: None)
-            The (integer) index of the metallicity to use. By default, use
-            the current value of ``self.params["zmet"]``.
+            The (integer) index of the metallicity to use. By default, use the
+            current value of ``self.params["zmet"]``.
 
         :param tage: (default: 0.0)
-            The age of the stellar population. By default, this will compute
-            a grid of ages from :math:`t \approx 0` to the maximum age in the
+            The age of the stellar population. By default, this will compute a
+            grid of ages from :math:`t \approx 0` to the maximum age in the
             isochrones.
 
         :param redshift: (default: 0.0)
-            Optionally redshift the spectrum first.
+            Optionally redshift the spectrum first.  This will only work
+            properly if ``self.params["zred"]`` is 0.0, otherwise an error is
+            raised.
 
         :param bands: (default: None)
             The names of the filters that you would like to compute the
@@ -563,8 +566,14 @@ class StellarPopulation(object):
             Otherwise, it is a 2D array with shape ``(NTFULL, NBANDS)``. If a
             particular set of bands was requested then this return value will
             be properly compressed along that axis, ordered according to the
-            ``bands`` argument.
+            ``bands`` argument. If ``redshift`` is not 0, the units are
+            apparent observed frame magnitude :math:`m`, otherwise they are
+            :math:`m - \mu + 2.5\, log(1+z)`, i.e. observed frame absolute
+            magnitude.
         """
+        if redshift > 0.0:
+            assert self.params["zred"] == 0.0, \
+              "One of 'zred' or redshift must be zero."
         self.params["tage"] = tage
         if zmet is not None:
             self.params["zmet"] = zmet
@@ -898,7 +907,7 @@ class ParameterSet(object):
                   "add_agb_dust_model", "agb_dust", "redgb", "masscut",
                   "fcstar", "evtype"]
 
-    csp_params = ["smooth_velocity", "vactoair_flag", "redshift_colors",
+    csp_params = ["smooth_velocity", "redshift_colors",
                   "dust_type", "add_dust_emission", "add_neb_emission",
                   "add_neb_continuum", "cloudy_dust", "add_igm_absorption",
                   "zmet", "sfh", "wgp1", "wgp2", "wgp3",

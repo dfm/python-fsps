@@ -355,6 +355,20 @@ contains
     ssp_lbol_out = lbol_ssp_zz
 
   end subroutine
+
+  subroutine set_sfh_tab(ntab, age, sfr, met)
+
+    ! Fill the sfh_tab array
+
+    implicit none
+    integer, intent(in) :: ntab
+    double precision, dimension(ntab), intent(in) :: age, sfr, met
+    ntabsfh = ntab
+    sfh_tab(1,1:ntabsfh) = age
+    sfh_tab(2, 1:ntabsfh) = sfr
+    sfh_tab(3, 1:ntabsfh) = met
+
+  end subroutine set_sfh_tab
   
   subroutine get_setup_vars(cvms, vta_flag)
 

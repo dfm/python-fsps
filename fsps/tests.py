@@ -106,4 +106,27 @@ def test_redshift():
     # The following fails for now, because of how redshifting and filter projection is
     # delegated in and accessed from FSPS.  The difference will be dist. mod. - 2.5*log(1+zred)
 
-    # assert np.all(v3 == v1)    
+    # assert np.all(v3 == v1)
+
+def test_tabular():
+    _reset_default_params()
+
+    import os
+    fn = os.path.join(os.environ['SPS_HOME'], 'data/sfh.dat')
+    age, sfr, z = np.genfromtxt(fn, unpack=True, skip_header=0)
+
+    pop.params['sfh'] = 3
+    pop.set_tabular_sfh(age, sfr)
+    w, spec = pop.get_spectrum(tage=0)
+    pop.set_tabular_sfh(age, sfr)
+    assert pop.params.dirty
+    w, spec = pop.get_spectrum(tage=0)
+    assert spec.shape[0] == len(pop.ssp_ages)
+    assert pop.params['sfh'] == 3
+    w, spec_last = pop.get_spectrum(tage=-99)
+    assert spec_last.ndim == 1
+    w, spec = pop.get_spectrum(tage=age.max())
+    assert np.allclose(spec, spec_last)
+    pop.params['logzsol'] = -1
+    w, spec_lowz = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec, spec_lowz)

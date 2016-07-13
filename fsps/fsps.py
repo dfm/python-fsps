@@ -531,7 +531,7 @@ class StellarPopulation(object):
             factor = np.ones_like(wavegrid)
 
         NSPEC = driver.get_nspec()
-        if tage > 0.0:
+        if (tage > 0.0) or (tage == -99):
             return wavegrid, driver.get_spec(NSPEC, 1)[0] * factor
 
         NTFULL = driver.get_ntfull()
@@ -780,6 +780,37 @@ class StellarPopulation(object):
                               dtype=np.dtype([(n, np.float) for n in header]))
         return cmd_data
 
+    def set_tabular_sfh(self, age, sfr, Z=None):
+        """Set a tabular SFH for use with the sfh=3 option.  See the FSPS
+        documentation for information about tabular SFHs.  This SFH will be
+        piecewise linearly interpolated.
+
+        :param age:
+            Age in Gyr.  ndarray of shape (ntab,)
+
+        :param sfr:
+            The SFR at each ``age``, in Msun/yr.  Must be an ndarray same
+            length as ``age``.
+
+        :param Z: (optional)
+            The metallicity at each age.  Currently this is ignored, and the
+            value of ``zmet`` or ``logzsol`` is used for all ages.  Thus
+            setting this parameter will result in a NotImplementedError.
+        """
+        assert len(age) == len(sfr)
+        ntab = len(age)
+        if Z is None:
+            Z = np.zeros(ntab)
+        else:
+            raise(NotImplementedError)
+            assert len(Z) == ntab
+        driver.set_sfh_tab(age*1e9, sfr, Z)
+        if self.params['sfh'] == 3:
+            self.params.dirtiness = max(1, self.params.dirtiness)
+        else:
+            print("Warning: You are setting a tabular SFH, "
+                  "but but the ``sfh`` parameter is not 3")
+    
     def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
         """
         Smooth a spectrum by a gaussian with standard deviation given by sigma.

@@ -20,9 +20,9 @@ class StellarPopulation(object):
     of the parameters of the system using keyword arguments. Below, you'll
     find a list of the options that you can include (with the comments taken
     directly from the `FSPS docs
-    <https://github.com/cconroy20/fsps/blob/master/doc/MANUAL.pdf>`_. To change
-    these values later, use the ``params`` property—which is ``dict``-like.
-    For example:
+    <https://github.com/cconroy20/fsps/blob/master/doc/MANUAL.pdf>`_). Unless
+    otherwise noted, you can change these values later using the ``params``
+    property—which is ``dict``-like.  For example:
 
     ::
 
@@ -50,17 +50,15 @@ class StellarPopulation(object):
           specified by the ``logzsol`` and ``pmetals`` parameters. The value of
           ``zmet`` is ignored.
 
-    :param redshift_colors: (default: False)
-        Flag specifying how to compute magnitudes. This has no
-        effect. Magnitudes are always computed at a fixed redshift specified by
-        ``zred``.  See `get_mags` for details.
+        Can only be changed during initialization.
+          
+    :param add_agb_dust_model: (default: True)
+        Switch to turn on/off the AGB circumstellar dust model presented in
+        Villaume (2014). NB: The AGB dust emission is scaled by the parameter
+        `agb_dust`.
 
-    :param smooth_velocity: (default: True)
-        Switch to choose smoothing in velocity space (``True``) or wavelength
-        space.
-
-    :param add_stellar_remnants: (default: True)
-        Switch to add stellar remnants in the stellar mass computation.
+    :param add_dust_emission: (default: True)
+        Switch to turn on/off the Draine & Li 2007 dust emission model.
 
     :param add_igm_absorption: (default: False)
         Switch to include IGM absorption via Madau (1995).  The ``zred``
@@ -68,21 +66,31 @@ class StellarPopulation(object):
         optical depth can be scaled using the ``igm_factor`` parameter.
 
     :param add_neb_emission: (default: False)
-        Switch to turn on/off a Cloudy-based nebular emission model.
+        Switch to turn on/off a nebular emission model (both continuum and line
+        emission), based on Cloudy models from Nell Byler.  Contrary to FSPS,
+        this option is turned off by default.
 
     :param add_neb_continuum: (default: True)
         Switch to turn on/off the nebular continuum component (automatically
         turned off if ``add_neb_emission`` is ``False``).
 
+    :param add_stellar_remnants: (default: True)
+        Switch to add stellar remnants in the stellar mass computation.
+
+    :param redshift_colors: (default: False)
+        Flag specifying how to compute magnitudes. This has no effect in
+        python-FSPS. Magnitudes are always computed at a fixed redshift
+        specified by ``zred``.  See `get_mags` for details.
+
+    :param smooth_velocity: (default: True)
+        Switch to choose smoothing in velocity space (``True``) or wavelength
+        space.
+
     :param cloudy_dust: (default: False)
         Switch to include dust in the Cloudy tables.
 
-    :param add_dust_emission: (default: True)
-        Switch to turn on/off the Draine & Li 2007 dust emission model.
-
-    :param add_agb_dust_model: (default: True)
-        Switch to turn on/off the AGB circumstellar dust model. NB: The AGB
-        dust emission is scaled by the parameter `agb_dust`.
+    :param agb_dust: (default: 1.0)
+        Scales the circumstellar AGB dust emission.
 
     :param tpagb_norm_type: (default: 2)
         Flag specifying TP-AGB normalization scheme:
@@ -91,21 +99,62 @@ class StellarPopulation(object):
         * 1: Conroy & Gunn 2010 normalization
         * 2: Villaume, Conroy, Johnson 2015 normalization
 
-    :param dust_type: (default: 0)
-        Common variable deﬁning the extinction curve for dust around old stars:
+    :param dell: (default: 0.0)
+        Shift in :math:`\log L_\mathrm{bol}` of the TP-AGB isochrones. Note
+        that the meaning of this parameter and the one below has changed to
+        reflect the updated calibrations presented in Conroy & Gunn (2009).
+        That is, these parameters now refer to a modification about the
+        calibrations presented in that paper.  Only has effect if
+        ``tpagb_norm_type=2``.
 
-        * 0: power law with index dust index set by ``dust_index``.
-        * 1: Milky Way extinction law (with the :math:`R = A_V /E(B - V)` value
-          given by ``mwr``) parameterized by Cardelli et al. (1989).
-        * 2: Calzetti et al. (2000) attenuation curve. Note that if this value
-          is set then the dust attenuation is applied to all starlight equally
-          (not split by age), and therefore the only relevant parameter is
-          ``dust2``, which sets the overall normalization.
-        * 3: allows the user to access a variety of attenuation curve models
-          from Witt & Gordon (2000) using the parameters ``wgp1`` and ``wgp2``.
-        * 4: Kriek & Conroy 2013 attenuation curve.  In this model the slope of
-          the curve, set by the parameter ``dust_index``, is linked to the
-          strength of the UV bump.
+    :param delt: (default: 0.0)
+        Shift in :math:`\log T_\mathrm{eff}` of the TP-AGB isochrones.  Only
+        has effect if ``tpagb_norm_type=2``.
+
+    :param redgb: (default: 1.0)
+        Modify weight given to RGB.  Only available with BaSTI isochrone set.
+
+    :param fcstar: (default: 1.0)
+        Fraction of stars that the Padova isochrones identify as Carbon stars
+        that FSPS assigns to a Carbon star spectrum. Set this to 0.0 if for
+        example the users wishes to turn all Carbon stars into regular M-type
+        stars.
+
+    :param sbss: (default: 0.0)
+        Specific frequency of blue straggler stars. See Conroy et al. (2009a)
+        for details and a plausible range.
+
+    :param fbhb: (default: 0.0)
+        Fraction of horizontal branch stars that are blue. The blue HB stars
+        are uniformly spread in :math:`\log T_\mathrm{eff}` to :math:`10^4`
+        K. See Conroy et al. (2009a) for details and a plausible range.
+
+    :param pagb: (default: 1.0)
+        Weight given to the post–AGB phase. A value of 0.0 turns off post-AGB
+        stars; a value of 1.0 implies that the Vassiliadis & Wood (1994) tracks
+        are implemented as–is.
+
+    :param zred: (default: 0.0)
+        Redshift. If this value is non-zero and if ``redshift_colors=1``, the
+        magnitudes will be computed for the spectrum placed at redshift
+        ``zred``.
+
+    :param zmet: (default: 1)
+        The metallicity is specified as an integer ranging between 1 and nz. If
+        ``zcontinuous > 0`` then this parameter is ignored.
+
+    :param logzsol: (default: 0.0)
+        Parameter describing the metallicity, given in units of :math:`\log
+        (Z/Z_\odot)`.  Only used if ``zcontinuous > 0``.
+
+    :param pmetals: (default: 2.0)
+       The power for the metallicty distribution function.  The MDF is given by
+       :math:`(Z \\, e^{{-Z}})^{{\mathrm{pmetals}}}` where :math:`Z =
+       z/(z_\\odot \\, 10^{{\mathrm{logzsol}}})` and z is the metallicity in
+       linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative value
+       will result in smoothing of the SSPs by a three-point triangular kernel
+       before linear interpolation (in :math:`\log Z`) to the requested
+       metallicity. Only used if ``zcontinuous = 2``.
 
     :param imf_type: (default: 2)
         Common variable defining the IMF type:
@@ -117,82 +166,6 @@ class StellarPopulation(object):
         * 4: Dave (2008)
         * 5: tabulated piece-wise power law IMF, specified in ``imf.dat`` file
           located in the data directory
-
-    :param pagb: (default: 1.0)
-        Weight given to the post–AGB phase. A value of 0.0 turns off post-AGB
-        stars; a value of 1.0 implies that the Vassiliadis & Wood (1994) tracks
-        are implemented as–is.
-
-    :param dell: (default: 0.0)
-        Shift in :math:`\log L_\mathrm{bol}` of the TP-AGB isochrones. Note
-        that the meaning of this parameter and the one below has changed to
-        reflect the updated calibrations presented in Conroy & Gunn (2009).
-        That is, these parameters now refer to a modification about the
-        calibrations presented in that paper.
-
-    :param delt: (default: 0.0)
-        Shift in :math:`\log T_\mathrm{eff}` of the TP-AGB isochrones.
-
-    :param fbhb: (default: 0.0)
-        Fraction of horizontal branch stars that are blue. The blue HB stars
-        are uniformly spread in :math:`\log T_\mathrm{eff}` to :math:`10^4`
-        K. See Conroy et al. (2009a) for details and a plausible range.
-
-    :param sbss: (default: 0.0)
-        Specific frequency of blue straggler stars. See Conroy et al. (2009a)
-        for details and a plausible range.
-
-    :param tau: (default: 1.0)
-        Defines e-folding time for the SFH, in Gyr. Only used if ``sfh=1`` or
-        ``sfh=4``. The range is :math:`0.1 < \\tau < 10^2`.
-
-    :param const: (default: 0.0)
-        Defines the constant component of the SFH. This quantity is defined
-        as the fraction of mass formed in a constant mode of SF; the range
-        is therefore :math:`0 \le C \le 1`. Only used if ``sfh=1`` or
-        ``sfh=4``.
-
-    :param tage: (default: 0.0)
-        If set to a non-zero value, the
-        :func:`fsps.StellarPopulation.compute_csp` method will compute the
-        spectra and magnitudes only at this age, and will therefore only output
-        one age result. The units are Gyr. (The default is to compute and
-        return results from :math:`t \\approx 0` to the maximum age in the
-        isochrones).
-
-    :param fburst: (default: 0.0)
-        Deﬁnes the fraction of mass formed in an instantaneous burst of star
-        formation. Only used if ``sfh=1`` or ``sfh=4``.
-
-    :param tburst: (default: 11.0)
-        Defines the age of the Universe when the burst occurs. If ``tburst >
-        tage`` then there is no burst. Only used if ``sfh=1`` or ``sfh=4``.
-
-    :param dust1: (default: 0.0)
-        Dust parameter describing the attenuation of young stellar light,
-        i.e. where ``t <= dust_tesc`` (for details, see Conroy et al. 2009a).
-
-    :param dust2: (default: 0.0)
-        Dust parameter describing the attenuation of old stellar light,
-        i.e. where ``t > dust_tesc`` (for details, see Conroy et al. 2009a).
-
-    :param logzsol: (default: 0.0)
-        Parameter describing the metallicity, given in units of :math:`\log
-        (Z/Z_\odot)`.  Only used if ``zcontinuous > 0``.
-
-    :param zred: (default: 0.0)
-        Redshift. If this value is non-zero and if ``redshift_colors=1``, the
-        magnitudes will be computed for the spectrum placed at redshift
-        ``zred``.
-
-    :param pmetals: (default: 2.0)
-       The power for the metallicty distribution function.  The MDF is given by
-       :math:`(Z \\, e^{{-Z}})^{{\mathrm{pmetals}}}` where :math:`Z =
-       z/(z_\\odot \\, 10^{{\mathrm{logzsol}}})` and z is the metallicity in
-       linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative value
-       will result in smoothing of the SSPs by a three-point triangular kernel
-       before linear interpolation (in :math:`\log Z`) to the requested
-       metallicity.
 
     :param imf1: (default: 1.3)
         Logarithmic slope of the IMF over the range :math:`0.08 < M < 0.5
@@ -210,106 +183,155 @@ class StellarPopulation(object):
         IMF parameter defined in van Dokkum (2008). Only used if
         ``imf_type=3``.
 
-    :param dust_clumps: (default: -99.)
-        Dust parameter describing the dispersion of a Gaussian PDF density
-        distribution for the old dust. Setting this value to -99.0 sets the
-        distribution to a uniform screen. See Conroy et al. (2009b) for
-        details.
+    :param mdave: (default: 0.5)
+        IMF parameter defined in Dave (2008). Only used if ``imf_type=4``.
 
-    :param frac_nodust: (default: 0.0)
-        Fraction of starlight that is not attenuated by the diffuse dust
-        component (i.e. that is not affected by ``dust2``).
+    :param evtype: (default: -1)
+        Compute SSPs for only the given evolutionary type. All phases used when
+        set to -1.
 
-    :param dust_index: (default: -0.7)
-        Power law index of the attenuation curve. Only used when
-        ``dust_type=0``.
+    :param masscut: (default: 150.0)
+        Truncate the IMF above this value.
+
+    :param sigma_smooth: (default: 0.0)
+        If smooth_velocity is True, this gives the velocity dispersion in km/s.
+        Otherwise, it gives the width of the gaussian wavelength smoothing in
+        Angstroms.  These widths are in terms of :math:`\sigma`, *not* FWHM.
+
+    :param min_wave_smooth: (default: 1e3)
+        Minimum wavelength to consider when smoothing the spectrum.
+
+    :param max_wave_smooth: (default: 1e4)
+        Maximum wavelength to consider when smoothing the spectrum.
+
+    :param gas_logu: (default: -2)
+        Log of the gas ionization parameter; relevant only for the nebular
+        emission model.
+
+    :param gas_logz: (default: 0.0)
+        Log of the gas-phase metallicity; relevant only for the nebular
+        emission model.  In units of :math:`\log (Z/Z_\odot)`.
+
+    :param igm_factor: (default: 1.0)
+        Factor used to scale the IGM optical depth.
+
+    :param sfh: (default: 0)
+        Defines the type of star formation history, normalized such that one
+        solar mass of stars is formed over the full SFH. Default value is 0.
+
+        * 0: Compute an SSP.
+        * 1: Tau-model. A six parameter SFH (tau model plus a constant
+          component and a burst) with parameters ``tau``, ``const``,
+          ``sf_start``, ``sf_trunc``, ``tburst``, and ``fburst`` (see below).
+        * 2: This option is not supported in Python-FSPS.
+        * 3: Compute a tabulated SFH, which is supplied through the
+          ``set_tabular_sfh`` method.  See that method for details.
+        * 4: Delayed tau-model. This is the same as option 1 except that the
+          tau-model component takes the form :math:`t\,e^{−t/\\tau}`.
+        * 5: Delayed tau-model with a transition at a time ``sf_trunc`` to a
+          linearly decreasing SFH with the slope specified by ``sf_slope``. See
+          Simha et al. 2014 for details.
+
+    :param tau: (default: 1.0)
+        Defines e-folding time for the SFH, in Gyr. Only used if ``sfh=1`` or
+        ``sfh=4``. The range is :math:`0.1 < \\tau < 10^2`.
+
+    :param const: (default: 0.0)
+        Defines the constant component of the SFH. This quantity is defined as
+        the fraction of mass formed in a constant mode of SF; the range is
+        therefore :math:`0 \le C \le 1`. Only used if ``sfh=1`` or ``sfh=4``.
+
+    :param sf_start: (default: 0.0)
+        Start time of the SFH, in Gyr. Only used if ``sfh=1`` or ``sfh=4`` or
+        ``sfh=5``.
+
+    :param sf_trunc: (default: 0.0)
+        Truncation time of the SFH, in Gyr. If set to 0.0, there is no trunction.
+
+    :param tage: (default: 0.0)
+        If set to a non-zero value, the
+        :func:`fsps.StellarPopulation.compute_csp` method will compute the
+        spectra and magnitudes only at this age, and will therefore only output
+        one age result. The units are Gyr. (The default is to compute and
+        return results from :math:`t \\approx 0` to the maximum age in the
+        isochrones).
+
+    :param fburst: (default: 0.0)
+        Deﬁnes the fraction of mass formed in an instantaneous burst of star
+        formation. Only used if ``sfh=1`` or ``sfh=4``.
+
+    :param tburst: (default: 11.0)
+        Defines the age of the Universe when the burst occurs. If ``tburst >
+        tage`` then there is no burst. Only used if ``sfh=1`` or ``sfh=4``.
+
+    :param sf_slope: (default: 0.0)
+        For ``sfh=5``, this is the slope of the SFR after time ``sf_trunc``. 
+
+    :param dust_type: (default: 0)
+        Common variable deﬁning the extinction curve for dust around old stars:
+
+        * 0: power law with index dust index set by ``dust_index``.
+        * 1: Milky Way extinction law (with the :math:`R = A_V /E(B - V)` value
+          given by ``mwr``) parameterized by Cardelli et al. (1989), with
+          variable UV bump strength (see ``uvb`` below).
+        * 2: Calzetti et al. (2000) attenuation curve. Note that if this value
+          is set then the dust attenuation is applied to all starlight equally
+          (not split by age), and therefore the only relevant parameter is
+          ``dust2``, which sets the overall normalization (you must set
+          ``dust1=0.0`` for this to work correctly).
+        * 3: allows the user to access a variety of attenuation curve models
+          from Witt & Gordon (2000) using the parameters ``wgp1`` and
+          ``wgp2``. In this case the parameters ``dust1`` and ``dust2`` have no
+          effect because the WG00 models specify the full attenuation curve.
+        * 4: Kriek & Conroy (2013) attenuation curve.  In this model the slope
+          of the curve, set by the parameter ``dust_index``, is linked to the
+          strength of the UV bump.
 
     :param dust_tesc: (default: 7.0)
         Stars younger than ``dust_tesc`` are attenuated by both ``dust1`` and
         ``dust2``, while stars older are attenuated by ``dust2`` only. Units
         are :math:`\\log (\\mathrm{yrs})`.
 
+    :param dust1: (default: 0.0)
+        Dust parameter describing the attenuation of young stellar light,
+        i.e. where ``t <= dust_tesc`` (for details, see Conroy et al. 2009a).
+
+    :param dust2: (default: 0.0)
+        Dust parameter describing the attenuation of old stellar light,
+        i.e. where ``t > dust_tesc`` (for details, see Conroy et al. 2009a).
+
+    :param dust_clumps: (default: -99.)
+        Dust parameter describing the dispersion of a Gaussian PDF density
+        distribution for the old dust. Setting this value to -99.0 sets the
+        distribution to a uniform screen. See Conroy et al. (2009b) for
+        details.  Values other than -99 are no longer supported.
+
+    :param frac_nodust: (default: 0.0)
+        Fraction of starlight that is not attenuated by the diffuse dust
+        component (i.e. that is not affected by ``dust2``).
+
     :param frac_obrun: (default: 0.0)
         Fraction of the young stars (age < dust_tesc) that are not attenuated
         by ``dust1``, representing runaway OB stars.  These stars are still
         attenuated by ``dust2``.
 
-    :param uvb: (default: 1.0)
-        Parameter characterizing the strength of the 2175A extinction feature
-        with respect to the standard Cardelli et al. determination for the
-        MW. Only used when ``dust_type=1``.
+    :param dust_index: (default: -0.7)
+        Power law index of the attenuation curve. Only used when
+        ``dust_type=0``.
+
+    :param dust1_index: (default: -1.0)
+        Power law index of the attenuation curve affecting stars younger than
+        dust_tesc corresponding to ``dust1``. Only used when ``dust_type=0``.
 
     :param mwr: (default: 3.1)
         The ratio of total to selective absorption which characterizes the MW
         extinction curve: :math:`R = A_V /E(B - V)`. Only used when
         ``dust_type=1``.
 
-    :param redgb: (default: 1.0)
-        Weighting of red  giant branch.
-
-    :param dust1_index: (default: -1.0)
-        Power law index of the attenuation curve affecting stars younger than
-        dust_tesc corresponding to ``dust1``. Only used when ``dust_type=0``.
-
-    :param mdave: (default: 0.5)
-        IMF parameter defined in Dave (2008). Only used if ``imf_type=4``.
-
-    :param sf_start: (default: 0.0)
-        Start time of the SFH, in Gyr.
-
-    :param sf_trunc: (default: 0.0)
-        Undocumented.
-
-    :param sf_slope: (default: 0.0)
-        Undocumented.
-
-    :param duste_gamma: (default: 0.01)
-        Parameter of the Draine & Li (2007) dust emission model. Specifies the
-        relative contribution of dust heated at a radiation field strength of
-        :math:`U_\mathrm{min}` and dust heated at :math:`U_\mathrm{min} < U \le
-        U_\mathrm{max}`. Allowable range is 0.0 – 1.0.
-
-    :param duste_umin: (default: 1.0)
-        Parameter of the Draine & Li (2007) dust emission model. Specifies the
-        minimum radiation field strength in units of the MW value. Valid range
-        is 0.1 – 25.0.
-
-    :param duste_qpah: (default: 3.5)
-        Parameter of the Draine & Li (2007) dust emission model. Specifies the
-        grain size distribution through the fraction of grain mass in
-        PAHs. This parameter has units of % and a valid range of 0.0 − 10.0.
-
-    :param fcstar: (default: 1.0)
-        Fraction of stars that the Padova isochrones identify as Carbon stars
-        that FSPS assigns to a Carbon star spectrum. Set this to 0.0 if for
-        example the users wishes to turn all Carbon stars into regular M-type
-        stars.
-
-    :param masscut: (default: 150.0)
-        Truncate the IMF above this value.
-
-    :param zmet: (default: 1)
-        The metallicity is specified as an integer ranging between 1 and nz. If
-        ``zcontinuous > 0`` then this parameter is ignored.
-
-    :param sfh: (default: 0)
-        Defines the type of star formation history, normalized such that one
-        solar mass of stars is formed over the full SFH. Default value is 0.
-
-        * 0: Compute an SSP
-        * 1: Compute a five parameter SFH (see below).
-        * 2: Compute a tabulated SFH defined in a file called ``sfh.dat`` that
-          must reside in the data directory. The file must contain three
-          rows. The first column is time since the Big Bang in Gyr, the second
-          is the SFR in units of solar masses per year, the third is the
-          absolute metallicity. An example is provided in the data
-          directory. The time grid in this file can be arbitrary (so long as
-          the units are correct), but it is up to the user to ensure that the
-          tabulated SFH is well-sampled so that the outputs are stable.
-          Obviously, highly oscillatory data require dense sampling.  This
-          option is not supported in Python-FSPS.
-        * 4: Delayed tau-model. This is the same as option 1 except that the
-          tau-model component takes the form :math:`t\,e^{−t/\\tau}`.
+    :param uvb: (default: 1.0)
+        Parameter characterizing the strength of the 2175A extinction feature
+        with respect to the standard Cardelli et al. determination for the
+        MW. Only used when ``dust_type=1``.
 
     :param wgp1: (default: 1)
         Integer specifying the optical depth in the Witt & Gordon (2000)
@@ -332,33 +354,21 @@ class StellarPopulation(object):
         and a value of 1 corresponds to a clumpy distribution. See Witt &
         Gordon (2000) for details.
 
-    :param evtype: (default: -1)
-        Compute SSPs for only the given evolutionary type.
+    :param duste_gamma: (default: 0.01)
+        Parameter of the Draine & Li (2007) dust emission model. Specifies the
+        relative contribution of dust heated at a radiation field strength of
+        :math:`U_\mathrm{min}` and dust heated at :math:`U_\mathrm{min} < U \le
+        U_\mathrm{max}`. Allowable range is 0.0 – 1.0.
 
-    :param sigma_smooth: (default: 0.0)
-        If smooth_velocity is True, this gives the velocity dispersion in km/s.
-        Otherwise, it gives the width of the gaussian wavelength smoothing in
-        Angstroms.  These widths are in terms of :math:`\sigma`, *not* FWHM.
+    :param duste_umin: (default: 1.0)
+        Parameter of the Draine & Li (2007) dust emission model. Specifies the
+        minimum radiation field strength in units of the MW value. Valid range
+        is 0.1 – 25.0.
 
-    :param agb_dust: (default: 1.0)
-        Scales the circumstellar AGB dust emission.
-
-    :param min_wave_smooth: (default: 1e3)
-        Minimum wavelength to consider when smoothing the spectrum.
-
-    :param max_wave_smooth: (default: 1e4)
-        Maximum wavelength to consider when smoothing the spectrum.
-
-    :param gas_logu: (default: -2)
-        Log of the gas ionization parameter, for determining the nebular
-        emission.
-
-    :param gas_logz: (default: 0.0)
-        Log of the gas-phase metallicity, for determining the nebular emission.
-        In units of :math:`\log (Z/Z_\odot)`.
-
-    :param igm_factor: (default: 1.0)
-        Factor used to scale the IGM optical depth.
+    :param duste_qpah: (default: 3.5)
+        Parameter of the Draine & Li (2007) dust emission model. Specifies the
+        grain size distribution through the fraction of grain mass in
+        PAHs. This parameter has units of % and a valid range of 0.0 − 10.0.
 
     :param fagn: (default: 0.0)
         The total luminosity of the AGN, expressed as a fraction of the
@@ -974,6 +984,9 @@ class ParameterSet(object):
                 self._params["dust_type"])
         assert self._params["imf_type"] in range(6), \
             "imf_type={0} out of range [0, 5]".format(self._params["imf_type"])
+        assert (self.params["tage"] <= 0) | (self.params["tage"] > self.params["sf_start"]), \
+            "sf_start={0} is greater than tage={1}".format(
+                self.params["sf_start"], self.params["tage"])
 
     def __getitem__(self, k):
         return self._params[k]

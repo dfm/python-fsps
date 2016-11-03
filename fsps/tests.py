@@ -94,7 +94,7 @@ def test_redshift():
     _reset_default_params()
     pop.params["sfh"] = 0
     pop.params["zred"] = 0.0
-    pop.params['igm_factor'] = 0.0
+    pop.params["add_igm_absorption"] = False
     v1 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
     v2 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
     assert np.all(v1 == v2)

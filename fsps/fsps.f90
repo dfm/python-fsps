@@ -454,6 +454,17 @@ contains
     
   end subroutine
 
+  subroutine get_libraries(isocname,specname)
+
+    implicit none
+
+    character(4), intent(out) :: isocname
+    character(5), intent(out) :: specname
+    isocname = isoc_type
+    specname = spec_type
+
+  end subroutine  
+
   subroutine get_isochrone_dimensions(n_age,n_mass)
 
     implicit none

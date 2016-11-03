@@ -484,6 +484,7 @@ class StellarPopulation(object):
         self._zlegend = None
         self._ssp_ages = None
         self._stats = None
+        self._libraries = None
 
     def _update_params(self):
         if self.params.dirtiness == 2:
@@ -902,8 +903,8 @@ class StellarPopulation(object):
         if self._ssp_ages is None:
             NTFULL = driver.get_ntfull()
             self._ssp_ages = driver.get_timefull(NTFULL)
-        return self._ssp_ages
-
+        return self._ssp_ages        
+    
     @property
     def log_age(self):
         """log10(age/yr)."""
@@ -950,6 +951,22 @@ class StellarPopulation(object):
         if self.params["tage"] > 0:
             return stats[k][0]
         return stats[k]
+
+    @property
+    def isoc_library(self):
+        """The name of the isochrone library being used in FSPS."""
+        return self.libraries[0]
+
+    @property
+    def spec_library(self):
+        """The name of the spectral library being used in FSPS."""
+        return self.libraries[1]
+
+    @property
+    def libraries(self):
+        if self._libraries is None:
+            self._libraries = driver.get_libraries()
+        return self._libraries
 
 
 class ParameterSet(object):

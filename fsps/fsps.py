@@ -922,6 +922,11 @@ class StellarPopulation(object):
         """Dust mass, in solar masses."""
         return self._stat(4)
 
+    @property
+    def formed_mass(self):
+        """Integral of the SFH."""
+        return self._stat(5)
+
     def _get_grid_stats(self):
         if self.params.dirty:
             self._compute_csp()

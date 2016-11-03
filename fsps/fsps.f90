@@ -473,7 +473,7 @@ contains
 
   end subroutine
 
-  subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust)
+  subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust,mformed)
 
     implicit none
 
@@ -481,7 +481,8 @@ contains
     integer :: i
     integer, intent(in) :: n_age
     double precision, dimension(n_age), intent(out) :: age,mass_csp,&
-                                                       lbol_csp,sfr,mdust
+                                                       lbol_csp,sfr,mdust,&
+                                                       mformed
 
     do i=1,n_age
       age(i)      = ocompsp(i)%age
@@ -489,6 +490,7 @@ contains
       lbol_csp(i) = ocompsp(i)%lbol_csp
       sfr(i)      = ocompsp(i)%sfr
       mdust(i)    = ocompsp(i)%mdust
+      mformed(i)  = ocompsp(i)%mformed
     enddo
 
   end subroutine

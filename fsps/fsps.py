@@ -82,6 +82,14 @@ class StellarPopulation(object):
         python-FSPS. Magnitudes are always computed at a fixed redshift
         specified by ``zred``.  See `get_mags` for details.
 
+    :param compute_light_ages: (default: False)
+        Flag specifying whether to compute light- and mass-weighted ages.  If
+        ``True`` then the returned spectra are actually light-weighted ages (in
+        Gyr) at every wavelength, the returned magnitudes are filter
+        transmission weighted averages of these, the ``log_lbol`` attribute is
+        the bolometric luminosity weighted age, and the ``stellar_mass``
+        attribute gives the mass-weighted age.
+
     :param smooth_velocity: (default: True)
         Switch to choose smoothing in velocity space (``True``) or wavelength
         space.
@@ -388,6 +396,7 @@ class StellarPopulation(object):
         self.params = ParameterSet(
             smooth_velocity=True,
             redshift_colors=False,
+            compute_light_ages=False,
             dust_type=0,
             add_dust_emission=True,
             add_agb_dust_model=True,
@@ -952,6 +961,7 @@ class ParameterSet(object):
                   "fcstar", "evtype"]
 
     csp_params = ["smooth_velocity", "redshift_colors",
+                  "compute_light_ages",
                   "dust_type", "add_dust_emission", "add_neb_emission",
                   "add_neb_continuum", "cloudy_dust", "add_igm_absorption",
                   "zmet", "sfh", "wgp1", "wgp2", "wgp3",

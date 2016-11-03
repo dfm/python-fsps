@@ -94,19 +94,20 @@ def test_redshift():
     _reset_default_params()
     pop.params["sfh"] = 0
     pop.params["zred"] = 0.0
+    pop.params['igm_factor'] = 0.0
     v1 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
     v2 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
     assert np.all(v1 == v2)
 
     pop.params["zred"] = 1.0
-    v3 = pop.get_mags(redshift=0.0, tage=1.0, bands=["v"])
-    v4 = pop.get_mags(redshift=0.0, tage=1.0, bands=["v"])
+    v3 = pop.get_mags(redshift=None, tage=1.0, bands=["v"])
+    v4 = pop.get_mags(redshift=None, tage=1.0, bands=["v"])
+    v5 = pop.get_mags(redshift=0.0, tage=1.0, bands=["v"])
     assert np.all(v3 == v4)
 
-    # The following fails for now, because of how redshifting and filter projection is
-    # delegated in and accessed from FSPS.  The difference will be dist. mod. - 2.5*log(1+zred)
+    assert np.all(v3 == v1)
+    assert np.all(v5 != v4)
 
-    # assert np.all(v3 == v1)
 
 def test_tabular():
     _reset_default_params()

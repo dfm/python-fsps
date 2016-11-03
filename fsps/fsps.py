@@ -51,14 +51,9 @@ class StellarPopulation(object):
           ``zmet`` is ignored.
 
     :param redshift_colors: (default: False)
-        Flag specifying how to compute magnitudes:
-
-        * ``False``: Magnitudes are computed at a fixed redshift specified by
-          ``zred``.
-        * ``True``: Magnitudes are computed at a redshift that corresponds to
-          the age of the output SSP/CSP (assuming a redshift–age relation
-          appropriate for a WMAP5 cosmology). This switch is useful if the user
-          wants to compute the evolution in observed colors of a SSP/CSP.
+        Flag specifying how to compute magnitudes. This has no
+        effect. Magnitudes are always computed at a fixed redshift specified by
+        ``zred``.  See `get_mags` for details.
 
     :param smooth_velocity: (default: True)
         Switch to choose smoothing in velocity space (``True``) or wavelength
@@ -537,7 +532,7 @@ class StellarPopulation(object):
         NTFULL = driver.get_ntfull()
         return wavegrid, driver.get_spec(NSPEC, NTFULL) * factor[None, :]
 
-    def get_mags(self, zmet=None, tage=0.0, redshift=0.0, bands=None):
+    def get_mags(self, zmet=None, tage=0.0, redshift=None, bands=None):
         """
         Get the magnitude of the CSP.
 
@@ -550,10 +545,9 @@ class StellarPopulation(object):
             grid of ages from :math:`t \approx 0` to the maximum age in the
             isochrones.
 
-        :param redshift: (default: 0.0)
-            Optionally redshift the spectrum first.  This will only work
-            properly if ``self.params["zred"]`` is 0.0, otherwise an error is
-            raised.
+        :param redshift: (default: None)
+            Optionally redshift the spectrum first. If not supplied, the
+            redshift given by `StellarPopulation.params['zred']` is assumed.
 
         :param bands: (default: None)
             The names of the filters that you would like to compute the
@@ -571,9 +565,13 @@ class StellarPopulation(object):
             :math:`m - \mu + 2.5\, log(1+z)`, i.e. observed frame absolute
             magnitude.
         """
-        if redshift > 0.0:
-            assert self.params["zred"] == 0.0, \
-              "One of 'zred' or redshift must be zero."
+        if redshift is None:
+            zr = self.params["zred"]
+        elif (self.params["zred"] > 0) & (redshift != self.params["zred"]):
+            zr = redshift
+            print("Warning: redshift is different than 'zred'.")
+        else:
+            zr = redshift
         self.params["tage"] = tage
         if zmet is not None:
             self.params["zmet"] = zmet
@@ -596,7 +594,7 @@ class StellarPopulation(object):
                                 dtype=bool)] = False
 
         inds = np.array(band_array, dtype=int)
-        mags = driver.get_mags(NSPEC, NTFULL, redshift, inds)
+        mags = driver.get_mags(NSPEC, NTFULL, zr, inds)
 
         if tage > 0.0:
             if bands is not None:

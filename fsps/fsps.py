@@ -1026,10 +1026,12 @@ class ParameterSet(object):
                 self._params["dust_type"])
         assert self._params["imf_type"] in range(6), \
             "imf_type={0} out of range [0, 5]".format(self._params["imf_type"])
-        assert (self.params["tage"] <= 0) | (self.params["tage"] > self.params["sf_start"]), \
+        assert (self._params["tage"] <= 0) | (self._params["tage"] > self._params["sf_start"]), \
             "sf_start={0} is greater than tage={1}".format(
-                self.params["sf_start"], self.params["tage"])
-
+                self._params["sf_start"], self._params["tage"])
+         assert (self._params["const"]+self._params["fburst"]) > 1, \
+            "const + fburst > 1"
+        
     def __getitem__(self, k):
         return self._params[k]
 

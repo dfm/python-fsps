@@ -24,14 +24,17 @@ def test_imf3():
     model1 = pop.get_spectrum(tage=0.2)[1]
     pop.params["imf3"] = 8.3
     assert pop.params.dirtiness == 2
+    print('first imf_test passed') #add output to make travis not die?
     model2 = pop.get_spectrum(tage=0.2)[1]
     original = np.array(model1 - model2)
 
     pop.params["imf3"] = 2.3
     assert pop.params.dirtiness == 2
+    print('second imf_test passed') #add output to make travis not die?
     model1 = pop.get_spectrum(tage=0.2)[1]
     pop.params["imf3"] = 8.3
     assert pop.params.dirtiness == 2
+    print('third imf_test passed') #add output to make travis not die?
     model2 = pop.get_spectrum(tage=0.2)[1]
 
     assert_allclose(original, model1 - model2)

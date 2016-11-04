@@ -627,7 +627,7 @@ class StellarPopulation(object):
             else:
                 return mags
 
-    def ztinterp(self, zpos, tpos, peraa=False):
+    def _ztinterp(self, zpos, tpos, peraa=False):
         """
         Return an SSP spectrum, mass, and luminosity interpolated to a target
         metallicity and age.  This effectively wraps the ZTINTERP subroutine.
@@ -709,8 +709,8 @@ class StellarPopulation(object):
 
         return spec, mass, lbol
 
-    def get_stellar_spectrum(self, mact, logt, lbol, logg, phase, comp,
-                             mdot=0, weight=1, zmet=None, peraa=True):
+    def _get_stellar_spectrum(self, mact, logt, lbol, logg, phase, comp,
+                              mdot=0, weight=1, zmet=None, peraa=True):
         """
         Get the spectrum of a star with a given set of physical parameters.
         This uses the metallicity given by the current value of ``zmet``.
@@ -867,6 +867,16 @@ class StellarPopulation(object):
     def filter_data(self):
         """Return effective wavelengths, and vega and solar magnitudes
         of all filters.
+
+        :returns lambda_eff:
+            Effective wavelength of each filter.
+
+        :returns magvega:
+            The AB magnitude of Vega (used to convert between AB and Vega
+            systems).
+
+        :returns magsun:
+            The AB absolute magnitude of the Sun.
         """
         NBANDS = driver.get_nbands()
         lambda_eff, magvega, magsun = driver.get_filter_data(NBANDS)

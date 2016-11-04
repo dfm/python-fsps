@@ -516,7 +516,7 @@ contains
     integer, intent(in) :: nb
     double precision, dimension(nb), intent(out) :: wave_eff,mag_vega,mag_sun
     wave_eff = filter_leff
-    mag_vega = magvega
+    mag_vega = magvega - magvega(1)
     mag_sun = magsun
 
   end subroutine

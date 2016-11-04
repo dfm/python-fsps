@@ -962,6 +962,55 @@ class StellarPopulation(object):
             return stats[k][0]
         return stats[k]
 
+    def sfr_avg(self, tage=None, dt=0.1):
+        """Use Gamma functions to get the average SFR between time tage-dt and
+        tage, given the SFH parameters, for ``sfh=1`` or ``sfh=4``.  Like
+        SFHSTAT in FSPS.  Requires scipy.
+
+        :param tage: (default, None)
+            The ages (in Gyr) at which the average SFR over the last ``dt`` is
+            desired.  if ``None``, uses the current value of the ``tage`` in
+            the parameter set.
+
+        :param dt: (default: 0.1)
+            The time interval over which the recent SFR is averaged, in Gyr.
+            defaults to 100 Myr (i.e. sfr8).
+
+        :returns sfr_av:
+            The SFR at ``tage`` averaged over the last ``dt`` Gyr, in units of
+            solar masses per year.
+        """
+        from scipy.special import gammainc
+        assert self.params['sf_trunc'] <= 0, \
+          "sfr_avg not supported for sf_trunc > 0"
+        if self.params['sfh'] == 1:
+            power = 1
+        elif self.params['sfh'] == 4:
+            power = 2
+        else:
+            raise ValueError("sfr_avg not supported for this SFH type.")
+
+        tau, sf_start = self.params['tau'], self.params['sf_start']
+        if tage is None:
+            tage = np.atleast_1d(self.params['tage'])
+        else:
+            tage = np.atleast_1d(tage)
+        if tage[0] <= 0:
+            tage = 10**(self.log_age - 9)
+
+        tb = (self.params['tburst'] - sf_start) / tau
+        tmax = (tage[-1] - sf_start) / tau
+        normalized_times = (np.array([tage, tage - dt]).T - sf_start) / tau
+
+        tau_mass_frac = gammainc(power, normalized_times) / gammainc(power, tmax)
+        burst_in_past = tb <= normalized_times
+        mass = (tau_mass_frac * (1 - self.params['const'] - self.params['fburst']) +
+                self.params['const'] * normalized_times / tmax +
+                burst_in_past * self.params['fburst'])
+
+        avsfr = (mass[...,0] - mass[...,1]) / dt / 1e9 # Msun/yr
+        return np.clip(avsfr, 0, np.inf)
+
     @property
     def isoc_library(self):
         """The name of the isochrone library being used in FSPS."""
@@ -1029,7 +1078,7 @@ class ParameterSet(object):
         assert (self._params["tage"] <= 0) | (self._params["tage"] > self._params["sf_start"]), \
             "sf_start={0} is greater than tage={1}".format(
                 self._params["sf_start"], self._params["tage"])
-         assert (self._params["const"]+self._params["fburst"]) > 1, \
+        assert (self._params["const"]+self._params["fburst"]) <= 1, \
             "const + fburst > 1"
         
     def __getitem__(self, k):

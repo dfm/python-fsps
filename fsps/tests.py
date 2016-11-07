@@ -151,19 +151,23 @@ def test_mformed():
 def test_light_ages():
     _reset_default_params()
     tmax = 5.0
-    pop.params['sfh'] = 1.0
+    pop.params['sfh'] = 1
     pop.params['const'] = 0.5
     w, spec = pop.get_spectrum(tage=tmax)
     mstar = pop.stellar_mass
     lbol = pop.log_lbol
-    pop.params['compute_light_ages']
+    pop.params['compute_light_ages'] = True
     w, light_age = pop.get_spectrum(tage=tmax)
-    assert np.all(spec != light_age)
+    assert np.all(np.abs(np.log10(spec / light_age)) > 1)
     # make sure fuv really from young stars
-    assert (light_age[w < 1500]).max() < 0.1
+    fuv = (w > 1220) & (w < 2000)
+    assert (light_age[fuv]).max() < 0.1
+    assert (light_age[fuv]).max() > 1e-5
     assert pop.log_lbol != lbol
     assert pop.stellar_mass != mstar
-    assert pop.mstar < tmax
+    assert pop.stellar_mass < tmax
+    # luminosity weighted age always less than mass-weighted age
+    #assert pop.log_lbol < pop.stellar_mass
 
 
 def test_libraries():

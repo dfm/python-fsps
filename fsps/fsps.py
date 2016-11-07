@@ -4,12 +4,13 @@
 from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 
-__all__ = ["StellarPopulation"]
-
 import os
 import numpy as np
 from ._fsps import driver
 from .filters import FILTERS
+
+
+__all__ = ["StellarPopulation"]
 
 
 class StellarPopulation(object):
@@ -26,7 +27,7 @@ class StellarPopulation(object):
 
     ::
 
-        sp = StellarPopulation(imf_type=2)
+        sp = StellarPopulation(imf_type=2, zcontinuous=1)
         sp.params["imf_type"] = 1
 
     :param compute_vega_mags: (default: False)
@@ -51,7 +52,7 @@ class StellarPopulation(object):
           ``zmet`` is ignored.
 
         Can only be changed during initialization.
-          
+
     :param add_agb_dust_model: (default: True)
         Switch to turn on/off the AGB circumstellar dust model presented in
         Villaume (2014). NB: The AGB dust emission is scaled by the parameter
@@ -80,7 +81,8 @@ class StellarPopulation(object):
     :param redshift_colors: (default: False)
         Flag specifying how to compute magnitudes. This has no effect in
         python-FSPS. Magnitudes are always computed at a fixed redshift
-        specified by ``zred``.  See `get_mags` for details.
+        specified by ``zred`` or the ``redshift`` parameter of ``get_mags``.
+        See `get_mags` for details.
 
     :param compute_light_ages: (default: False)
         Flag specifying whether to compute light- and mass-weighted ages.  If
@@ -273,7 +275,7 @@ class StellarPopulation(object):
         tage`` then there is no burst. Only used if ``sfh=1`` or ``sfh=4``.
 
     :param sf_slope: (default: 0.0)
-        For ``sfh=5``, this is the slope of the SFR after time ``sf_trunc``. 
+        For ``sfh=5``, this is the slope of the SFR after time ``sf_trunc``.
 
     :param dust_type: (default: 0)
         Common variable deﬁning the extinction curve for dust around old stars:
@@ -567,7 +569,9 @@ class StellarPopulation(object):
 
         :param redshift: (default: None)
             Optionally redshift the spectrum first. If not supplied, the
-            redshift given by `StellarPopulation.params['zred']` is assumed.
+            redshift given by ``StellarPopulation.params["zred"]`` is assumed.
+            If supplied, the value of ``zred`` is ignored (and IGM attenuation
+            will not work properly).
 
         :param bands: (default: None)
             The names of the filters that you would like to compute the
@@ -828,7 +832,7 @@ class StellarPopulation(object):
         else:
             print("Warning: You are setting a tabular SFH, "
                   "but but the ``sfh`` parameter is not 3")
-    
+
     def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
         """
         Smooth a spectrum by a gaussian with standard deviation given by sigma.
@@ -913,8 +917,8 @@ class StellarPopulation(object):
         if self._ssp_ages is None:
             NTFULL = driver.get_ntfull()
             self._ssp_ages = driver.get_timefull(NTFULL)
-        return self._ssp_ages        
-    
+        return self._ssp_ages
+
     @property
     def log_age(self):
         """log10(age/yr)."""
@@ -1008,7 +1012,7 @@ class StellarPopulation(object):
                 self.params['const'] * normalized_times / tmax +
                 burst_in_past * self.params['fburst'])
 
-        avsfr = (mass[...,0] - mass[...,1]) / dt / 1e9 # Msun/yr
+        avsfr = (mass[..., 0] - mass[..., 1]) / dt / 1e9  # Msun/yr
         return np.clip(avsfr, 0, np.inf)
 
     @property
@@ -1080,7 +1084,7 @@ class ParameterSet(object):
                 self._params["sf_start"], self._params["tage"])
         assert (self._params["const"]+self._params["fburst"]) <= 1, \
             "const + fburst > 1"
-        
+
     def __getitem__(self, k):
         return self._params[k]
 

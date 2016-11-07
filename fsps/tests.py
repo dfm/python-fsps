@@ -24,17 +24,14 @@ def test_imf3():
     model1 = pop.get_spectrum(tage=0.2)[1]
     pop.params["imf3"] = 8.3
     assert pop.params.dirtiness == 2
-    #print('first imf_test passed') #add output to make travis not die?
     model2 = pop.get_spectrum(tage=0.2)[1]
     original = np.array(model1 - model2)
 
     pop.params["imf3"] = 2.3
     assert pop.params.dirtiness == 2
-    #print('second imf_test passed') #add output to make travis not die?
     model1 = pop.get_spectrum(tage=0.2)[1]
     pop.params["imf3"] = 8.3
     assert pop.params.dirtiness == 2
-    #print('third imf_test passed') #add output to make travis not die?
     model2 = pop.get_spectrum(tage=0.2)[1]
 
     assert_allclose(original, model1 - model2)
@@ -78,10 +75,10 @@ def test_ssp():
     wave, spec = pop.get_spectrum(tage=1, peraa=True)
     assert (wave[0] > 0) & (wave[0] < wave[-1])
     assert (wave[-1] > 1e6) & (wave[-1] < 1e10)
-    Mv = 4.62 # AB absolute magnitude for a Zsol 1Gyr old SSP
+    Mv = 4.62  # AB absolute magnitude for a Zsol 1Gyr old SSP
     mag = pop.get_mags(tage=1, bands=["v"])
-    assert np.all( abs(mag - Mv) < 1.0)
-    assert np.all( (pop.stellar_mass < 1.0) & (pop.stellar_mass > 0))
+    assert np.all(abs(mag - Mv) < 1.0)
+    assert np.all((pop.stellar_mass < 1.0) & (pop.stellar_mass > 0))
 
 
 def test_csp():
@@ -167,7 +164,7 @@ def test_light_ages():
     assert pop.stellar_mass != mstar
     assert pop.stellar_mass < tmax
     # luminosity weighted age always less than mass-weighted age
-    #assert pop.log_lbol < pop.stellar_mass
+    # assert pop.log_lbol < pop.stellar_mass
 
 
 def test_libraries():
@@ -177,7 +174,7 @@ def test_libraries():
     assert splib == pop.spec_library
 
 # Requires scipy
-#def test_sfr_avg():
+# def test_sfr_avg():
 
 #    _reset_default_params()
 #    tmax = 5.0
@@ -188,4 +185,3 @@ def test_libraries():
 #    dsfr = np.log10(pop.sfr/pop.sfr6)
 #    good = pop.log_age > 6
 #    assert np.all(np.abs(dsfr[good]) < 1e-2)
-    

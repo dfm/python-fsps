@@ -24,17 +24,17 @@ def test_imf3():
     model1 = pop.get_spectrum(tage=0.2)[1]
     pop.params["imf3"] = 8.3
     assert pop.params.dirtiness == 2
-    print('first imf_test passed') #add output to make travis not die?
+    #print('first imf_test passed') #add output to make travis not die?
     model2 = pop.get_spectrum(tage=0.2)[1]
     original = np.array(model1 - model2)
 
     pop.params["imf3"] = 2.3
     assert pop.params.dirtiness == 2
-    print('second imf_test passed') #add output to make travis not die?
+    #print('second imf_test passed') #add output to make travis not die?
     model1 = pop.get_spectrum(tage=0.2)[1]
     pop.params["imf3"] = 8.3
     assert pop.params.dirtiness == 2
-    print('third imf_test passed') #add output to make travis not die?
+    #print('third imf_test passed') #add output to make travis not die?
     model2 = pop.get_spectrum(tage=0.2)[1]
 
     assert_allclose(original, model1 - model2)
@@ -81,7 +81,7 @@ def test_ssp():
     Mv = 4.62 # AB absolute magnitude for a Zsol 1Gyr old SSP
     mag = pop.get_mags(tage=1, bands=["v"])
     assert np.all( abs(mag - Mv) < 1.0)
-    assert np.all( (pop.stellar_mass < 1.0) & (pop.stellar_mass >0))
+    assert np.all( (pop.stellar_mass < 1.0) & (pop.stellar_mass > 0))
 
 
 def test_csp():
@@ -134,3 +134,53 @@ def test_tabular():
     pop.params['logzsol'] = -1
     w, spec_lowz = pop.get_spectrum(tage=age.max())
     assert not np.allclose(spec, spec_lowz)
+
+
+def test_mformed():
+    _reset_default_params()
+    pop.params['sfh'] = 1
+    pop.params['const'] = 0.5
+    w, s = pop.get_spectrum(tage=0)
+    assert pop.formed_mass[-1] == 1
+    assert pop.formed_mass[50] < 1.0
+    assert pop.formed_mass[50] > 0.0
+    w, s = pop.get_spectrum(tage=0)
+    assert pop.formed_mass[-1] == 1.0
+
+
+def test_light_ages():
+    _reset_default_params()
+    tmax = 5.0
+    pop.params['sfh'] = 1.0
+    pop.params['const'] = 0.5
+    w, spec = pop.get_spectrum(tage=tmax)
+    mstar = pop.stellar_mass
+    lbol = pop.log_lbol
+    pop.params['compute_light_ages']
+    w, light_age = sp.get_spectrum(tage=tmax)
+    assert np.all(spec != light_age)
+    # make sure fuv really from young stars
+    assert (light_age[w < 1500]).max() < 0.1
+    assert pop.log_lbol != lbol
+    assert pop.stellar_mass != mstar
+    assert pop.mstar < tmax
+
+
+def test_libraries():
+    _reset_default_params()
+    ilib, splib = pop.libraries()
+    assert ilib == pop.isoc_library
+    assert splib == pop.spec_library
+
+
+def test_sfr_avg():
+    _reset_default_params()
+    tmax = 5.0
+    pop.params['sfh'] = 1.0
+    pop.params['const'] = 0.5
+    w, spec = pop.get_spectrum(tage=0)
+    sfr6 = pop.sfr_avg(dt=1e-3)
+    dsfr = np.log10(pop.sfr/pop.sfr6)
+    good = pop.log_age > 6
+    assert np.all(np.abs(dsfr[good]) < 1e-2)
+    

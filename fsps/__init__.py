@@ -6,7 +6,7 @@ from __future__ import division, print_function
 import os
 import subprocess
 
-__version__ = "0.2.2"
+__version__ = "0.3.0"
 
 def run_command(cmd):
     """
@@ -29,7 +29,7 @@ except KeyError:
 
 # Check the githashes to make sure the required FSPS updates are
 # present, and if not or there are no githashes, raise an error
-REQUIRED_GITHASHES = ['6ad1058', 'b5250ab', 'a23e409']
+REQUIRED_GITHASHES = ['6ad1058', 'b5250ab', 'a23e409', '45f9680']
 
 cmd = 'cd {0}; git log --format="format:%h"'.format(ev)
 stat, githashes, err = run_command(cmd)

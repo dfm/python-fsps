@@ -75,10 +75,10 @@ def test_ssp():
     wave, spec = pop.get_spectrum(tage=1, peraa=True)
     assert (wave[0] > 0) & (wave[0] < wave[-1])
     assert (wave[-1] > 1e6) & (wave[-1] < 1e10)
-    Mv = 4.62 # AB absolute magnitude for a Zsol 1Gyr old SSP
+    Mv = 4.62  # AB absolute magnitude for a Zsol 1Gyr old SSP
     mag = pop.get_mags(tage=1, bands=["v"])
-    assert np.all( abs(mag - Mv) < 1.0)
-    assert np.all( (pop.stellar_mass < 1.0) & (pop.stellar_mass >0))
+    assert np.all(abs(mag - Mv) < 1.0)
+    assert np.all((pop.stellar_mass < 1.0) & (pop.stellar_mass > 0))
 
 
 def test_csp():
@@ -94,19 +94,20 @@ def test_redshift():
     _reset_default_params()
     pop.params["sfh"] = 0
     pop.params["zred"] = 0.0
+    pop.params["add_igm_absorption"] = False
     v1 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
     v2 = pop.get_mags(redshift=1.0, tage=1.0, bands=["v"])
     assert np.all(v1 == v2)
 
     pop.params["zred"] = 1.0
-    v3 = pop.get_mags(redshift=0.0, tage=1.0, bands=["v"])
-    v4 = pop.get_mags(redshift=0.0, tage=1.0, bands=["v"])
+    v3 = pop.get_mags(redshift=None, tage=1.0, bands=["v"])
+    v4 = pop.get_mags(redshift=None, tage=1.0, bands=["v"])
+    v5 = pop.get_mags(redshift=0.0, tage=1.0, bands=["v"])
     assert np.all(v3 == v4)
 
-    # The following fails for now, because of how redshifting and filter projection is
-    # delegated in and accessed from FSPS.  The difference will be dist. mod. - 2.5*log(1+zred)
+    assert np.all(v3 == v1)
+    assert np.all(v5 != v4)
 
-    # assert np.all(v3 == v1)
 
 def test_tabular():
     _reset_default_params()
@@ -130,3 +131,57 @@ def test_tabular():
     pop.params['logzsol'] = -1
     w, spec_lowz = pop.get_spectrum(tage=age.max())
     assert not np.allclose(spec, spec_lowz)
+
+
+def test_mformed():
+    _reset_default_params()
+    pop.params['sfh'] = 1
+    pop.params['const'] = 0.5
+    w, s = pop.get_spectrum(tage=0)
+    assert pop.formed_mass[-1] == 1
+    assert pop.formed_mass[50] < 1.0
+    assert pop.formed_mass[50] > 0.0
+    w, s = pop.get_spectrum(tage=0)
+    assert pop.formed_mass[-1] == 1.0
+
+
+def test_light_ages():
+    _reset_default_params()
+    tmax = 5.0
+    pop.params['sfh'] = 1
+    pop.params['const'] = 0.5
+    w, spec = pop.get_spectrum(tage=tmax)
+    mstar = pop.stellar_mass
+    lbol = pop.log_lbol
+    pop.params['compute_light_ages'] = True
+    w, light_age = pop.get_spectrum(tage=tmax)
+    assert np.all(np.abs(np.log10(spec / light_age)) > 1)
+    # make sure fuv really from young stars
+    fuv = (w > 1220) & (w < 2000)
+    assert (light_age[fuv]).max() < 0.1
+    assert (light_age[fuv]).max() > 1e-5
+    assert pop.log_lbol != lbol
+    assert pop.stellar_mass != mstar
+    assert pop.stellar_mass < tmax
+    # luminosity weighted age always less than mass-weighted age
+    # assert pop.log_lbol < pop.stellar_mass
+
+
+def test_libraries():
+    _reset_default_params()
+    ilib, splib = pop.libraries
+    assert ilib == pop.isoc_library
+    assert splib == pop.spec_library
+
+# Requires scipy
+# def test_sfr_avg():
+
+#    _reset_default_params()
+#    tmax = 5.0
+#    pop.params['sfh'] = 1.0
+#    pop.params['const'] = 0.5
+#    w, spec = pop.get_spectrum(tage=0)
+#    sfr6 = pop.sfr_avg(dt=1e-3)
+#    dsfr = np.log10(pop.sfr/pop.sfr6)
+#    good = pop.log_age > 6
+#    assert np.all(np.abs(dsfr[good]) < 1e-2)

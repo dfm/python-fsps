@@ -78,6 +78,7 @@ contains
   end subroutine
 
   subroutine set_csp_params(smooth_velocity0,redshift_colors0,&
+                            compute_light_ages0,&
                             dust_type0,add_dust_emission0,add_neb_emission0,&
                             add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                             zmet,sfh,wgp1,wgp2,wgp3,tau,&
@@ -94,6 +95,7 @@ contains
     implicit none
     
     integer, intent(in) :: smooth_velocity0,redshift_colors0,&
+                           compute_light_ages0,&
                            dust_type0,add_dust_emission0,add_neb_emission0,&
                            add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                            zmet,sfh,wgp1,wgp2,wgp3
@@ -108,6 +110,7 @@ contains
 
     smooth_velocity=smooth_velocity0
     redshift_colors=redshift_colors0
+    compute_light_ages=compute_light_ages0
     dust_type=dust_type0
     add_dust_emission=add_dust_emission0
     add_neb_emission=add_neb_emission0
@@ -451,6 +454,17 @@ contains
     
   end subroutine
 
+  subroutine get_libraries(isocname,specname)
+
+    implicit none
+
+    character(4), intent(out) :: isocname
+    character(5), intent(out) :: specname
+    isocname = isoc_type
+    specname = spec_type
+
+  end subroutine  
+
   subroutine get_isochrone_dimensions(n_age,n_mass)
 
     implicit none
@@ -473,7 +487,7 @@ contains
 
   end subroutine
 
-  subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust)
+  subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust,mformed)
 
     implicit none
 
@@ -481,7 +495,8 @@ contains
     integer :: i
     integer, intent(in) :: n_age
     double precision, dimension(n_age), intent(out) :: age,mass_csp,&
-                                                       lbol_csp,sfr,mdust
+                                                       lbol_csp,sfr,mdust,&
+                                                       mformed
 
     do i=1,n_age
       age(i)      = ocompsp(i)%age
@@ -489,6 +504,7 @@ contains
       lbol_csp(i) = ocompsp(i)%lbol_csp
       sfr(i)      = ocompsp(i)%sfr
       mdust(i)    = ocompsp(i)%mdust
+      mformed(i)  = ocompsp(i)%mformed
     enddo
 
   end subroutine
@@ -500,7 +516,7 @@ contains
     integer, intent(in) :: nb
     double precision, dimension(nb), intent(out) :: wave_eff,mag_vega,mag_sun
     wave_eff = filter_leff
-    mag_vega = magvega
+    mag_vega = magvega - magvega(1)
     mag_sun = magsun
 
   end subroutine

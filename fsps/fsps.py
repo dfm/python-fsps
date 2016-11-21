@@ -115,11 +115,11 @@ class StellarPopulation(object):
         reflect the updated calibrations presented in Conroy & Gunn (2009).
         That is, these parameters now refer to a modification about the
         calibrations presented in that paper.  Only has effect if
-        ``tpagb_norm_type=2``.
+        ``tpagb_norm_type=1``.
 
     :param delt: (default: 0.0)
         Shift in :math:`\log T_\mathrm{eff}` of the TP-AGB isochrones.  Only
-        has effect if ``tpagb_norm_type=2``.
+        has effect if ``tpagb_norm_type=1``.
 
     :param redgb: (default: 1.0)
         Modify weight given to RGB.  Only available with BaSTI isochrone set.
@@ -778,14 +778,8 @@ class StellarPopulation(object):
             $SPS_HOME/OUTPUTS/ directory
 
         :returns dat:
-            A huge numpy array containing information about every isochrone
+            A huge numpy structured array containing information about every isochrone
             point for the current metallicity.
-
-        :returns header:
-            A list of the column names pulled from the header of the .cmd file.
-            The number of column names will not match the number of columns in
-            dat since there are as many ``mags`` as filters.  Use
-            ``fsps.list_filters()`` to get the ordered filter name list.
         """
         if self.params.dirty:
             self._compute_csp()
@@ -803,7 +797,8 @@ class StellarPopulation(object):
         return cmd_data
 
     def set_tabular_sfh(self, age, sfr, Z=None):
-        """Set a tabular SFH for use with the sfh=3 option.  See the FSPS
+        """
+        Set a tabular SFH for use with the ``sfh=3`` option.  See the FSPS
         documentation for information about tabular SFHs.  This SFH will be
         piecewise linearly interpolated.
 
@@ -869,7 +864,8 @@ class StellarPopulation(object):
         return outspec
 
     def filter_data(self):
-        """Return effective wavelengths, and vega and solar magnitudes
+        """
+        Return effective wavelengths, and vega and solar magnitudes
         of all filters.
 
         :returns lambda_eff:
@@ -888,9 +884,7 @@ class StellarPopulation(object):
 
     @property
     def wavelengths(self):
-        """
-        The wavelength scale for the computed spectra, in :math:`\AA`
-
+        """The wavelength scale for the computed spectra, in :math:`\AA`
         """
         if self._wavelengths is None:
             NSPEC = driver.get_nspec()
@@ -899,9 +893,7 @@ class StellarPopulation(object):
 
     @property
     def zlegend(self):
-        """
-        The available metallicities.
-
+        """The available metallicities.
         """
         if self._zlegend is None:
             NZ = driver.get_nz()
@@ -910,9 +902,7 @@ class StellarPopulation(object):
 
     @property
     def ssp_ages(self):
-        """
-        The age grid of the SSPs, in log(years), used by FSPS.
-
+        """The age grid of the SSPs, in log(years), used by FSPS.
         """
         if self._ssp_ages is None:
             NTFULL = driver.get_ntfull()
@@ -926,19 +916,19 @@ class StellarPopulation(object):
 
     @property
     def stellar_mass(self):
-        """Stellar mass in solar masses (including remants if the FSPS
-        parameter `add_stellar_remants=1`).
+        """Surviving stellar mass in solar masses (including remnants if the
+        FSPS parameter ``add_stellar_remants=1``).
         """
         return self._stat(1)
 
     @property
     def log_lbol(self):
-        """log(bolometric luminosity / :math:`L_\odot/`)."""
+        """log(bolometric luminosity / :math:`L_\odot`)."""
         return self._stat(2)
 
     @property
     def sfr(self):
-        """Star formation rate (solar masses per year)."""
+        """Star formation rate (:math:`M_\odot/yr`)."""
         return self._stat(3)
 
     @property
@@ -948,7 +938,7 @@ class StellarPopulation(object):
 
     @property
     def formed_mass(self):
-        """Integral of the SFH."""
+        """Integral of the SFH, in solar masses."""
         return self._stat(5)
 
     def _get_grid_stats(self):
@@ -967,20 +957,21 @@ class StellarPopulation(object):
         return stats[k]
 
     def sfr_avg(self, tage=None, dt=0.1):
-        """Use Gamma functions to get the average SFR between time tage-dt and
-        tage, given the SFH parameters, for ``sfh=1`` or ``sfh=4``.  Like
-        SFHSTAT in FSPS.  Requires scipy.
+        """
+        The average SFR between time ``tage``-``dt`` and ``tage``, given the
+        SFH parameters, for ``sfh=1`` or ``sfh=4``.  Like SFHSTAT in FSPS.
+        Requires scipy, as it uses gamma functions.
 
         :param tage: (default, None)
             The ages (in Gyr) at which the average SFR over the last ``dt`` is
             desired.  if ``None``, uses the current value of the ``tage`` in
-            the parameter set.
+            the parameter set. Scalar or iterable.
 
         :param dt: (default: 0.1)
             The time interval over which the recent SFR is averaged, in Gyr.
             defaults to 100 Myr (i.e. sfr8).
 
-        :returns sfr_av:
+        :returns sfr_avg:
             The SFR at ``tage`` averaged over the last ``dt`` Gyr, in units of
             solar masses per year.
         """

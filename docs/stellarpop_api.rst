@@ -7,8 +7,8 @@ Modelling Stellar Populations
 Example
 -------
 
-Lets start by initializing a simple stellar population,
-with solar metallicity,
+Lets start by initializing a simple stellar population
+with solar metallicity
 and some dust with a Calzetti et al (2000) extinction curve::
 
    >>> import fsps
@@ -19,6 +19,7 @@ and some dust with a Calzetti et al (2000) extinction curve::
 
 The last line indicates that we are using the Padova isochrones and MILES spectral library.
 These can be changed only within FSPS itself (which must recompiled and python-FSPS reinstalled for the changes to take effect.)
+
 Let's get the AB magnitudes in SDSS bands, for an SSP that is 13.7 Gyr old::
 
    >>> sdss_bands = fsps.find_filter('sdss')
@@ -34,7 +35,7 @@ Now we can change a parameter (say, lower the metallicity) and get a new set of 
    array([ 8.5626572 ,  7.07918435,  6.05304881,  6.38592117,  5.84199   ])
 
 We can also get the spectrum, here in units of :math:`L_\odot/\mathrm{Hz}`,
-the total stellar mass formed by 13.7 Gyr,
+as well as the total stellar mass formed by 13.7 Gyr
 and the surviving stellar mass at 13.7 Gyr (both in units of :math:`M_\odot`)::
 
    >>> wave, spec = sp.get_spectrum(tage=13.7)
@@ -43,7 +44,7 @@ and the surviving stellar mass at 13.7 Gyr (both in units of :math:`M_\odot`)::
    >>> sp.stellar_mass
    0.57809244144339011
 
- It is highly recommended that only one instance of :class:`fsps.StellarPopulation` be used in a given program.
+It is highly recommended that only one instance of :class:`fsps.StellarPopulation` be used in a given program.
 
 API Reference
 -------------

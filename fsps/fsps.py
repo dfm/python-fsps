@@ -837,7 +837,8 @@ class StellarPopulation(object):
     def set_lsf(self, wave, sigma, wmin=None, wmax=None):
         """
         Set a wavelength dependent Gaussian line-spread function that will be
-        applied to the SSPs.
+        applied to the SSPs.  Only takes effect if ``smooth_lsf`` and
+        ``smooth_velocity`` are True.
 
         :param wave:
             Wavelength in angstroms, sorted ascending.  If `wmin` or `wmax`

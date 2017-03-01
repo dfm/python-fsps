@@ -35,6 +35,9 @@ contains
     call sps_setup(-1)
     is_setup = 1
 
+    ! We will only compute mags when asked for through get_mags.
+    pset%mag_compute=0
+
   end subroutine
 
   subroutine set_ssp_params(imf_type0,imf1,imf2,imf3,vdmc,mdave,dell,&

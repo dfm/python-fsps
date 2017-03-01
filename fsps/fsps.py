@@ -96,6 +96,11 @@ class StellarPopulation(object):
         Switch to choose smoothing in velocity space (``True``) or wavelength
         space.
 
+    :param smooth_lsf: (default: False)
+        Switch to apply smoothing of the SSPs by a wavelength dependent line
+        spread function. See the ``set_lsf()`` method for details.  Only takes
+        effect if ``smooth_velocity`` is True.
+
     :param cloudy_dust: (default: False)
         Switch to include dust in the Cloudy tables.
 
@@ -405,6 +410,7 @@ class StellarPopulation(object):
             redshift_colors=False,
             compute_light_ages=False,
             smooth_velocity=True,
+            smooth_lsf=False,
             cloudy_dust=False,
             agb_dust=1.0,
             tpagb_norm_type=2,
@@ -858,8 +864,15 @@ class StellarPopulation(object):
             wmax = wave.max()
         sig = np.interp(self.wavelengths, wave, sigma)
         driver.set_ssp_lsf(len(self.wavelengths), sig, wmin, wmax)
-        self.params.dirtiness = max(2, self.params.dirtiness)
-            
+        if self.params["smooth_lsf"]:
+            self.params.dirtiness = max(2, self.params.dirtiness)
+        else:
+            print("Warning: You are setting an LSF for the SSPs, "
+                  "but the ``smooth_lsf`` parameter is not True.")
+        if (not self.params["smooth_velocity"]):
+            print("Warning: You are setting an LSF for the SSPs, "
+                  "but the ``smooth_velocity`` parameter is not True.")
+
     def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
         """
         Smooth a spectrum by a gaussian with standard deviation given by sigma.
@@ -1061,7 +1074,7 @@ class ParameterSet(object):
                   "dell", "delt", "sbss", "fbhb", "pagb",
                   "add_stellar_remnants", "tpagb_norm_type",
                   "add_agb_dust_model", "agb_dust", "redgb", "masscut",
-                  "fcstar", "evtype"]
+                  "fcstar", "evtype", "smooth_lsf"]
 
     csp_params = ["smooth_velocity", "redshift_colors",
                   "compute_light_ages",

@@ -372,6 +372,20 @@ contains
     sfh_tab(3, 1:ntabsfh) = met
 
   end subroutine set_sfh_tab
+
+  subroutine set_ssp_lsf(ns, sigma, wlo, whi)
+
+    ! Fill the lsfinfo structure
+
+    implicit none
+    integer, intent(in) :: ns
+    double precision, dimension(ns), intent(in) :: sigma
+    double precision, intent(in) :: wlo, whi
+    lsfinfo%minlam = wlo
+    lsfinfo%maxlam = whi
+    lsfinfo%lsf = sigma
+
+  end subroutine set_ssp_lsf
   
   subroutine get_setup_vars(cvms, vta_flag)
 

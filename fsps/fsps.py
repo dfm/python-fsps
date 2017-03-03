@@ -864,7 +864,7 @@ class StellarPopulation(object):
         if wmax is None:
             wmax = wave.max()
         sig = np.interp(self.wavelengths, wave, sigma)
-        driver.set_ssp_lsf(len(self.wavelengths), sig, wmin, wmax)
+        driver.set_ssp_lsf(sig, wmin, wmax)
         if self.params["smooth_lsf"]:
             self.params.dirtiness = max(2, self.params.dirtiness)
         else:

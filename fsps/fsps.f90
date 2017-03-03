@@ -377,13 +377,13 @@ contains
 
   end subroutine set_sfh_tab
 
-  subroutine set_ssp_lsf(ns, sigma, wlo, whi)
+  subroutine set_ssp_lsf(nsv, sigma, wlo, whi)
 
     ! Fill the lsfinfo structure
 
     implicit none
-    integer, intent(in) :: ns
-    double precision, dimension(ns), intent(in) :: sigma
+    integer, intent(in) :: nsv
+    double precision, dimension(nsv), intent(in) :: sigma
     double precision, intent(in) :: wlo, whi
     lsfinfo%minlam = wlo
     lsfinfo%maxlam = whi

@@ -489,6 +489,7 @@ class StellarPopulation(object):
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
+        self._emwavelengths = None
         self._zlegend = None
         self._ssp_ages = None
         self._stats = None
@@ -938,6 +939,15 @@ class StellarPopulation(object):
         return self._wavelengths
 
     @property
+    def emline_wavelengths(self):
+        """Emission line wavelengths, in :math:`\AA`
+        """
+        if self._emwavelengths is None:
+            NE = driver.get_nemline()
+            self._emwavelengths = driver.get_emlambda(NE)
+        return self._emwavelengths
+
+    @property
     def zlegend(self):
         """The available metallicities.
         """
@@ -987,12 +997,18 @@ class StellarPopulation(object):
         """Integral of the SFH, in solar masses."""
         return self._stat(5)
 
+    @property
+    def emline_luminosity(self):
+        """emission line luminosities, in :math:`L_\odot`. shape=(ne)
+        """
+        return self._stat(6)
+
     def _get_grid_stats(self):
         if self.params.dirty:
             self._compute_csp()
 
         if self._stats is None:
-            self._stats = driver.get_stats(driver.get_ntfull())
+            self._stats = driver.get_stats(driver.get_ntfull(),driver.get_nemline())
 
         return self._stats
 

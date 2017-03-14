@@ -458,6 +458,29 @@ contains
 
   end subroutine
 
+  subroutine get_nemline(ne)
+
+    ! Get the number of emission lines (hard coded in sps_vars).
+    implicit none
+    integer, intent(out) :: ne
+    ne = nemline 
+
+  end subroutine
+
+  subroutine get_emlambda(ne,em_lambda)
+
+    ! Get the emission line wavelengths
+    implicit none
+    integer, intent(in) :: ne
+    double precision, dimension(ne), intent(out) :: em_lambda
+    if (vactoair_flag .eq. 1) then
+       em_lambda = vactoair(nebem_line_pos)
+    else
+       em_lambda = nebem_line_pos
+    endif
+
+  end subroutine
+
   subroutine get_lambda(ns,lambda)
 
     ! Get the grid of wavelength bins.
@@ -505,16 +528,17 @@ contains
 
   end subroutine
 
-  subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust,mformed)
+  subroutine get_stats(n_age,ne,age,mass_csp,lbol_csp,sfr,mdust,mformed,emlines)
 
     implicit none
 
     ! Get some stats about the computed SP.
     integer :: i
-    integer, intent(in) :: n_age
+    integer, intent(in) :: n_age,ne
     double precision, dimension(n_age), intent(out) :: age,mass_csp,&
                                                        lbol_csp,sfr,mdust,&
                                                        mformed
+    double precision, dimension(n_age,ne), intent(out) :: emlines
 
     do i=1,n_age
       age(i)      = ocompsp(i)%age
@@ -523,6 +547,7 @@ contains
       sfr(i)      = ocompsp(i)%sfr
       mdust(i)    = ocompsp(i)%mdust
       mformed(i)  = ocompsp(i)%mformed
+      emlines(i,:)  = ocompsp(i)%emlines
     enddo
 
   end subroutine

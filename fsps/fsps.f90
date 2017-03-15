@@ -82,7 +82,7 @@ contains
   end subroutine
 
   subroutine set_csp_params(smooth_velocity0,redshift_colors0,&
-                            compute_light_ages0,&
+                            compute_light_ages0,nebemlineinspec0,&
                             dust_type0,add_dust_emission0,add_neb_emission0,&
                             add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                             zmet,sfh,wgp1,wgp2,wgp3,tau,&
@@ -99,7 +99,7 @@ contains
     implicit none
     
     integer, intent(in) :: smooth_velocity0,redshift_colors0,&
-                           compute_light_ages0,&
+                           compute_light_ages0,nebemlineinspec0,&
                            dust_type0,add_dust_emission0,add_neb_emission0,&
                            add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                            zmet,sfh,wgp1,wgp2,wgp3
@@ -121,6 +121,7 @@ contains
     add_neb_continuum=add_neb_continuum0
     cloudy_dust=cloudy_dust0
     add_igm_absorption=add_igm_absorption0
+    nebemlineinspec=nebemlineinspec0
 
     pset%zmet=zmet
     pset%sfh=sfh

@@ -92,6 +92,11 @@ class StellarPopulation(object):
         the bolometric luminosity weighted age, and the ``stellar_mass``
         attribute gives the mass-weighted age.
 
+    :param nebemlineinspec: (default: True)
+        Flag to include the emission line fluxes in the spectrum. Turning this off
+        is a significant speedup in model calculation time. If not set, the line luminosities
+        are still computed.
+
     :param smooth_velocity: (default: True)
         Switch to choose smoothing in velocity space (``True``) or wavelength
         space.
@@ -408,6 +413,7 @@ class StellarPopulation(object):
             add_neb_continuum=True,
             add_stellar_remnants=True,
             redshift_colors=False,
+            nebemlineinspec=True,
             compute_light_ages=False,
             smooth_velocity=True,
             smooth_lsf=False,
@@ -1094,7 +1100,7 @@ class ParameterSet(object):
                   "fcstar", "evtype", "smooth_lsf"]
 
     csp_params = ["smooth_velocity", "redshift_colors",
-                  "compute_light_ages",
+                  "compute_light_ages","nebemlineinspec",
                   "dust_type", "add_dust_emission", "add_neb_emission",
                   "add_neb_continuum", "cloudy_dust", "add_igm_absorption",
                   "zmet", "sfh", "wgp1", "wgp2", "wgp3",

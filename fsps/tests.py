@@ -70,16 +70,14 @@ def test_smoothspec():
 
 def test_nebemlineinspec():
     _reset_default_params()
-    pop.params["sfh"] = 0
     pop.params['nebemlineinspec'] = False
     pop.params['add_neb_emission'] = True
     wave, spec_neboff = pop.get_spectrum()
-    pop.params.dirtiness = 2
     pop.params['nebemlineinspec'] = True
     wave, spec_nebon = pop.get_spectrum()
-    assert (spec_nebon-spec_neboff).sum() > 0
+    assert (spec_nebon-spec_neboff)[0,:].sum() > 0
     ha_idx = (wave > 6556) & (wave < 6573)
-    assert (spec_nebon-spec_neboff)[ha_idx].sum() > 0
+    assert (spec_nebon-spec_neboff)[0,ha_idx].sum() > 0
 
 def test_ssp():
     _reset_default_params()

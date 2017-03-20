@@ -413,8 +413,8 @@ class StellarPopulation(object):
             add_neb_continuum=True,
             add_stellar_remnants=True,
             redshift_colors=False,
-            nebemlineinspec=True,
             compute_light_ages=False,
+            nebemlineinspec=True,
             smooth_velocity=True,
             smooth_lsf=False,
             cloudy_dust=False,
@@ -949,8 +949,8 @@ class StellarPopulation(object):
         """Emission line wavelengths, in :math:`\AA`
         """
         if self._emwavelengths is None:
-            NE = driver.get_nemline()
-            self._emwavelengths = driver.get_emlambda(NE)
+            NLINE = driver.get_nemline()
+            self._emwavelengths = driver.get_emlambda(NLINE)
         return self._emwavelengths
 
     @property

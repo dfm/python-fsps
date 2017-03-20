@@ -115,13 +115,13 @@ contains
     smooth_velocity=smooth_velocity0
     redshift_colors=redshift_colors0
     compute_light_ages=compute_light_ages0
+    nebemlineinspec=nebemlineinspec0
     dust_type=dust_type0
     add_dust_emission=add_dust_emission0
     add_neb_emission=add_neb_emission0
     add_neb_continuum=add_neb_continuum0
     cloudy_dust=cloudy_dust0
     add_igm_absorption=add_igm_absorption0
-    nebemlineinspec=nebemlineinspec0
 
     pset%zmet=zmet
     pset%sfh=sfh
@@ -459,21 +459,21 @@ contains
 
   end subroutine
 
-  subroutine get_nemline(ne)
+  subroutine get_nemline(nline)
 
     ! Get the number of emission lines (hard coded in sps_vars).
     implicit none
-    integer, intent(out) :: ne
-    ne = nemline 
+    integer, intent(out) :: nline
+    nline = nemline 
 
   end subroutine
 
-  subroutine get_emlambda(ne,em_lambda)
+  subroutine get_emlambda(nline,em_lambda)
 
     ! Get the emission line wavelengths
     implicit none
-    integer, intent(in) :: ne
-    double precision, dimension(ne), intent(out) :: em_lambda
+    integer, intent(in) :: nline
+    double precision, dimension(nline), intent(out) :: em_lambda
     if (vactoair_flag .eq. 1) then
        em_lambda = vactoair(nebem_line_pos)
     else
@@ -529,17 +529,17 @@ contains
 
   end subroutine
 
-  subroutine get_stats(n_age,ne,age,mass_csp,lbol_csp,sfr,mdust,mformed,emlines)
+  subroutine get_stats(n_age,nline,age,mass_csp,lbol_csp,sfr,mdust,mformed,emlines)
 
     implicit none
 
     ! Get some stats about the computed SP.
     integer :: i
-    integer, intent(in) :: n_age,ne
+    integer, intent(in) :: n_age,nline
     double precision, dimension(n_age), intent(out) :: age,mass_csp,&
                                                        lbol_csp,sfr,mdust,&
                                                        mformed
-    double precision, dimension(n_age,ne), intent(out) :: emlines
+    double precision, dimension(n_age,nline), intent(out) :: emlines
 
     do i=1,n_age
       age(i)      = ocompsp(i)%age

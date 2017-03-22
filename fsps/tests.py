@@ -127,10 +127,10 @@ def test_tabular():
     w, spec_last = pop.get_spectrum(tage=-99)
     assert spec_last.ndim == 1
     w, spec = pop.get_spectrum(tage=age.max())
-    assert np.allclose(spec, spec_last)
+    assert np.allclose(spec / spec_last - 1., 0.)
     pop.params['logzsol'] = -1
     w, spec_lowz = pop.get_spectrum(tage=age.max())
-    assert not np.allclose(spec, spec_lowz)
+    assert not np.allclose(spec / spec_lowz - 1., 0.)
 
 
 def test_mformed():
@@ -173,6 +173,26 @@ def test_libraries():
     assert ilib == pop.isoc_library
     assert splib == pop.spec_library
 
+
+def test_smooth_lsf():
+    _reset_default_params()
+    tmax = 1.0
+    wave_lsf = np.arange(4000, 7000., 10)
+    x = (wave_lsf - 5500) / 1500.
+    # a quadratic lsf dependence that goes from ~50 to ~100 km/s
+    sigma_lsf = 50 * (1.0 + 0.4 * x + 0.6 * x**2) 
+    w, spec = pop.get_spectrum(tage=tmax)
+    pop.params['smooth_lsf'] = True
+    assert pop.params.dirtiness == 2
+    pop.set_lsf(wave_lsf, sigma_lsf)
+    w, smspec = pop.get_spectrum(tage=tmax)
+    hi = w > 7100
+    sm = (w < 7000) & (w > 3000)
+    assert np.allclose(spec[hi]/smspec[hi] - 1., 0.)
+    assert not np.allclose(spec[sm] / smspec[sm] - 1., 0.)
+    pop.set_lsf(wave_lsf, sigma_lsf * 2)
+    assert pop.params.dirtiness == 2
+    
 # Requires scipy
 # def test_sfr_avg():
 

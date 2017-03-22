@@ -35,19 +35,22 @@ contains
     call sps_setup(-1)
     is_setup = 1
 
+    ! We will only compute mags when asked for through get_mags.
+    pset%mag_compute=0
+
   end subroutine
 
   subroutine set_ssp_params(imf_type0,imf1,imf2,imf3,vdmc,mdave,dell,&
                             delt,sbss,fbhb,pagb,add_stellar_remnants0,&
                             tpagb_norm_type0,add_agb_dust_model0,agb_dust,&
-                            redgb,masscut,fcstar,evtype)
+                            redgb,masscut,fcstar,evtype,smooth_lsf0)
  
     ! Set the parameters that affect the SSP computation.
 
     implicit none
 
     integer, intent(in) :: imf_type0,add_stellar_remnants0,tpagb_norm_type0,&
-                           add_agb_dust_model0
+                           add_agb_dust_model0,smooth_lsf0
     double precision, intent(in) :: imf1,imf2,imf3,vdmc,mdave,dell,&
                                     delt,sbss,fbhb,pagb,agb_dust,&
                                     redgb,masscut,fcstar,evtype
@@ -56,6 +59,7 @@ contains
     add_stellar_remnants=add_stellar_remnants0
     tpagb_norm_type=tpagb_norm_type0
     add_agb_dust_model=add_agb_dust_model0
+    smooth_lsf=smooth_lsf0
     pset%imf1=imf1
     pset%imf2=imf2
     pset%imf3=imf3
@@ -372,6 +376,20 @@ contains
     sfh_tab(3, 1:ntabsfh) = met
 
   end subroutine set_sfh_tab
+
+  subroutine set_ssp_lsf(nsv, sigma, wlo, whi)
+
+    ! Fill the lsfinfo structure
+
+    implicit none
+    integer, intent(in) :: nsv
+    double precision, dimension(nsv), intent(in) :: sigma
+    double precision, intent(in) :: wlo, whi
+    lsfinfo%minlam = wlo
+    lsfinfo%maxlam = whi
+    lsfinfo%lsf = sigma
+
+  end subroutine set_ssp_lsf
   
   subroutine get_setup_vars(cvms, vta_flag)
 

@@ -96,6 +96,11 @@ class StellarPopulation(object):
         Switch to choose smoothing in velocity space (``True``) or wavelength
         space.
 
+    :param smooth_lsf: (default: False)
+        Switch to apply smoothing of the SSPs by a wavelength dependent line
+        spread function. See the ``set_lsf()`` method for details.  Only takes
+        effect if ``smooth_velocity`` is True.
+
     :param cloudy_dust: (default: False)
         Switch to include dust in the Cloudy tables.
 
@@ -405,6 +410,7 @@ class StellarPopulation(object):
             redshift_colors=False,
             compute_light_ages=False,
             smooth_velocity=True,
+            smooth_lsf=False,
             cloudy_dust=False,
             agb_dust=1.0,
             tpagb_norm_type=2,
@@ -826,7 +832,47 @@ class StellarPopulation(object):
             self.params.dirtiness = max(1, self.params.dirtiness)
         else:
             print("Warning: You are setting a tabular SFH, "
-                  "but but the ``sfh`` parameter is not 3")
+                  "but the ``sfh`` parameter is not 3")
+
+    def set_lsf(self, wave, sigma, wmin=None, wmax=None):
+        """
+        Set a wavelength dependent Gaussian line-spread function that will be
+        applied to the SSPs.  Only takes effect if ``smooth_lsf`` and
+        ``smooth_velocity`` are True.
+
+        :param wave:
+            Wavelength in angstroms, sorted ascending.  If `wmin` or `wmax`
+            are not specified they are taken from the minimum and maximum of
+            this array.  ndarray.
+
+        :param sigma:
+            The dispersion of the Gaussian LSF at the wavelengths given by
+            `wave`, in km/s.  If 0, no smoothing is applied at that wavelength.
+            ndarray of same shape as `wave`.
+
+        :param wmin: (optional)
+            The minimum wavelength (in AA) for which smoothing will be
+            applied. If not given, it is taken from the minimum of `wave`.
+
+        :param wmax: (optional)
+            The maximum wavelength (in AA) for which smoothing will be
+            applied. If not given, it is taken from the maximum of `wave`.
+        """
+
+        if wmin is None:
+            wmin = wave.min()
+        if wmax is None:
+            wmax = wave.max()
+        sig = np.interp(self.wavelengths, wave, sigma)
+        driver.set_ssp_lsf(sig, wmin, wmax)
+        if self.params["smooth_lsf"]:
+            self.params.dirtiness = max(2, self.params.dirtiness)
+        else:
+            print("Warning: You are setting an LSF for the SSPs, "
+                  "but the ``smooth_lsf`` parameter is not True.")
+        if (not self.params["smooth_velocity"]):
+            print("Warning: You are setting an LSF for the SSPs, "
+                  "but the ``smooth_velocity`` parameter is not True.")
 
     def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
         """
@@ -1029,7 +1075,7 @@ class ParameterSet(object):
                   "dell", "delt", "sbss", "fbhb", "pagb",
                   "add_stellar_remnants", "tpagb_norm_type",
                   "add_agb_dust_model", "agb_dust", "redgb", "masscut",
-                  "fcstar", "evtype"]
+                  "fcstar", "evtype", "smooth_lsf"]
 
     csp_params = ["smooth_velocity", "redshift_colors",
                   "compute_light_ages",

@@ -5,7 +5,7 @@ from __future__ import division, print_function
 from multiprocessing import Pool
 import numpy as np
 from numpy.testing import assert_allclose
-from fsps import StellarPopulation
+from .fsps import StellarPopulation
 
 
 pop = StellarPopulation(zcontinuous=1)

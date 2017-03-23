@@ -92,6 +92,11 @@ class StellarPopulation(object):
         the bolometric luminosity weighted age, and the ``stellar_mass``
         attribute gives the mass-weighted age.
 
+    :param nebemlineinspec: (default: True)
+        Flag to include the emission line fluxes in the spectrum. Turning this off
+        is a significant speedup in model calculation time. If not set, the line luminosities
+        are still computed.
+
     :param smooth_velocity: (default: True)
         Switch to choose smoothing in velocity space (``True``) or wavelength
         space.
@@ -409,6 +414,7 @@ class StellarPopulation(object):
             add_stellar_remnants=True,
             redshift_colors=False,
             compute_light_ages=False,
+            nebemlineinspec=True,
             smooth_velocity=True,
             smooth_lsf=False,
             cloudy_dust=False,
@@ -489,6 +495,7 @@ class StellarPopulation(object):
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
+        self._emwavelengths = None
         self._zlegend = None
         self._ssp_ages = None
         self._stats = None
@@ -938,6 +945,15 @@ class StellarPopulation(object):
         return self._wavelengths
 
     @property
+    def emline_wavelengths(self):
+        """Emission line wavelengths, in :math:`\AA`
+        """
+        if self._emwavelengths is None:
+            NLINE = driver.get_nemline()
+            self._emwavelengths = driver.get_emlambda(NLINE)
+        return self._emwavelengths
+
+    @property
     def zlegend(self):
         """The available metallicities.
         """
@@ -987,12 +1003,18 @@ class StellarPopulation(object):
         """Integral of the SFH, in solar masses."""
         return self._stat(5)
 
+    @property
+    def emline_luminosity(self):
+        """emission line luminosities, in :math:`L_\odot`. shape=(ne)
+        """
+        return self._stat(6)
+
     def _get_grid_stats(self):
         if self.params.dirty:
             self._compute_csp()
 
         if self._stats is None:
-            self._stats = driver.get_stats(driver.get_ntfull())
+            self._stats = driver.get_stats(driver.get_ntfull(),driver.get_nemline())
 
         return self._stats
 
@@ -1078,7 +1100,7 @@ class ParameterSet(object):
                   "fcstar", "evtype", "smooth_lsf"]
 
     csp_params = ["smooth_velocity", "redshift_colors",
-                  "compute_light_ages",
+                  "compute_light_ages","nebemlineinspec",
                   "dust_type", "add_dust_emission", "add_neb_emission",
                   "add_neb_continuum", "cloudy_dust", "add_igm_absorption",
                   "zmet", "sfh", "wgp1", "wgp2", "wgp3",

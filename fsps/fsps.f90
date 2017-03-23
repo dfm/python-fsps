@@ -82,7 +82,7 @@ contains
   end subroutine
 
   subroutine set_csp_params(smooth_velocity0,redshift_colors0,&
-                            compute_light_ages0,&
+                            compute_light_ages0,nebemlineinspec0,&
                             dust_type0,add_dust_emission0,add_neb_emission0,&
                             add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                             zmet,sfh,wgp1,wgp2,wgp3,tau,&
@@ -99,7 +99,7 @@ contains
     implicit none
     
     integer, intent(in) :: smooth_velocity0,redshift_colors0,&
-                           compute_light_ages0,&
+                           compute_light_ages0,nebemlineinspec0,&
                            dust_type0,add_dust_emission0,add_neb_emission0,&
                            add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                            zmet,sfh,wgp1,wgp2,wgp3
@@ -115,6 +115,7 @@ contains
     smooth_velocity=smooth_velocity0
     redshift_colors=redshift_colors0
     compute_light_ages=compute_light_ages0
+    nebemlineinspec=nebemlineinspec0
     dust_type=dust_type0
     add_dust_emission=add_dust_emission0
     add_neb_emission=add_neb_emission0
@@ -458,6 +459,29 @@ contains
 
   end subroutine
 
+  subroutine get_nemline(nline)
+
+    ! Get the number of emission lines (hard coded in sps_vars).
+    implicit none
+    integer, intent(out) :: nline
+    nline = nemline 
+
+  end subroutine
+
+  subroutine get_emlambda(nline,em_lambda)
+
+    ! Get the emission line wavelengths
+    implicit none
+    integer, intent(in) :: nline
+    double precision, dimension(nline), intent(out) :: em_lambda
+    if (vactoair_flag .eq. 1) then
+       em_lambda = vactoair(nebem_line_pos)
+    else
+       em_lambda = nebem_line_pos
+    endif
+
+  end subroutine
+
   subroutine get_lambda(ns,lambda)
 
     ! Get the grid of wavelength bins.
@@ -505,16 +529,17 @@ contains
 
   end subroutine
 
-  subroutine get_stats(n_age,age,mass_csp,lbol_csp,sfr,mdust,mformed)
+  subroutine get_stats(n_age,nline,age,mass_csp,lbol_csp,sfr,mdust,mformed,emlines)
 
     implicit none
 
     ! Get some stats about the computed SP.
     integer :: i
-    integer, intent(in) :: n_age
+    integer, intent(in) :: n_age,nline
     double precision, dimension(n_age), intent(out) :: age,mass_csp,&
                                                        lbol_csp,sfr,mdust,&
                                                        mformed
+    double precision, dimension(n_age,nline), intent(out) :: emlines
 
     do i=1,n_age
       age(i)      = ocompsp(i)%age
@@ -523,6 +548,7 @@ contains
       sfr(i)      = ocompsp(i)%sfr
       mdust(i)    = ocompsp(i)%mdust
       mformed(i)  = ocompsp(i)%mformed
+      emlines(i,:)  = ocompsp(i)%emlines
     enddo
 
   end subroutine

@@ -482,7 +482,7 @@ class StellarPopulation(object):
         # Make sure that we didn't get any unknown options.
         if len(kwargs):
             raise TypeError("__init__() got an unexpected keyword argument "
-                            "'{0}'".format(kwargs.keys()[0]))
+                            "'{0}'".format(list(kwargs)[0]))
 
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.

@@ -40,7 +40,8 @@ contains
 
   end subroutine
 
-  subroutine set_ssp_params(imf_type0,imf1,imf2,imf3,vdmc,mdave,dell,&
+  subroutine set_ssp_params(imf_type0,imf_upper_limit0,imf_lower_limit0,&
+                            imf1,imf2,imf3,vdmc,mdave,dell,&
                             delt,sbss,fbhb,pagb,add_stellar_remnants0,&
                             tpagb_norm_type0,add_agb_dust_model0,agb_dust,&
                             redgb,masscut,fcstar,evtype,smooth_lsf0)
@@ -51,11 +52,14 @@ contains
 
     integer, intent(in) :: imf_type0,add_stellar_remnants0,tpagb_norm_type0,&
                            add_agb_dust_model0,smooth_lsf0
-    double precision, intent(in) :: imf1,imf2,imf3,vdmc,mdave,dell,&
+    double precision, intent(in) :: imf_upper_limit0, imf_lower_limit0,&
+                                    imf1,imf2,imf3,vdmc,mdave,dell,&
                                     delt,sbss,fbhb,pagb,agb_dust,&
                                     redgb,masscut,fcstar,evtype
 
     imf_type=imf_type0
+    imf_upper_limit=imf_upper_limit0
+    imf_lower_limit=imf_lower_limit0
     add_stellar_remnants=add_stellar_remnants0
     tpagb_norm_type=tpagb_norm_type0
     add_agb_dust_model=add_agb_dust_model0

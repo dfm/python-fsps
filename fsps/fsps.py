@@ -187,6 +187,18 @@ class StellarPopulation(object):
         * 5: tabulated piece-wise power law IMF, specified in ``imf.dat`` file
           located in the data directory
 
+    :param imf_upper_limit: (default: 120)
+        The upper limit of the IMF, in solar masses. Note that if this is
+        above the maximum mass in the isochrones then those stars will not
+        contribute to the spectrum but will affect the overall IMF
+        normalization.
+
+    :param imf_lower_limit: (default: 0.08)
+        The lower limit of the IMF, in solar masses.  Note that if this is
+        below the minimum mass in the isochrones then those stars will not
+        contribute to the spectrum but will affect the overall IMF
+        normalization.
+
     :param imf1: (default: 1.3)
         Logarithmic slope of the IMF over the range :math:`0.08 < M < 0.5
         M_\odot`. Only used if ``imf_type=2``.
@@ -196,7 +208,7 @@ class StellarPopulation(object):
         M_\odot`. Only used if ``imf_type=2``.
 
     :param imf3: (default: 2.3)
-        Logarithmic slope of the IMF over the range :math:`1.0 < M < 100
+        Logarithmic slope of the IMF over the range :math:`1.0 < M < imf\_upper\_limit
         M_\odot`. Only used if ``imf_type=2``.
 
     :param vdmc: (default: 0.08)
@@ -432,6 +444,8 @@ class StellarPopulation(object):
             logzsol=0.0,
             pmetals=2.0,
             imf_type=2,
+            imf_upper_limit=120,
+            imf_lower_limit=0.08,
             imf1=1.3,
             imf2=2.3,
             imf3=2.3,
@@ -1093,7 +1107,8 @@ class StellarPopulation(object):
 
 class ParameterSet(object):
 
-    ssp_params = ["imf_type", "imf1", "imf2", "imf3", "vdmc", "mdave",
+    ssp_params = ["imf_type", "imf_upper_limit", "imf_lower_limit",
+                  "imf1", "imf2", "imf3", "vdmc", "mdave",
                   "dell", "delt", "sbss", "fbhb", "pagb",
                   "add_stellar_remnants", "tpagb_norm_type",
                   "add_agb_dust_model", "agb_dust", "redgb", "masscut",

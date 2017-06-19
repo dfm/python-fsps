@@ -14,7 +14,7 @@ and some dust with a Calzetti et al (2000) extinction curve::
    >>> import fsps
    >>> sp = fsps.StellarPopulation(compute_vega_mags=False, zcontinuous=1,
                                    sfh=0, logzsol=0.0, dust_type=2, dust2=0.2)
-   >>> sp.libraries()
+   >>> sp.libraries
    ('pdva', 'miles')
 
 The last line indicates that we are using the Padova isochrones and MILES spectral library.

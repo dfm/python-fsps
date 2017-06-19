@@ -1,3 +1,7 @@
+# This script creates a set of PDFs that illustrate the effect on the SED of
+# successively turning on various options or changing the value of some
+# variables.
+
 import numpy as np
 import matplotlib.pyplot as pl
 from matplotlib.backends.backend_pdf import PdfPages

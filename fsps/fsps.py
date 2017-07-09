@@ -837,19 +837,24 @@ class StellarPopulation(object):
             length as ``age``.
 
         :param Z: (optional)
-            The metallicity at each age.  Currently this is ignored, and the
-            value of ``zmet`` or ``logzsol`` is used for all ages.  Thus
-            setting this parameter will result in a NotImplementedError.
+            The metallicity at each age, in units of absolute metallicity
+            (e.g. Z=0.019 for solar with the Padova isochrones and MILES
+            stellar library).
         """
         assert len(age) == len(sfr)
         ntab = len(age)
         if Z is None:
             Z = np.zeros(ntab)
+            assert self._zcontinuous != 3
         else:
-            raise(NotImplementedError)
             assert len(Z) == ntab
+            assert np.all(Z >= 0), "All values of Z must be greater than or equal 0."
+            assert self._zcontinuous == 3, "_zcontinuous must be 3 for multi-Z tabular."
+            assert self.params["add_neb_emission"] is False, ("Cannot compute nebular emission "
+                                                              "with multi-metallicity tabular SFH.")
+
         driver.set_sfh_tab(age*1e9, sfr, Z)
-        if self.params['sfh'] == 3:
+        if self.params["sfh"] == 3:
             self.params.dirtiness = max(1, self.params.dirtiness)
         else:
             print("Warning: You are setting a tabular SFH, "

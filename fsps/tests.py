@@ -13,6 +13,7 @@ default_params = dict([(k, pop.params[k]) for k in pop.params.all_params])
 
 
 def _reset_default_params():
+    pop._zcontinuous = 1
     for k in pop.params.all_params:
         pop.params[k] = default_params[k]
 
@@ -145,7 +146,18 @@ def test_tabular():
     pop.params['logzsol'] = -1
     w, spec_lowz = pop.get_spectrum(tage=age.max())
     assert not np.allclose(spec / spec_lowz - 1., 0.)
-
+    pop._zcontinuous = 3
+    pop.set_tabular_sfh(age, sfr, z)
+    w, spec_multiz = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec_lowz / spec_multiz - 1., 0.)
+    pop._zcontinuous = 1
+    pop.set_tabular_sfh(age, sfr)
+    # get mass weighted metallicity
+    mbin = np.gradient(age) * sfr
+    mwz = (z * mbin).sum() / mbin.sum()
+    pop.params['logzsol'] = np.log10(mwz/0.019)
+    w, spec_onez = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec_onez / spec_multiz - 1., 0.)
 
 def test_mformed():
     _reset_default_params()

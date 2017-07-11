@@ -249,6 +249,19 @@ contains
        call compsp(0,1,outfile,mass,lbol,spec,pset,ocompsp)
     endif
 
+    if (ztype .eq. 3) then
+       ! Build the SSPs for *every* metallicity and feed all of them to compsp
+       ! for z-dependent tabular
+       do zmet=1,nz
+          if (has_ssp(zmet) .eq. 0) then
+             call ssp(zmet)
+          endif
+       enddo
+       call compsp(0,nz,outfile,mass_ssp_zz,lbol_ssp_zz,&
+            spec_ssp_zz,pset,ocompsp)
+    endif
+
+    
   end subroutine
 
   subroutine get_spec(ns,n_age,spec_out)

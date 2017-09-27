@@ -835,7 +835,8 @@ class StellarPopulation(object):
         piecewise linearly interpolated.
 
         :param age:
-            Age in Gyr.  ndarray of shape (ntab,)
+            Time since the beginning of the universe in Gyr.  Must be
+            increasing.  ndarray of shape (ntab,)
 
         :param sfr:
             The SFR at each ``age``, in Msun/yr.  Must be an ndarray same
@@ -846,7 +847,8 @@ class StellarPopulation(object):
             (e.g. Z=0.019 for solar with the Padova isochrones and MILES
             stellar library).
         """
-        assert len(age) == len(sfr)
+        assert len(age) == len(sfr), "age and sfr have different size."
+        assert np.all(age[1:] > age[:-1]), "Ages must be increasing."
         ntab = len(age)
         if Z is None:
             Z = np.zeros(ntab)

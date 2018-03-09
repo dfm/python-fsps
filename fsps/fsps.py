@@ -17,10 +17,11 @@ class StellarPopulation(object):
     """
     This is the main interface to use when interacting with FSPS from Python.
     Most of the Fortran API is exposed through Python hooks with various
-    features added for user friendliness. When initializing, you can set any
-    of the parameters of the system using keyword arguments. Below, you'll
-    find a list of the options that you can include (with the comments taken
-    directly from the `FSPS docs
+    features added for user friendliness. It is recommended to only
+    instantiate one StellarPopulation object in a given program. When
+    initializing, you can set any of the parameters of the system using keyword
+    arguments. Below, you'll find a list of the options that you can include
+    (with the comments taken directly from the `FSPS docs
     <https://github.com/cconroy20/fsps/blob/master/doc/MANUAL.pdf>`_). Unless
     otherwise noted, you can change these values later using the ``params``
     property—which is ``dict``-like.  For example:
@@ -29,6 +30,8 @@ class StellarPopulation(object):
 
         sp = StellarPopulation(imf_type=2, zcontinuous=1)
         sp.params["imf_type"] = 1
+        sp.params["logzsol"] = -0.3
+        sp.params["sfh"] = 1
 
     :param compute_vega_mags: (default: False)
         A switch that sets the zero points of the magnitude system: ``True``
@@ -283,7 +286,8 @@ class StellarPopulation(object):
         ``sfh=5``.
 
     :param sf_trunc: (default: 0.0)
-        Truncation time of the SFH, in Gyr. If set to 0.0, there is no trunction.
+        Truncation time of the SFH, in Gyr. If set to 0.0, there is no
+        trunction.  Only used if ``sfh=1`` or ``sfh=4`` or ``sfh=5``.
 
     :param tage: (default: 0.0)
         If set to a non-zero value, the
@@ -617,9 +621,8 @@ class StellarPopulation(object):
             particular set of bands was requested then this return value will
             be properly compressed along that axis, ordered according to the
             ``bands`` argument. If ``redshift`` is not 0, the units are
-            apparent observed frame magnitude :math:`m`, otherwise they are
-            :math:`m - \mu + 2.5\, log(1+z)`, i.e. observed frame absolute
-            magnitude.
+            apparent observed frame magnitude :math:`m` assuming
+            :math:`\Omega_m=0.3, \Omega_\Lambda=0.7`
         """
         if redshift is None:
             zr = self.params["zred"]
@@ -810,8 +813,20 @@ class StellarPopulation(object):
             $SPS_HOME/OUTPUTS/ directory
 
         :returns dat:
-            A huge numpy structured array containing information about every isochrone
-            point for the current metallicity.
+            A huge numpy structured array containing information about every
+            isochrone point for the current metallicity.  In general the
+            columns may be isochrone specific, but for Padova they are
+
+            * age: log age, yrs
+            * log(Z): log metallicity
+            * mini: initial stellar mass in solar masses
+            * mact: actual stellar mass (accounting for mass loss)
+            * logl: log bolometric luminosity, solar units
+            * logt: log temperature (K)
+            * logg: log gravity
+            * phase: (see evtype)
+            * log(weight): IMF weight
+            * log(mdot): mass loss rate (Msol/yr)
         """
         if self.params.dirty:
             self._compute_csp()
@@ -840,7 +855,7 @@ class StellarPopulation(object):
 
         :param sfr:
             The SFR at each ``age``, in Msun/yr.  Must be an ndarray same
-            length as ``age``.
+            length as ``age``, and contain at least one non-zero value.
 
         :param Z: (optional)
             The metallicity at each age, in units of absolute metallicity
@@ -849,6 +864,8 @@ class StellarPopulation(object):
         """
         assert len(age) == len(sfr), "age and sfr have different size."
         assert np.all(age[1:] > age[:-1]), "Ages must be increasing."
+        assert np.any(sfr > 1e-33), "At least one sfr must be > 1e-33."
+        assert np.all(sfr >= 0.0), "sfr cannot be negative."
         ntab = len(age)
         if Z is None:
             Z = np.zeros(ntab)

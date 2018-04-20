@@ -142,6 +142,10 @@ class StellarPopulation(object):
     :param redgb: (default: 1.0)
         Modify weight given to RGB.  Only available with BaSTI isochrone set.
 
+    :param agb: (default: 1.0)
+        Modify weight given to TP-AGB.  This only has effect for FSPS v3.1 or
+        higher.
+
     :param fcstar: (default: 1.0)
         Fraction of stars that the Padova isochrones identify as Carbon stars
         that FSPS assigns to a Carbon star spectrum. Set this to 0.0 if for
@@ -444,6 +448,7 @@ class StellarPopulation(object):
             dell=0.0,
             delt=0.0,
             redgb=1.0,
+            agb=1.0,
             fcstar=1.0,
             fbhb=0.0,
             sbss=0.0,
@@ -1140,8 +1145,8 @@ class ParameterSet(object):
                   "imf1", "imf2", "imf3", "vdmc", "mdave",
                   "dell", "delt", "sbss", "fbhb", "pagb",
                   "add_stellar_remnants", "tpagb_norm_type",
-                  "add_agb_dust_model", "agb_dust", "redgb", "masscut",
-                  "fcstar", "evtype", "smooth_lsf"]
+                  "add_agb_dust_model", "agb_dust", "redgb", "agb",
+                  "masscut", "fcstar", "evtype", "smooth_lsf"]
 
     csp_params = ["smooth_velocity", "redshift_colors",
                   "compute_light_ages","nebemlineinspec",

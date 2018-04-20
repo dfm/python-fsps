@@ -44,7 +44,7 @@ contains
                             imf1,imf2,imf3,vdmc,mdave,dell,&
                             delt,sbss,fbhb,pagb,add_stellar_remnants0,&
                             tpagb_norm_type0,add_agb_dust_model0,agb_dust,&
-                            redgb,masscut,fcstar,evtype,smooth_lsf0)
+                            redgb,agb,masscut,fcstar,evtype,smooth_lsf0)
  
     ! Set the parameters that affect the SSP computation.
 
@@ -55,7 +55,7 @@ contains
     double precision, intent(in) :: imf_upper_limit0, imf_lower_limit0,&
                                     imf1,imf2,imf3,vdmc,mdave,dell,&
                                     delt,sbss,fbhb,pagb,agb_dust,&
-                                    redgb,masscut,fcstar,evtype
+                                    redgb,agb,masscut,fcstar,evtype
 
     imf_type=imf_type0
     imf_upper_limit=imf_upper_limit0
@@ -76,6 +76,7 @@ contains
     pset%pagb=pagb
     pset%agb_dust=agb_dust 
     pset%redgb=redgb
+    pset%agb=agb
     pset%masscut=masscut
     pset%fcstar=fcstar
     pset%evtype=evtype

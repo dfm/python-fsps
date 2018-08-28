@@ -1072,16 +1072,16 @@ class StellarPopulation(object):
             return stats[k][0]
         return stats[k]
 
-    def sfr_avg(self, tage=None, dt=0.1):
+    def sfr_avg(self, times=None, dt=0.1):
         """
-        The average SFR between time ``tage``-``dt`` and ``tage``, given the
+        The average SFR between ``time``-``dt`` and ``time``, given the
         SFH parameters, for ``sfh=1`` or ``sfh=4``.  Like SFHSTAT in FSPS.
         Requires scipy, as it uses gamma functions.
 
-        :param tage: (default, None)
-            The ages (in Gyr) at which the average SFR over the last ``dt`` is
-            desired.  if ``None``, uses the current value of the ``tage`` in
-            the parameter set. Scalar or iterable.
+        :param times: (default, None)
+            The times (in Gyr of cosmic time) at which the average SFR over the
+            last ``dt`` is desired.  if ``None``, uses the current value of the
+            ``tage`` in the parameter set. Scalar or iterable.
 
         :param dt: (default: 0.1)
             The time interval over which the recent SFR is averaged, in Gyr.
@@ -1089,7 +1089,10 @@ class StellarPopulation(object):
 
         :returns sfr_avg:
             The SFR at ``tage`` averaged over the last ``dt`` Gyr, in units of
-            solar masses per year.
+            solar masses per year, such that :math:`1 M_\odot` formed by
+            ``tage``.  Same shape as ``times``.  For ``times < sf_start + dt``
+            the value of ``sfr_avg`` is ``nan``, for ``times > tage`` the value
+            is 0.
         """
         from scipy.special import gammainc
         assert self.params['sf_trunc'] <= 0, \
@@ -1102,24 +1105,33 @@ class StellarPopulation(object):
             raise ValueError("sfr_avg not supported for this SFH type.")
 
         tau, sf_start = self.params['tau'], self.params['sf_start']
-        if tage is None:
-            tage = np.atleast_1d(self.params['tage'])
+        if self.params['tage'] <= 0:
+            tage = 10**(np.max(self.ssp_ages) - 9)
         else:
-            tage = np.atleast_1d(tage)
-        if tage[0] <= 0:
-            tage = 10**(self.log_age - 9)
+            tage = np.array(self.params['tage'])
+
+        if times is None:
+            times = tage
+        else:
+            times = np.array(times)
 
         tb = (self.params['tburst'] - sf_start) / tau
-        tmax = (tage[-1] - sf_start) / tau
-        normalized_times = (np.array([tage, tage - dt]).T - sf_start) / tau
+        tmax = (tage - sf_start) / tau
+        normalized_times = (np.array([times, times - dt]).T - sf_start) / tau
 
         tau_mass_frac = gammainc(power, normalized_times) / gammainc(power, tmax)
-        burst_in_past = tb <= normalized_times
-        mass = (tau_mass_frac * (1 - self.params['const'] - self.params['fburst']) +
+        burst_in_past = (tb <= normalized_times)
+        mass = (tau_mass_frac * (1 - self.params['const'] - (tb < tmax) * self.params['fburst']) +
                 self.params['const'] * normalized_times / tmax +
                 burst_in_past * self.params['fburst'])
 
         avsfr = (mass[..., 0] - mass[..., 1]) / dt / 1e9  # Msun/yr
+
+        # These lines change behavior when you request sfrs outside the range (sf_start + dt, tage)
+        #avsfr[times > tage] = np.nan  # does not work for scalars
+        avsfr *= times <= tage
+        #avsfr[np.isfinite(avsfr)] = 0.0 # does not work for scalars
+
         return np.clip(avsfr, 0, np.inf)
 
     @property

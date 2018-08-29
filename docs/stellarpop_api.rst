@@ -50,13 +50,13 @@ Example using nebular emission
 -------
 
 We initialize a simple stellar population and set the flag to
-include nebular emission ::
+include nebular emission::
 
    >>> sp = fsps.StellarPopulation(zcontinuous=1,
                                    add_neb_emission=1)
 
 We can change the stellar metallicity, the gas phase metallicity, the
-gas ionization parameter, and then return the total spectrum at 1 Myr ::
+gas ionization parameter, and then return the total spectrum at 1 Myr::
 
    >>> sp.params['logzsol'] = -1.0
    >>> sp.params['gas_logz'] = -1.0
@@ -71,7 +71,7 @@ If users choose to vary the gas phase metallicity at constant stellar
 metallicity, expect non-hydrogenic emission lines to be accurate within 1-15%.
 
 Emission line wavelengths and line luminosities can be accessed through
-the stellar population object ::
+the stellar population object::
 
    >>> sp.emline_wavelengths
    >>> sp.emline_luminosity

@@ -46,6 +46,37 @@ and the surviving stellar mass at 13.7 Gyr (both in units of :math:`M_\odot`)::
 
 It is highly recommended that only one instance of :class:`fsps.StellarPopulation` be used in a given program.
 
+Example using nebular emission
+-------
+
+We initialize a simple stellar population and set the flag to
+include nebular emission ::
+
+   >>> sp = fsps.StellarPopulation(zcontinuous=1,
+                                   add_neb_emission=1)
+
+We can change the stellar metallicity, the gas phase metallicity, the
+gas ionization parameter, and then return the total spectrum at 1 Myr ::
+
+   >>> sp.params['logzsol'] = -1.0
+   >>> sp.params['gas_logz'] = -1.0
+   >>> sp.params['gas_logu'] = -2.5
+   >>> wave, spec = sp.get_spectrum(tage=0.001)
+
+Note: for the nebular model to be fully self-consistent, the gas phase
+metallicity and the stellar metallicity should be set to the same value.
+This effectively adds the emission spectrum to the same stellar spectrum
+that was used as the ionizing spectrum in Cloudy.
+If users choose to vary the gas phase metallicity at constant stellar
+metallicity, expect non-hydrogenic emission lines to be accurate within 1-15%.
+
+Emission line wavelengths and line luminosities can be accessed through
+the stellar population object ::
+
+   >>> sp.emline_wavelengths
+   >>> sp.emline_luminosity
+
+
 API Reference
 -------------
 

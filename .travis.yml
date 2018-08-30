@@ -55,4 +55,4 @@ install:
     - python setup.py build_ext --inplace
 
 script:
-    - travis_wait 30 py.test -v fsps/tests.py
+    - travis_wait 35 py.test -v fsps/tests.py

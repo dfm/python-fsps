@@ -18,26 +18,6 @@ def _reset_default_params():
         pop.params[k] = default_params[k]
 
 
-def test_imf3():
-    _reset_default_params()
-    pop.params["imf_type"] = 2
-    pop.params["imf3"] = 2.3
-    model1 = pop.get_spectrum(tage=0.2)[1]
-    pop.params["imf3"] = 8.3
-    assert pop.params.dirtiness == 2
-    model2 = pop.get_spectrum(tage=0.2)[1]
-    original = np.array(model1 - model2)
-
-    pop.params["imf3"] = 2.3
-    assert pop.params.dirtiness == 2
-    model1 = pop.get_spectrum(tage=0.2)[1]
-    pop.params["imf3"] = 8.3
-    assert pop.params.dirtiness == 2
-    model2 = pop.get_spectrum(tage=0.2)[1]
-
-    assert_allclose(original, model1 - model2)
-
-
 def _get_model(theta):
     pop.params["imf3"] = theta
     assert pop.params.dirtiness == 2
@@ -54,6 +34,15 @@ def _get_model(theta):
 #     assert_allclose(single, multi)
 
 
+def test_libraries():
+    """This does not require or build clean SSPs
+    """
+    _reset_default_params()
+    ilib, splib = pop.libraries
+    assert ilib == pop.isoc_library
+    assert splib == pop.spec_library
+
+
 def test_get_mags():
     fuv1 = pop.get_mags(bands=["galex_fuv"])[:, 0]
     mags = pop.get_mags()
@@ -61,48 +50,33 @@ def test_get_mags():
     fuv3 = mags[:, 62]
     assert np.all(fuv1 == fuv2)
     assert np.all(fuv1 != fuv3)
+    print("done get_mags")
 
-
-def test_smoothspec():
-    _reset_default_params()
-    wave, spec = pop.get_spectrum(tage=1, peraa=True)
-    spec2 = pop.smoothspec(wave, spec, 160., minw=1e3, maxw=1e4)
-    assert (spec-spec2 == 0.).sum() > 0
-
-def test_nebemlineinspec():
-    _reset_default_params()
-    pop.params['sfh'] = 4
-    pop.params['tau'] = 1.
-    pop.params['nebemlineinspec'] = False
-    pop.params['add_neb_emission'] = True
-    wave, spec_neboff = pop.get_spectrum(tage=1.0)
-    pop.params['nebemlineinspec'] = True
-    wave, spec_nebon = pop.get_spectrum(tage=1.0)
-    assert (spec_nebon-spec_neboff).sum() > 0
-    assert np.all(np.isfinite(pop.emline_luminosity))
-    assert np.all(np.isfinite(pop.emline_wavelengths))
-    ha_idx = (wave > 6556) & (wave < 6573)
-    assert (spec_nebon-spec_neboff)[ha_idx].sum() > 0
 
 def test_ssp():
     _reset_default_params()
     pop.params["sfh"] = 0
     wave, spec = pop.get_spectrum(tage=1, peraa=True)
-    assert (wave[0] > 0) & (wave[0] < wave[-1])
+    assert (wave[0] > 0) & (wave[0] < wave[-1]) & (wave[0] < 912.0)
     assert (wave[-1] > 1e6) & (wave[-1] < 1e10)
     Mv = 4.62  # AB absolute magnitude for a Zsol 1Gyr old SSP
+    # This also tests get_mags
     mag = pop.get_mags(tage=1, bands=["v"])
     assert np.all(abs(mag - Mv) < 1.0)
     assert np.all((pop.stellar_mass < 1.0) & (pop.stellar_mass > 0))
+    assert pop.params.dirtiness == 0
+    print("done ssp")
 
 
-def test_csp():
+def test_csp_dirtiness():
     _reset_default_params()
     pop.params["sfh"] = 1
     pop.params["tau"] = 1.0
     wave, spec = pop.get_spectrum(tage=1.0)
+    assert pop.params.dirtiness == 0
     pop.params["tau"] = 3.0
     assert pop.params.dirtiness == 1
+    print("done csp")
 
 
 def test_redshift():
@@ -122,42 +96,25 @@ def test_redshift():
 
     assert np.all(v3 == v1)
     assert np.all(v5 != v4)
+    print("done redshift")
 
-
-def test_tabular():
+    
+def test_nebemlineinspec():
     _reset_default_params()
+    pop.params['sfh'] = 4
+    pop.params['tau'] = 5.
+    pop.params['add_neb_emission'] = True
+    pop.params['nebemlineinspec'] = False
+    wave, spec_neboff = pop.get_spectrum(tage=1.0)
+    pop.params['nebemlineinspec'] = True
+    wave, spec_nebon = pop.get_spectrum(tage=1.0)
+    assert (spec_nebon-spec_neboff).sum() > 0
+    assert np.all(np.isfinite(pop.emline_luminosity))
+    assert np.all(np.isfinite(pop.emline_wavelengths))
+    ha_idx = (wave > 6556) & (wave < 6573)
+    assert (spec_nebon-spec_neboff)[ha_idx].sum() > 0
+    print("done nebemlineinspec")
 
-    import os
-    fn = os.path.join(os.environ['SPS_HOME'], 'data/sfh.dat')
-    age, sfr, z = np.genfromtxt(fn, unpack=True, skip_header=0)
-
-    pop.params['sfh'] = 3
-    pop.set_tabular_sfh(age, sfr)
-    w, spec = pop.get_spectrum(tage=0)
-    pop.set_tabular_sfh(age, sfr)
-    assert pop.params.dirty
-    w, spec = pop.get_spectrum(tage=0)
-    assert spec.shape[0] == len(pop.ssp_ages)
-    assert pop.params['sfh'] == 3
-    w, spec_last = pop.get_spectrum(tage=-99)
-    assert spec_last.ndim == 1
-    w, spec = pop.get_spectrum(tage=age.max())
-    assert np.allclose(spec / spec_last - 1., 0.)
-    pop.params['logzsol'] = -1
-    w, spec_lowz = pop.get_spectrum(tage=age.max())
-    assert not np.allclose(spec / spec_lowz - 1., 0.)
-    pop._zcontinuous = 3
-    pop.set_tabular_sfh(age, sfr, z)
-    w, spec_multiz = pop.get_spectrum(tage=age.max())
-    assert not np.allclose(spec_lowz / spec_multiz - 1., 0.)
-    pop._zcontinuous = 1
-    pop.set_tabular_sfh(age, sfr)
-    # get mass weighted metallicity
-    mbin = np.gradient(age) * sfr
-    mwz = (z * mbin).sum() / mbin.sum()
-    pop.params['logzsol'] = np.log10(mwz/0.019)
-    w, spec_onez = pop.get_spectrum(tage=age.max())
-    assert not np.allclose(spec_onez / spec_multiz - 1., 0.)
 
 def test_mformed():
     _reset_default_params()
@@ -193,14 +150,84 @@ def test_light_ages():
     # assert pop.log_lbol < pop.stellar_mass
 
 
-def test_libraries():
+def test_smoothspec():
+    # FIXME: This is not very stringent
     _reset_default_params()
-    ilib, splib = pop.libraries
-    assert ilib == pop.isoc_library
-    assert splib == pop.spec_library
+    wave, spec = pop.get_spectrum(tage=1, peraa=True)
+    spec2 = pop.smoothspec(wave, spec, 160., minw=1e3, maxw=1e4)
+    assert (spec - spec2 == 0.).sum() > 0
+    print("done smoothspec")
+
+
+def test_imf3():
+    """This requires SSP rebuilds
+    """
+    _reset_default_params()
+    pop.params["imf_type"] = 2
+    pop.params["imf3"] = 2.3
+    w, model1 = pop.get_spectrum(tage=0.2)
+    pop.params["imf3"] = 8.3
+    assert pop.params.dirtiness == 2
+    w, model2 = pop.get_spectrum(tage=0.2)
+    assert not np.allclose(model1 / model2 - 1., 0.)
+
+    # Do we *really* need to do this second check?
+    pop.params["imf3"] = 2.3
+    assert pop.params.dirtiness == 2
+    w, model1b = pop.get_spectrum(tage=0.2)
+    assert pop.params.dirtiness == 0
+    
+    assert_allclose(model1 / model1b - 1., 0.)
+    print("done imf3")
+
+
+def test_tabular():
+    """This requires all metallicity SSPs be built, so is very time consuming.
+    """
+    _reset_default_params()
+
+    import os
+    fn = os.path.join(os.environ['SPS_HOME'], 'data/sfh.dat')
+    age, sfr, z = np.genfromtxt(fn, unpack=True, skip_header=0)
+
+    # Mono-metallicity
+    pop.params['sfh'] = 3
+    pop.set_tabular_sfh(age, sfr)
+    w, spec = pop.get_spectrum(tage=0)
+    pop.set_tabular_sfh(age, sfr)
+    assert pop.params.dirty
+    w, spec = pop.get_spectrum(tage=0)
+    assert spec.shape[0] == len(pop.ssp_ages)
+    assert pop.params['sfh'] == 3
+    w, spec_last = pop.get_spectrum(tage=-99)
+    assert spec_last.ndim == 1
+    w, spec = pop.get_spectrum(tage=age.max())
+    assert np.allclose(spec / spec_last - 1., 0.)
+    pop.params['logzsol'] = -1
+    w, spec_lowz = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec / spec_lowz - 1., 0.)
+
+    # Multi-metallicity
+    pop._zcontinuous = 3
+    pop.set_tabular_sfh(age, sfr, z)
+    w, spec_multiz = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec_lowz / spec_multiz - 1., 0.)
+
+    pop._zcontinuous = 1
+    pop.set_tabular_sfh(age, sfr)
+    # get mass weighted metallicity
+    mbin = np.gradient(age) * sfr
+    mwz = (z * mbin).sum() / mbin.sum()
+    pop.params['logzsol'] = np.log10(mwz/0.019)
+    w, spec_onez = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec_onez / spec_multiz - 1., 0.)
+
+    print("done tabular")
 
 
 def test_smooth_lsf():
+    """This requires SSP rebuilds.
+    """
     _reset_default_params()
     tmax = 1.0
     wave_lsf = np.arange(4000, 7000., 10)
@@ -218,16 +245,17 @@ def test_smooth_lsf():
     assert not np.allclose(spec[sm] / smspec[sm] - 1., 0.)
     pop.set_lsf(wave_lsf, sigma_lsf * 2)
     assert pop.params.dirtiness == 2
-    
+
+
+
 # Requires scipy
 # def test_sfr_avg():
 
 #    _reset_default_params()
-#    tmax = 5.0
 #    pop.params['sfh'] = 1.0
 #    pop.params['const'] = 0.5
 #    w, spec = pop.get_spectrum(tage=0)
 #    sfr6 = pop.sfr_avg(dt=1e-3)
 #    dsfr = np.log10(pop.sfr/pop.sfr6)
-#    good = pop.log_age > 6
+#    good = pop.ssp_age > 6
 #    assert np.all(np.abs(dsfr[good]) < 1e-2)

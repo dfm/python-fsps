@@ -1,20 +1,29 @@
 sudo: false
+language: generic
 
-env:
-    global:
-        - NUMPY_VERSION=1.10.4
+matrix:
+    include:
 
-    matrix:
-        - PYTHON_VERSION=2.7
-        - PYTHON_VERSION=3.4
-        - PYTHON_VERSION=3.5
+        # Linux, Python 2.7
+        - os: linux
+          env: PYTHON_VERSION=2.7 NUMPY_VERSION=1.10.4
+        - os: linux
+          env: PYTHON_VERSION=2.7 NUMPY_VERSION=1.12
+        - os: linux
+          env: PYTHON_VERSION=2.7 NUMPY_VERSION=1.14
 
-        - PYTHON_VERSION=2.7
-          NUMPY_VERSION=1.11
-        - PYTHON_VERSION=3.4
-          NUMPY_VERSION=1.11
-        - PYTHON_VERSION=3.5
-          NUMPY_VERSION=1.11
+        # Linux, Python 3.5
+        - os: linux
+          env: PYTHON_VERSION=3.5 NUMPY_VERSION=1.12
+        - os: linux
+          env: PYTHON_VERSION=3.5 NUMPY_VERSION=1.14
+
+        # Linux, Python 3.6
+        - os: linux
+          env: PYTHON_VERSION=3.6 NUMPY_VERSION=1.12
+        - os: linux
+          env: PYTHON_VERSION=3.6 NUMPY_VERSION=1.14
+
 
 addons:
     apt:
@@ -46,4 +55,4 @@ install:
     - python setup.py build_ext --inplace
 
 script:
-    - travis_wait py.test -v fsps/tests.py
+    - travis_wait 35 py.test -v fsps/tests.py

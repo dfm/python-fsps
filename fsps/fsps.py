@@ -17,10 +17,11 @@ class StellarPopulation(object):
     """
     This is the main interface to use when interacting with FSPS from Python.
     Most of the Fortran API is exposed through Python hooks with various
-    features added for user friendliness. When initializing, you can set any
-    of the parameters of the system using keyword arguments. Below, you'll
-    find a list of the options that you can include (with the comments taken
-    directly from the `FSPS docs
+    features added for user friendliness. It is recommended to only
+    instantiate one StellarPopulation object in a given program. When
+    initializing, you can set any of the parameters of the system using keyword
+    arguments. Below, you'll find a list of the options that you can include
+    (with the comments taken directly from the `FSPS docs
     <https://github.com/cconroy20/fsps/blob/master/doc/MANUAL.pdf>`_). Unless
     otherwise noted, you can change these values later using the ``params``
     property—which is ``dict``-like.  For example:
@@ -29,6 +30,8 @@ class StellarPopulation(object):
 
         sp = StellarPopulation(imf_type=2, zcontinuous=1)
         sp.params["imf_type"] = 1
+        sp.params["logzsol"] = -0.3
+        sp.params["sfh"] = 1
 
     :param compute_vega_mags: (default: False)
         A switch that sets the zero points of the magnitude system: ``True``
@@ -138,6 +141,10 @@ class StellarPopulation(object):
 
     :param redgb: (default: 1.0)
         Modify weight given to RGB.  Only available with BaSTI isochrone set.
+
+    :param agb: (default: 1.0)
+        Modify weight given to TP-AGB.  This only has effect for FSPS v3.1 or
+        higher.
 
     :param fcstar: (default: 1.0)
         Fraction of stars that the Padova isochrones identify as Carbon stars
@@ -283,7 +290,8 @@ class StellarPopulation(object):
         ``sfh=5``.
 
     :param sf_trunc: (default: 0.0)
-        Truncation time of the SFH, in Gyr. If set to 0.0, there is no trunction.
+        Truncation time of the SFH, in Gyr. If set to 0.0, there is no
+        trunction.  Only used if ``sfh=1`` or ``sfh=4`` or ``sfh=5``.
 
     :param tage: (default: 0.0)
         If set to a non-zero value, the
@@ -440,6 +448,7 @@ class StellarPopulation(object):
             dell=0.0,
             delt=0.0,
             redgb=1.0,
+            agb=1.0,
             fcstar=1.0,
             fbhb=0.0,
             sbss=0.0,
@@ -617,9 +626,8 @@ class StellarPopulation(object):
             particular set of bands was requested then this return value will
             be properly compressed along that axis, ordered according to the
             ``bands`` argument. If ``redshift`` is not 0, the units are
-            apparent observed frame magnitude :math:`m`, otherwise they are
-            :math:`m - \mu + 2.5\, log(1+z)`, i.e. observed frame absolute
-            magnitude.
+            apparent observed frame magnitude :math:`m` assuming
+            :math:`\Omega_m=0.3, \Omega_\Lambda=0.7`
         """
         if redshift is None:
             zr = self.params["zred"]
@@ -810,8 +818,20 @@ class StellarPopulation(object):
             $SPS_HOME/OUTPUTS/ directory
 
         :returns dat:
-            A huge numpy structured array containing information about every isochrone
-            point for the current metallicity.
+            A huge numpy structured array containing information about every
+            isochrone point for the current metallicity.  In general the
+            columns may be isochrone specific, but for Padova they are
+
+            * age: log age, yrs
+            * log(Z): log metallicity
+            * mini: initial stellar mass in solar masses
+            * mact: actual stellar mass (accounting for mass loss)
+            * logl: log bolometric luminosity, solar units
+            * logt: log temperature (K)
+            * logg: log gravity
+            * phase: (see evtype)
+            * log(weight): IMF weight
+            * log(mdot): mass loss rate (Msol/yr)
         """
         if self.params.dirty:
             self._compute_csp()
@@ -835,18 +855,22 @@ class StellarPopulation(object):
         piecewise linearly interpolated.
 
         :param age:
-            Age in Gyr.  ndarray of shape (ntab,)
+            Time since the beginning of the universe in Gyr.  Must be
+            increasing.  ndarray of shape (ntab,)
 
         :param sfr:
             The SFR at each ``age``, in Msun/yr.  Must be an ndarray same
-            length as ``age``.
+            length as ``age``, and contain at least one non-zero value.
 
         :param Z: (optional)
             The metallicity at each age, in units of absolute metallicity
             (e.g. Z=0.019 for solar with the Padova isochrones and MILES
             stellar library).
         """
-        assert len(age) == len(sfr)
+        assert len(age) == len(sfr), "age and sfr have different size."
+        assert np.all(age[1:] > age[:-1]), "Ages must be increasing."
+        assert np.any(sfr > 1e-33), "At least one sfr must be > 1e-33."
+        assert np.all(sfr >= 0.0), "sfr cannot be negative."
         ntab = len(age)
         if Z is None:
             Z = np.zeros(ntab)
@@ -1048,16 +1072,16 @@ class StellarPopulation(object):
             return stats[k][0]
         return stats[k]
 
-    def sfr_avg(self, tage=None, dt=0.1):
+    def sfr_avg(self, times=None, dt=0.1):
         """
-        The average SFR between time ``tage``-``dt`` and ``tage``, given the
+        The average SFR between ``time``-``dt`` and ``time``, given the
         SFH parameters, for ``sfh=1`` or ``sfh=4``.  Like SFHSTAT in FSPS.
         Requires scipy, as it uses gamma functions.
 
-        :param tage: (default, None)
-            The ages (in Gyr) at which the average SFR over the last ``dt`` is
-            desired.  if ``None``, uses the current value of the ``tage`` in
-            the parameter set. Scalar or iterable.
+        :param times: (default, None)
+            The times (in Gyr of cosmic time) at which the average SFR over the
+            last ``dt`` is desired.  if ``None``, uses the current value of the
+            ``tage`` in the parameter set. Scalar or iterable.
 
         :param dt: (default: 0.1)
             The time interval over which the recent SFR is averaged, in Gyr.
@@ -1065,7 +1089,10 @@ class StellarPopulation(object):
 
         :returns sfr_avg:
             The SFR at ``tage`` averaged over the last ``dt`` Gyr, in units of
-            solar masses per year.
+            solar masses per year, such that :math:`1 M_\odot` formed by
+            ``tage``.  Same shape as ``times``.  For ``times < sf_start + dt``
+            the value of ``sfr_avg`` is ``nan``, for ``times > tage`` the value
+            is 0.
         """
         from scipy.special import gammainc
         assert self.params['sf_trunc'] <= 0, \
@@ -1078,24 +1105,33 @@ class StellarPopulation(object):
             raise ValueError("sfr_avg not supported for this SFH type.")
 
         tau, sf_start = self.params['tau'], self.params['sf_start']
-        if tage is None:
-            tage = np.atleast_1d(self.params['tage'])
+        if self.params['tage'] <= 0:
+            tage = 10**(np.max(self.ssp_ages) - 9)
         else:
-            tage = np.atleast_1d(tage)
-        if tage[0] <= 0:
-            tage = 10**(self.log_age - 9)
+            tage = np.array(self.params['tage'])
+
+        if times is None:
+            times = tage
+        else:
+            times = np.array(times)
 
         tb = (self.params['tburst'] - sf_start) / tau
-        tmax = (tage[-1] - sf_start) / tau
-        normalized_times = (np.array([tage, tage - dt]).T - sf_start) / tau
+        tmax = (tage - sf_start) / tau
+        normalized_times = (np.array([times, times - dt]).T - sf_start) / tau
 
         tau_mass_frac = gammainc(power, normalized_times) / gammainc(power, tmax)
-        burst_in_past = tb <= normalized_times
-        mass = (tau_mass_frac * (1 - self.params['const'] - self.params['fburst']) +
+        burst_in_past = (tb <= normalized_times)
+        mass = (tau_mass_frac * (1 - self.params['const'] - (tb < tmax) * self.params['fburst']) +
                 self.params['const'] * normalized_times / tmax +
                 burst_in_past * self.params['fburst'])
 
         avsfr = (mass[..., 0] - mass[..., 1]) / dt / 1e9  # Msun/yr
+
+        # These lines change behavior when you request sfrs outside the range (sf_start + dt, tage)
+        #avsfr[times > tage] = np.nan  # does not work for scalars
+        avsfr *= times <= tage
+        #avsfr[np.isfinite(avsfr)] = 0.0 # does not work for scalars
+
         return np.clip(avsfr, 0, np.inf)
 
     @property
@@ -1121,8 +1157,8 @@ class ParameterSet(object):
                   "imf1", "imf2", "imf3", "vdmc", "mdave",
                   "dell", "delt", "sbss", "fbhb", "pagb",
                   "add_stellar_remnants", "tpagb_norm_type",
-                  "add_agb_dust_model", "agb_dust", "redgb", "masscut",
-                  "fcstar", "evtype", "smooth_lsf"]
+                  "add_agb_dust_model", "agb_dust", "redgb", "agb",
+                  "masscut", "fcstar", "evtype", "smooth_lsf"]
 
     csp_params = ["smooth_velocity", "redshift_colors",
                   "compute_light_ages","nebemlineinspec",

@@ -227,7 +227,7 @@ contains
        zpos = pset%logzsol
        ! Find the bracketing metallicity indices and generate ssps if
        ! necessary, then interpolate, and feed the result to compsp
-       zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
+       zlo = max(min(locate(log10(zlegend/zsol),zpos),nz-1),1)
        do zmet=zlo,zlo+1
           if (has_ssp(zmet) .eq. 0) then
              call ssp(zmet)

@@ -120,4 +120,8 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
     ],
+    setup_requires=[
+        'numpy==1.16; python_version=="2.7"',
+        'numpy; python_version>="3.5"',
+    ],
 )

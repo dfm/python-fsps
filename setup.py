@@ -4,6 +4,7 @@ import os
 import sys
 import glob
 import shutil
+import subprocess
 
 try:
     from setuptools import setup, Extension
@@ -29,27 +30,30 @@ def invoke_f2py(files, flags=[], wd=None):
         sys.argv = oldargv
         os.chdir(olddir)
 
+def is_fortran_program(path):
+    with open(path, 'r') as f:
+        return any(line.lstrip().upper().startswith('PROGRAM ') for line in f)
+
 class build_fsps(build_ext):
 
     def run(self):
         # Generate the Fortran signature/interface.
         files = ['fsps.f90']
-        flags = " -m _fsps -h fsps.pyf --overwrite-signature".split()
+        flags = "-m _fsps -h fsps.pyf --overwrite-signature".split()
         print("Running f2py on {0} with flags {1}".format(files, flags))
         invoke_f2py(['fsps.f90'], flags, wd='fsps')
 
-        # Find the FSPS source files.
+        # Compile FSPS
         fsps_dir = os.path.join(os.environ["SPS_HOME"], "src")
-        fns = [f for f in glob.glob(os.path.join(fsps_dir, "*.o"))
-               if os.path.basename(f) not in ["autosps.o", "simple.o",
-                                              "lesssimple.o"]]
+        os.environ['F90FLAGS'] = os.environ.get('F90FLAGS', '') + " -fPIC"
 
-        # Check to make sure that all of the required modules exist.
-        flag = len(fns)
-        flag *= os.path.exists(os.path.join(fsps_dir, "sps_utils.mod"))
-        flag *= os.path.exists(os.path.join(fsps_dir, "sps_vars.mod"))
-        if not flag:
-            raise RuntimeError("You need to run make in $SPS_HOME/src first")
+        fns = [f.rsplit('.', 1)[0] + '.o' 
+                for f in glob.glob(os.path.join(fsps_dir, '*.f90'))
+                if not is_fortran_program(f)]
+
+        return_code = subprocess.call(['make', '-C'+fsps_dir] + fns)
+        if return_code != 0:
+            sys.exit(return_code)
 
         # Add the interface source files to the file list.
         fns += ["fsps.f90", "fsps.pyf"]
@@ -123,5 +127,6 @@ setup(
     setup_requires=[
         'numpy==1.16; python_version=="2.7"',
         'numpy; python_version>="3.5"',
+        'pygit2',
     ],
 )

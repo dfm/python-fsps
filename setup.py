@@ -37,6 +37,9 @@ def is_fortran_program(path):
 class build_fsps(build_ext):
 
     def run(self):
+        from fsps import check_fsps_version
+        check_fsps_version()
+
         # Generate the Fortran signature/interface.
         files = ['fsps.f90']
         flags = "-m _fsps -h fsps.pyf --overwrite-signature".split()

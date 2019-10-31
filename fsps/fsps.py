@@ -581,7 +581,7 @@ class StellarPopulation(object):
         if self.params.dirty:
             self._compute_csp()
 
-        wavegrid = self.wavelengths
+        wavegrid = self.wavelengths.copy()
         if peraa:
             factor = 3e18 / wavegrid ** 2
 

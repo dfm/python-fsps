@@ -55,8 +55,9 @@ before_script: |
       cd docs
       make dirhtml
       cd ..
-      git fetch https://github.com/dfm/python-fsps.git
-      git checkout gh-pages
+      git remote set-url origin https://github.com/dfm/python-fsps.git
+      git fetch origin
+      git checkout -b gh-pages origin/gh-pages
       rm -rf $VERSION
       mkdir $VERSION
       cp -r docs/_build/dirhtml/* $VERSION/

@@ -54,13 +54,11 @@ before_script: |
       python -m pip install -U sphinx
       cd docs
       make dirhtml
-      cd ..
-      git remote set-url origin https://github.com/dfm/python-fsps.git
-      git fetch origin
-      git checkout -b gh-pages origin/gh-pages
+      git clone --branch=gh-pages --depth=50 https://github.com/dfm/python-fsps.git _output
+      cd _output
       rm -rf $VERSION
-      mkdir $VERSION
-      cp -r docs/_build/dirhtml/* $VERSION/
+      mkdir -p $VERSION
+      cp -r ../_build/dirhtml/* $VERSION/
       git add $VERSION
       git -c user.name='travis' -c user.email='travis' commit -m "Updated docs for version $VERSION [ci skip]"
       git push -q -f https://$GITHUB_USER:$GITHUB_API_KEY@github.com/dfm/python-fsps.git gh-pages

@@ -6,24 +6,16 @@ matrix:
 
         # Linux, Python 2.7
         - os: linux
-          env: PYTHON_VERSION=2.7 NUMPY_VERSION=1.10.4
-        - os: linux
-          env: PYTHON_VERSION=2.7 NUMPY_VERSION=1.12
-        - os: linux
           env: PYTHON_VERSION=2.7 NUMPY_VERSION=1.14
-
-        # Linux, Python 3.5
-        - os: linux
-          env: PYTHON_VERSION=3.5 NUMPY_VERSION=1.12
-        - os: linux
-          env: PYTHON_VERSION=3.5 NUMPY_VERSION=1.14
 
         # Linux, Python 3.6
         - os: linux
-          env: PYTHON_VERSION=3.6 NUMPY_VERSION=1.12
+          env: PYTHON_VERSION=3.6 NUMPY_VERSION=1.16
         - os: linux
-          env: PYTHON_VERSION=3.6 NUMPY_VERSION=1.14
+          env: PYTHON_VERSION=3.6 NUMPY_VERSION=1.17
 
+        - os: linux
+          env: PYTHON_VERSION=3.7 NUMPY_VERSION=1.17 BUILD_DOCS=true
 
 addons:
     apt:
@@ -52,7 +44,25 @@ install:
     - source activate test
 
     # Python FSPS
-    - python setup.py build_ext --inplace
+    - python setup.py develop
 
 script:
     - travis_wait 35 py.test -v fsps/tests.py
+
+after_success: |
+    if [[ "$BUILD_DOCS" = "true" && "$TRAVIS_BRANCH" = "master" ]]
+    then
+      export VERSION=`python -c "import fsps;print(fsps.__version__)"`
+      echo $VERSION
+      python -m pip install -U sphinx
+      cd docs
+      make dirhtml
+      cd ..
+      git checkout gh-pages
+      rm -rf $VERSION
+      mkdir $VERSION
+      cp -r docs/_build/dirhtml/* $VERSION/
+      git add $VERSION
+      git -c user.name='travis' -c user.email='travis' commit -m "Updated docs for version $VERSION [ci skip]"
+      git push -q -f https://$GITHUB_USER:$GITHUB_API_KEY@github.com/dfm/python-fsps.git gh-pages
+    fi

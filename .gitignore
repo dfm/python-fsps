@@ -11,3 +11,4 @@ fsps/_fsps*
 dist
 *.egg-info
 .cache
+env

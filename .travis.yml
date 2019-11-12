@@ -47,7 +47,7 @@ install:
     - python setup.py develop
 
 before_script: |
-    if [[ "$BUILD_DOCS" = "true" && "$TRAVIS_BRANCH" = "master" ]]
+    if [[ "$BUILD_DOCS" = "true" && "$TRAVIS_BRANCH" = "master" && -n "$GITHUB_API_KEY" ]]
     then
       export VERSION=`python -c "import fsps;print(fsps.__version__)"`
       echo $VERSION

@@ -62,6 +62,7 @@ before_script: |
       git add $VERSION
       git -c user.name='travis' -c user.email='travis' commit -m "Updated docs for version $VERSION [ci skip]"
       git push -q -f https://$GITHUB_USER:$GITHUB_API_KEY@github.com/dfm/python-fsps.git gh-pages
+      cd $TRAVIS_BUILD_DIR
     fi
 
 script:

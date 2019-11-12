@@ -55,6 +55,7 @@ before_script: |
       cd docs
       make dirhtml
       cd ..
+      git fetch https://github.com/dfm/python-fsps.git
       git checkout gh-pages
       rm -rf $VERSION
       mkdir $VERSION

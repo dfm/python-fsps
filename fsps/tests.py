@@ -7,7 +7,6 @@ import numpy as np
 from numpy.testing import assert_allclose
 from .fsps import StellarPopulation
 
-
 pop = StellarPopulation(zcontinuous=1)
 default_params = dict([(k, pop.params[k]) for k in pop.params.all_params])
 
@@ -52,7 +51,104 @@ def test_get_mags():
     assert np.all(fuv1 != fuv3)
     print("done get_mags")
 
+def test_convert_mags():
+    from .filters import FILTERS
+    from .fsps import LIGHTSPEEED
+    
+    # Magnitudes in same system, no correction
+    vega = StellarPopulation.convert_mags(0, units='vegamag', scale=1.,
+                                         bands=None, attach_units=False,
+                                         mags_are_vega=True)
+    
+    assert np.allclose(vega, 0.)
 
+    ab = StellarPopulation.convert_mags(0, units='abmag', scale=1.,
+                                         bands=None, attach_units=False,
+                                         mags_are_vega=False)
+    
+    assert np.allclose(ab, 0.)
+        
+    # microJy
+    ujy = StellarPopulation.convert_mags(23.9, units='ujy', scale=1.,
+                                         bands=None, attach_units=False)
+    assert np.allclose(ujy, 1)
+        
+    # scaled
+    ujy_scl = StellarPopulation.convert_mags(23.9, units='ujy', scale=10.,
+                                         bands=None, attach_units=False)
+    assert np.allclose(ujy_scl, 10.)
+    
+    # List input, length (NBAND)
+    mlist = [23.9]*10
+    ujy = StellarPopulation.convert_mags(mlist, units='ujy', scale=1.,
+                                         bands=None, attach_units=False)
+    
+    assert np.allclose(ujy, 1)
+    assert isinstance(ujy, list)
+    
+    # Array input, shapes (NBAND) or (NAGE, NBAND)
+    NAGE = 107
+    mag_arrays = [np.ones(NAGE)*23.9]
+    for nband in [1,2,3]:
+        mag_arrays.append(np.ones((NAGE, nband))*23.9)
+
+    for arr in mag_arrays:
+        ujy = StellarPopulation.convert_mags(arr, units='ujy', scale=1.,
+                                         bands=None, attach_units=False)
+        assert np.allclose(ujy, 1)
+        assert (ujy.shape == arr.shape)
+    
+    # scale array (i.e., age grid stellar masses)
+    scl = np.ones(NAGE)*10.
+    
+    for arr in mag_arrays:
+        ujy = StellarPopulation.convert_mags(arr, units='ujy', scale=scl,
+                                         bands=None, attach_units=False)
+        assert np.allclose(ujy, 10)
+        assert (ujy.shape == arr.shape)
+    
+    # nanoJy
+    njy = StellarPopulation.convert_mags(23.9, units='njy', scale=1.,
+                                         bands=None, attach_units=False)
+    assert np.allclose(njy, 1000.)
+    
+    # fnu
+    fnu = StellarPopulation.convert_mags(23.9, units='fnu', scale=1.,
+                                         bands=None, attach_units=False)
+    assert np.allclose(fnu, 1.e-29)
+    
+    # Filter-dependent conversions
+    if 'wfc3_ir_f140w' in FILTERS:
+        bands = ['wfc3_ir_f140w']
+        
+        vega = StellarPopulation.convert_mags(0, units='vegamag', scale=1.,
+                                             bands=bands, attach_units=False,
+                                             mags_are_vega=False)
+        
+        assert np.allclose(vega, -1.08)                                    
+        
+        vl = StellarPopulation.convert_mags(mlist, units='vegamag', scale=1.,
+                                             bands=bands, attach_units=False,          
+                                             mags_are_vega=False)
+
+        assert np.allclose(vl, 23.9 - 1.08)
+        assert isinstance(vl, list)
+        
+        ab = StellarPopulation.convert_mags(0, units='abmag', scale=1.,
+                                             bands=bands, attach_units=False,
+                                             mags_are_vega=True)
+        
+        assert np.allclose(ab, 1.08)                                    
+        
+        flam = StellarPopulation.convert_mags(23.9, units='flam', scale=1.,
+                                             bands=bands, attach_units=False)
+        
+        lambda_eff = FILTERS[bands[0]].lambda_eff
+        
+        assert np.allclose(flam, 1.e-29 * LIGHTSPEED / lambda_eff**2)
+        
+    print("done convert_mags")
+    
 def test_ssp():
     _reset_default_params()
     pop.params["sfh"] = 0

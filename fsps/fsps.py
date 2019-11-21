@@ -12,6 +12,7 @@ from .filters import FILTERS
 
 __all__ = ["StellarPopulation"]
 
+LIGHTSPEED = 2.99792458e+18 # Angstrom/second
 
 class StellarPopulation(object):
     """
@@ -520,6 +521,7 @@ class StellarPopulation(object):
             cvms, vtaflag = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
             assert vactoair_flag == bool(vtaflag)
+        
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
@@ -528,7 +530,7 @@ class StellarPopulation(object):
         self._ssp_ages = None
         self._stats = None
         self._libraries = None
-
+    
     def _update_params(self):
         if self.params.dirtiness == 2:
             driver.set_ssp_params(*[self.params[k]
@@ -583,7 +585,7 @@ class StellarPopulation(object):
 
         wavegrid = self.wavelengths
         if peraa:
-            factor = 3e18 / wavegrid ** 2
+            factor = LIGHTSPEED / wavegrid ** 2
 
         else:
             factor = np.ones_like(wavegrid)
@@ -595,7 +597,7 @@ class StellarPopulation(object):
         NTFULL = driver.get_ntfull()
         return wavegrid, driver.get_spec(NSPEC, NTFULL) * factor[None, :]
 
-    def get_mags(self, zmet=None, tage=0.0, redshift=None, bands=None):
+    def get_mags(self, zmet=None, tage=0.0, redshift=None, bands=None, units='abmag', stellar_mass=None):
         """
         Get the magnitude of the CSP.
 
@@ -618,7 +620,16 @@ class StellarPopulation(object):
             The names of the filters that you would like to compute the
             magnitude for. This should correspond to the result of
             :func:`fsps.find_filter`.
+            
+        :param units: ('abmag', 'ujy', 'njy', 'flam'; default: 'abmag')
+            If other than 'abmag', convert to linear flux densities:
+                'ujy': f-nu, micro-Jansky
+                'njy': f-nu, nano-Jansky
+                'flam': f-lambda, erg/s/cm**2/A
 
+        :param stellar_mass: (float, default: None)
+            Optionally scale the output to a defined stellar mass.
+            
         :returns mags:
             The magnitude grid. If an age was was provided by the ``tage``
             parameter then the result is a 1D array with ``NBANDS`` values.
@@ -659,18 +670,28 @@ class StellarPopulation(object):
 
         inds = np.array(band_array, dtype=int)
         mags = driver.get_mags(NSPEC, NTFULL, zr, inds)
-
+                    
         if tage > 0.0:
             if bands is not None:
-                return mags[0, user_sorted_inds]
+                mags = mags[0, user_sorted_inds]
             else:
-                return mags[0, :]
+                mags = mags[0, :]
         else:
             if bands is not None:
-                return mags[:, user_sorted_inds]
-            else:
-                return mags
-
+                mags = mags[:, user_sorted_inds]
+        
+        # Do unit conversions
+        if stellar_mass is not None:
+            scale = stellar_mass/self.stellar_mass
+        else:
+            scale = 1.
+                    
+        out = self.convert_mags(mags, units=units, scale=scale, bands=bands, 
+                                attach_units=True,
+                                mags_are_vega=self.compute_vega_mags)
+                                    
+        return out
+        
     def _ztinterp(self, zpos, tpos, peraa=False):
         """
         Return an SSP spectrum, mass, and luminosity interpolated to a target
@@ -707,7 +728,7 @@ class StellarPopulation(object):
 
         if peraa:
             wavegrid = self.wavelengths
-            factor = 3e18 / wavegrid ** 2
+            factor = LIGHTSPEED / wavegrid ** 2
             spec *= factor
 
         return spec, mass, lbol
@@ -748,7 +769,7 @@ class StellarPopulation(object):
 
         if peraa:
             wavegrid = self.wavelengths
-            factor = 3e18 / wavegrid ** 2
+            factor = LIGHTSPEED / wavegrid ** 2
             spec *= factor[:, None, None]
 
         return spec, mass, lbol
@@ -803,7 +824,7 @@ class StellarPopulation(object):
                                 comp, mdot, weight, outspec)
         if peraa:
             wavegrid = self.wavelengths
-            factor = 3e18 / wavegrid ** 2
+            factor = LIGHTSPEED / wavegrid ** 2
             outspec *= factor
 
         return outspec
@@ -928,7 +949,7 @@ class StellarPopulation(object):
         if (not self.params["smooth_velocity"]):
             print("Warning: You are setting an LSF for the SSPs, "
                   "but the ``smooth_velocity`` parameter is not True.")
-
+    
     def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
         """
         Smooth a spectrum by a gaussian with standard deviation given by sigma.
@@ -982,7 +1003,21 @@ class StellarPopulation(object):
         NBANDS = driver.get_nbands()
         lambda_eff, magvega, magsun = driver.get_filter_data(NBANDS)
         return lambda_eff, magvega, magsun
-
+    
+    @property 
+    def compute_vega_mags(self):
+        """compute_vega_mags parameter set in the FSPS driver
+        """
+        cvms, vtaflag = driver.get_setup_vars()
+        return cvms
+    
+    @property 
+    def vactoair_flag(self):
+        """vactoair_flag parameter set in the FSPS driver
+        """
+        cvms, vtaflag = driver.get_setup_vars()
+        return vtaflag
+        
     @property
     def wavelengths(self):
         """The wavelength scale for the computed spectra, in :math:`\AA`
@@ -1149,8 +1184,138 @@ class StellarPopulation(object):
         if self._libraries is None:
             self._libraries = driver.get_libraries()
         return self._libraries
+    
+    @staticmethod
+    def convert_mags(mags, scale=1., units='abmag', attach_units=True,
+                     mags_are_vega=False, bands=None):
+        """
+        :param mags: 
+            Input magnitudes.  Mag system indicated in the `mags_are_vega` 
+            keyword.
 
+        :param units: default: 'abmag')
+            Available options:
+                'abmag', 'vegamag': Magnitudes
+                'ujy': f-nu, micro-Jansky
+                'njy': f-nu, nano-Jansky
+                'fnu': f-nu, erg/s/cm**2/Hz
+                'flam': f-lambda, erg/s/cm**2/A
+        
+        :param scale: (default: 1.)
+            Linear scaling to apply to the input values.  Can also be an array
+            of the same size as the first dimension of `mags`.
+        
+        :param mags_are_vega: (default: False)
+            Specify if input magnitudes are on Vega system.
+        
+        :param attach_units: (default: True)
+            Try to attach unit label using `~astropy.units`.
+                      
+        """
+        try:
+            import astropy.units as u
+        except:
+            u = None
+            
+        ALLOWED_UNITS = ['vegamag', 'abmag', 'ujy', 'njy', 'fnu', 'flam']
+        
+        dmag = -2.5*np.log10(scale)
+        mags2 = np.atleast_2d(mags)
+        if hasattr(mags, 'ndim'):
+            if mags.ndim == 1:
+                mags2 = mags2.T
+        
+        if isinstance(mags, list):
+            mags2 = mags2.T
+        
+        # Allow for vector scale
+        scaled_mags = (np.atleast_2d(mags2).T+dmag).T
+        
+        if units not in ALLOWED_UNITS:
+            msg = 'Specified units ({0}) not in {1}.'
+            raise ValueError(msg.format(units.__repr__(), ALLOWED_UNITS))
+            
+        if mags_are_vega:
+            vegamag = scaled_mags
+            abmag = None
+        else:
+            vegamag = None
+            abmag = scaled_mags
+             
+        # Do we need filter info?
+        need_filters = (units == 'flam')
+        need_filters |= (mags_are_vega) & (units != 'vegamag')
+        need_filters |= (not mags_are_vega) & (units == 'vegamag')
+        
+        if need_filters:
+            nbands_mag = scaled_mags.shape[-1]
+            if bands is None:
+                bands = FILTERS
+            
+            nbands = len(bands)
+            
+            if nbands != nbands_mag:
+                msg = 'Shape of `mags`, {0}, doesn\'t match number of specified bands ({1})'
+                raise ValueError(msg.format(scaled_mags.shape, nbands))
 
+            ab_minus_vega = np.zeros(len(bands))
+            for i, band in enumerate(bands):
+                filt = FILTERS[band]
+                ab_minus_vega[i] = filt.msun_ab - filt.msun_vega
+            
+            if vegamag is None:
+                vegamag = abmag - ab_minus_vega
+            else:
+                abmag = vegamag + ab_minus_vega
+                
+        if (units == 'vegamag'):
+            return match_dimensions(vegamag, mags)
+
+        if units == 'abmag':
+            return match_dimensions(abmag, mags)
+                    
+        # mags to microJy
+        ujy = 10**(-0.4*(abmag-23.9))
+        
+        if units == 'ujy':
+            if (u is not None) & attach_units:
+                ujy *= u.microJansky
+            
+            return match_dimensions(ujy, mags)
+                
+        elif units == 'njy':
+            if (u is not None) & attach_units:
+                ujy *= u.nanoJansky
+            
+            return match_dimensions(ujy*1000, mags)
+        
+        else: # 'flam', 'fnu'
+            fnu = ujy*1.e-29
+            if units == 'fnu':
+                if (u is not None) & attach_units:
+                    fnu *= u.erg/u.cm**2/u.second/u.Hz
+                
+                return match_dimensions(fnu, mags)
+            
+            ### Last, flam
+            
+            # Get effective wavelengths
+            lambda_eff = np.zeros(len(bands))
+            for i, band in enumerate(bands):
+                if band not in FILTERS:
+                    msg = 'Band {0} not in `fsps.filters.FILTERS`.'
+                    raise KeyError(msg.format(band))
+                else:
+                    lambda_eff[i] = FILTERS[band].lambda_eff
+            
+            flam = fnu * LIGHTSPEED / lambda_eff**2
+            if (u is not None) & attach_units:
+                flam *= u.erg/u.cm**2/u.second/u.Angstrom
+
+            return match_dimensions(flam, mags)
+            
+
+            
 class ParameterSet(object):
 
     ssp_params = ["imf_type", "imf_upper_limit", "imf_lower_limit",
@@ -1220,3 +1385,28 @@ class ParameterSet(object):
 
             self._params[k] = v
             self.check_params()
+
+def match_dimensions(arr1, arr2):
+    """
+    Match dimensions/type of `arr1` to `arr2`, where the latter can be an 
+    array, list or scalar.
+    """
+    
+    # Test sizes match
+    s1 = np.atleast_2d(arr1)
+    s2 = np.atleast_1d(arr2)
+    if s1.size != s2.size:
+        msg = 'Size of arr1 ({0}) doesn\'t match arr2 ({1})'
+        raise ValueError(msg.format(s1.size, s2.size))
+    
+    if isinstance(arr2, list):
+        return list(arr1.flatten())
+    elif isinstance(arr2, np.ndarray):
+        return s1.reshape(arr2.shape)
+    elif s2.size == 1:
+        # scalar
+        return s1.flatten()[0]
+    else:
+        msg = 'Don\'t know how to handle `arr2` class {0}'
+        raise ValueError(msg.format(arr2.__class__))
+        

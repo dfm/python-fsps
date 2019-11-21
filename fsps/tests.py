@@ -53,7 +53,8 @@ def test_get_mags():
 
 def test_convert_mags():
     from .filters import FILTERS
-    from .fsps import LIGHTSPEEED
+    
+    LIGHTSPEED = 2.99792458e+18
     
     # Magnitudes in same system, no correction
     vega = StellarPopulation.convert_mags(0, units='vegamag', scale=1.,

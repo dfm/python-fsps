@@ -621,12 +621,14 @@ class StellarPopulation(object):
             magnitude for. This should correspond to the result of
             :func:`fsps.find_filter`.
             
-        :param units: ('abmag', 'ujy', 'njy', 'flam'; default: 'abmag')
-            If other than 'abmag', convert to linear flux densities:
+        :param units: (default: 'abmag')
+            Output units.  Available options:
+                'abmag', 'vegamag': Magnitudes
                 'ujy': f-nu, micro-Jansky
                 'njy': f-nu, nano-Jansky
+                'fnu': f-nu, erg/s/cm**2/Hz
                 'flam': f-lambda, erg/s/cm**2/A
-
+            
         :param stellar_mass: (float, default: None)
             Optionally scale the output to a defined stellar mass.
             
@@ -1210,7 +1212,11 @@ class StellarPopulation(object):
         
         :param attach_units: (default: True)
             Try to attach unit label using `~astropy.units`.
-                      
+        
+        :returns scaled_mags:
+            Magnitudes / flux densities scaled by `scale` and in the desired
+            `units`.
+                       
         """
         try:
             import astropy.units as u

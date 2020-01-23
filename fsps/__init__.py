@@ -29,7 +29,7 @@ except KeyError:
 
 # Check to make sure the required environment variable is an FSPS install directory
 if not os.path.isdir(ev):
-    raise ImportError(f"SPS_HOME environment variable '{ev}' is not a directory - is it set correctly?")
+    raise ImportError("SPS_HOME environment variable '" + ev + "' is not a directory - is it set correctly?")
 
 # Check the githashes to make sure the required FSPS updates are
 # present, and if not or there are no githashes, raise an error

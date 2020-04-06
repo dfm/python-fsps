@@ -44,7 +44,7 @@ install:
     - source activate test
 
     # Python FSPS
-    - python setup.py develop
+    - python -m pip install -e .
 
 before_script: |
     if [[ "$BUILD_DOCS" = "true" && "$TRAVIS_BRANCH" = "master" && -n "$GITHUB_API_KEY" ]]

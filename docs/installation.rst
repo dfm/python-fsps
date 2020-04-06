@@ -31,7 +31,7 @@ You can do this by cloning the `python-fsps repository
 
     git clone https://github.com/dfm/python-fsps.git
     cd python-fsps
-    python setup.py install
+    python -m pip install .
 
 Installing stable version
 -------------------------

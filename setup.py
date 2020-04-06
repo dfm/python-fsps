@@ -130,6 +130,7 @@ setup(
     install_requires=[
         'numpy<=1.16; python_version=="2.7"',
         'numpy; python_version>="3.5"',
-        'pygit2',
+        'pygit2<=0.28; python_version=="2.7"',
+        'pygit2; python_version>="3.5"',
     ],
 )

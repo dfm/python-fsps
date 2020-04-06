@@ -2,7 +2,7 @@
   :target: https://travis-ci.org/dfm/python-fsps
 
 **Read the documentation:**
-`dan.iel.fm/python-fsps <http://dan.iel.fm/python-fsps>`_
+`dfm.io/python-fsps <http://dfm.io/python-fsps>`_
 
 If you use this code, follow the citation requirements `on the FSPS
 homepage <https://github.com/cconroy20/fsps>`_ and reference

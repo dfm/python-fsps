@@ -47,7 +47,7 @@ and the surviving stellar mass at 13.7 Gyr (both in units of :math:`M_\odot`)::
 It is highly recommended that only one instance of :class:`fsps.StellarPopulation` be used in a given program.
 
 Example using nebular emission
--------
+------------------------------
 
 We initialize a simple stellar population and set the flag to
 include nebular emission::

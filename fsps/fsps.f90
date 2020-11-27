@@ -346,6 +346,24 @@ contains
 
   end subroutine
 
+  subroutine smooth_spectrum_ires(ns,wave,spec,sigma_wave,minw,maxw)
+    
+    ! Smooth the spectrum by a wavelength-dependent gaussian of width sigma_broad
+    
+    implicit none
+    integer, intent(in) :: ns
+    double precision :: dummy_sigma
+    double precision, intent(in) :: minw,maxw
+    double precision, dimension(ns), intent(in) :: wave
+    double precision, dimension(ns), intent(in) :: sigma_wave
+    double precision, dimension(ns), intent(inout) :: spec
+    
+    dummy_sigma = 100.
+    
+    call smoothspec(wave,spec,dummy_sigma,minw,maxw,sigma_wave)
+
+  end subroutine
+
   subroutine stellar_spectrum(ns,mact,logt,lbol,logg,phase,ffco,lmdot,wght,spec_out)
     
     ! Get a stellar spectrum for a given set of parameters
@@ -467,7 +485,7 @@ contains
     ns = nspec
 
   end subroutine
-
+  
   subroutine get_nbands(nb)
 
     ! Get the number of known filters (hard coded in sps_vars).

@@ -904,7 +904,9 @@ class StellarPopulation(object):
             assert self._zcontinuous == 3, "_zcontinuous must be 3 for multi-Z tabular."
             assert self.params["add_neb_emission"] is False, ("Cannot compute nebular emission "
                                                               "with multi-metallicity tabular SFH.")
-
+        
+        self._sfh_tab = (age, sfr, Z)
+        
         driver.set_sfh_tab(age*1e9, sfr, Z)
         if self.params["sfh"] == 3:
             self.params.dirtiness = max(1, self.params.dirtiness)
@@ -1227,12 +1229,12 @@ class StellarPopulation(object):
         
         dmag = -2.5*np.log10(scale)
         mags2 = np.atleast_2d(mags)
-        if hasattr(mags, 'ndim'):
-            if mags.ndim == 1:
-                mags2 = mags2.T
-        
-        if isinstance(mags, list):
-            mags2 = mags2.T
+        # if hasattr(mags, 'ndim'):
+        #     if mags.ndim == 1:
+        #         mags2 = mags2.T
+        # 
+        # if isinstance(mags, list):
+        #     mags2 = mags2.T
         
         # Allow for vector scale
         scaled_mags = (np.atleast_2d(mags2).T+dmag).T

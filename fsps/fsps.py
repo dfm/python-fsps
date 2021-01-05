@@ -366,7 +366,7 @@ class StellarPopulation(object):
 
     :param dust1_index: (default: -1.0)
         Power law index of the attenuation curve affecting stars younger than
-        dust_tesc corresponding to ``dust1``. Only used when ``dust_type=0``.
+        dust_tesc corresponding to ``dust1``. Used for all dust types.
 
     :param mwr: (default: 3.1)
         The ratio of total to selective absorption which characterizes the MW

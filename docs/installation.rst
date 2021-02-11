@@ -6,7 +6,7 @@ Prerequisites
 
 There are only two required dependencies for building this package: `FSPS
 <https://github.com/cconroy20/fsps>`_ (obviously) and `NumPy
-<http://www.numpy.org/>`_.
+<https://www.numpy.org/>`_.
 First, make sure that you have NumPy installed (using your favorite method)
 and access to the ``f2py`` executable (this should be installed along with
 NumPy).
@@ -56,13 +56,13 @@ Here are possible fixes for the most common installation issues:
   installation, and if you do not it will print an error.  This requires that
   you have `git` and that FSPS be under git version control.  If you do not
   have the correct version, try::
-  
+
       cd $SPS_HOME
       git pull
       cd src
       make clean
       make all
-   
+
   to get and compile the most recent version.  Then try to install python-FSPS again.
 
 * fPIC.  For some compilers (e.g. Intel) it may be necessary to set the
@@ -72,9 +72,9 @@ Here are possible fixes for the most common installation issues:
   For gfortran the flag is not necesary.::
 
     cd $SPS_HOME/src
-      
+
   edit the ``F90FLAGS=`` line in the Makefile to include ``-fPIC`` and then::
-    
+
     make clean
     make all
 

@@ -1,1 +1,7 @@
-include *.rst fsps/fsps.f90 fsps/data/filter_keys.txt
+include *.rst
+
+graft src/fsps/libfsps
+
+exclude .*
+prune .github
+prune docs

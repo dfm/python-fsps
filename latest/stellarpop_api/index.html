@@ -274,8 +274,8 @@ Parameter describing the metallicity, given in units of <span class="math notran
 (Z/Z_\odot)\)</span>.  Only used if <code class="docutils literal notranslate"><span class="pre">zcontinuous</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
 <li><p><strong>pmetals</strong> – (default: 2.0)
 The power for the metallicty distribution function.  The MDF is given by
-<span class="math notranslate nohighlight">\((Z \, e^{{-Z}})^{{\mathrm{pmetals}}}\)</span> where <span class="math notranslate nohighlight">\(Z =
-z/(z_\odot \, 10^{{\mathrm{logzsol}}})\)</span> and z is the metallicity in
+<span class="math notranslate nohighlight">\((Z \\, e^{{-Z}})^{{\mathrm{pmetals}}}\)</span> where <span class="math notranslate nohighlight">\(Z =
+z/(z_\\odot \\, 10^{{\mathrm{logzsol}}})\)</span> and z is the metallicity in
 linear units (i.e., <span class="math notranslate nohighlight">\(z_\odot = 0.019\)</span>).  Using a negative value
 will result in smoothing of the SSPs by a three-point triangular kernel
 before linear interpolation (in <span class="math notranslate nohighlight">\(\log Z\)</span>) to the requested
@@ -349,7 +349,7 @@ component and a burst) with parameters <code class="docutils literal notranslate
 <li><p>3: Compute a tabulated SFH, which is supplied through the
 <code class="docutils literal notranslate"><span class="pre">set_tabular_sfh</span></code> method.  See that method for details.</p></li>
 <li><p>4: Delayed tau-model. This is the same as option 1 except that the
-tau-model component takes the form <span class="math notranslate nohighlight">\(t\,e^{−t/\tau}\)</span>.</p></li>
+tau-model component takes the form <span class="math notranslate nohighlight">\(t\,e^{−t/\\tau}\)</span>.</p></li>
 <li><p>5: Delayed tau-model with a transition at a time <code class="docutils literal notranslate"><span class="pre">sf_trunc</span></code> to a
 linearly decreasing SFH with the slope specified by <code class="docutils literal notranslate"><span class="pre">sf_slope</span></code>. See
 Simha et al. 2014 for details.</p></li>
@@ -357,7 +357,7 @@ Simha et al. 2014 for details.</p></li>
 </p></li>
 <li><p><strong>tau</strong> – (default: 1.0)
 Defines e-folding time for the SFH, in Gyr. Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or
-<code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>. The range is <span class="math notranslate nohighlight">\(0.1 &lt; \tau &lt; 10^2\)</span>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>. The range is <span class="math notranslate nohighlight">\(0.1 &lt; \\tau &lt; 10^2\)</span>.</p></li>
 <li><p><strong>const</strong> – (default: 0.0)
 Defines the constant component of the SFH. This quantity is defined as
 the fraction of mass formed in a constant mode of SF; the range is
@@ -373,7 +373,7 @@ If set to a non-zero value, the
 <code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.StellarPopulation.compute_csp()</span></code> method will compute the
 spectra and magnitudes only at this age, and will therefore only output
 one age result. The units are Gyr. (The default is to compute and
-return results from <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the
+return results from <span class="math notranslate nohighlight">\(t \\approx 0\)</span> to the maximum age in the
 isochrones).</p></li>
 <li><p><strong>fburst</strong> – (default: 0.0)
 Deﬁnes the fraction of mass formed in an instantaneous burst of star
@@ -407,7 +407,7 @@ strength of the UV bump.</p></li>
 <li><p><strong>dust_tesc</strong> – (default: 7.0)
 Stars younger than <code class="docutils literal notranslate"><span class="pre">dust_tesc</span></code> are attenuated by both <code class="docutils literal notranslate"><span class="pre">dust1</span></code> and
 <code class="docutils literal notranslate"><span class="pre">dust2</span></code>, while stars older are attenuated by <code class="docutils literal notranslate"><span class="pre">dust2</span></code> only. Units
-are <span class="math notranslate nohighlight">\(\log (\mathrm{yrs})\)</span>.</p></li>
+are <span class="math notranslate nohighlight">\(\\log (\\mathrm{yrs})\)</span>.</p></li>
 <li><p><strong>dust1</strong> – (default: 0.0)
 Dust parameter describing the attenuation of young stellar light,
 i.e. where <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">&lt;=</span> <span class="pre">dust_tesc</span></code> (for details, see Conroy et al. 2009a).</p></li>

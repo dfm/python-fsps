@@ -4,6 +4,7 @@
 from __future__ import division, print_function
 
 import os
+import sys
 import subprocess
 
 __version__ = "0.3.0"
@@ -18,8 +19,10 @@ def run_command(cmd):
     out = [s.decode("utf-8").strip() for s in child.stdout]
     err = [s.decode("utf-8").strip() for s in child.stderr]
     w = child.wait()
-    return os.WEXITSTATUS(w), out, err
-
+    if not sys.platform.startswith("win"):
+        return os.WEXITSTATUS(w), out, err
+    else:
+        return w, out, err
 
 # Check to make sure that the required environment variable is present.
 try:
@@ -35,7 +38,7 @@ if not os.path.isdir(ev):
 # present, and if not or there are no githashes, raise an error
 REQUIRED_GITHASHES = ['6ad1058', 'b5250ab', 'a23e409', '45f9680','05584df']
 
-cmd = 'cd {0}; git log --format="format:%h"'.format(ev)
+cmd = 'cd {0}; git log --format="format:%h"'.format(ev) if not sys.platform.startswith("win") else 'cd {0} & git log --format="format:%h"'.format(ev)
 stat, githashes, err = run_command(cmd)
 accepted = (len(githashes) > 0) and (len(err) == 0)
 if not accepted:

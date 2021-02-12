@@ -38,7 +38,7 @@ jobs:
           DISTUTILS_USE_SDK: 1
           MSSdk: 1
       - name: Run tests
-        run: python -m pytest -vs tests/tests.py
+        run: python -m pytest --durations=0 -vs tests/tests.py
         env:
           SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
 

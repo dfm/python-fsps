@@ -15,21 +15,21 @@ jobs:
         python-version: ["3.8", "3.9"]
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v2
+      - name: Clone the repo
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/setup-python@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       - name: Link gfortran on macos (hacks)
         if: runner.os == 'macOS'
         run: ln -s `which gfortran-10` /usr/local/bin/gfortran
-      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Set up windows compilers
+        uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
-      - name: Install 'msvc-runtime' on windows (hacks)
-        if: runner.os == 'Windows'
-        run: python -m pip install msvc-runtime
       - name: Install dependencies
         run: |
           python -m pip install -U pip pytest
@@ -37,9 +37,6 @@ jobs:
         env:
           DISTUTILS_USE_SDK: 1
           MSSdk: 1
-      - run: python -c 'import fsps;print(fsps.__version__)'
-        env:
-          SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
       - name: Run tests
         run: python -m pytest -vs tests/tests.py
         env:
@@ -49,11 +46,13 @@ jobs:
     name: "docs"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Clone the repo
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/setup-python@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
           python-version: "3.9"
       - name: Install dependencies
@@ -61,7 +60,6 @@ jobs:
           python -m pip install -U pip sphinx
           python -m pip install .
       - name: Build documentation
-        continue-on-error: true
         run: .github/workflows/build_docs.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

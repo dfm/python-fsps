@@ -14,5 +14,8 @@ cp -r ../_build/dirhtml/* latest/
 
 # Push the results to GitHub
 git add latest
-git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "Updated docs [ci skip]"
-git push --force https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY gh-pages
+if git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "Updated docs [ci skip]"; then
+    git push --force https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY gh-pages
+else
+    echo "No changes"
+fi

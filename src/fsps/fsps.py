@@ -177,8 +177,8 @@ class StellarPopulation(object):
 
     :param pmetals: (default: 2.0)
        The power for the metallicty distribution function.  The MDF is given by
-       :math:`(Z \\, e^{{-Z}})^{{\mathrm{pmetals}}}` where :math:`Z =
-       z/(z_\\odot \\, 10^{{\mathrm{logzsol}}})` and z is the metallicity in
+       :math:`(Z \, e^{-Z})^{\mathrm{pmetals}}` where :math:`Z =
+       z/(z_\odot \, 10^{\mathrm{logzsol}})` and z is the metallicity in
        linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative value
        will result in smoothing of the SSPs by a three-point triangular kernel
        before linear interpolation (in :math:`\log Z`) to the requested
@@ -216,7 +216,7 @@ class StellarPopulation(object):
         M_\odot`. Only used if ``imf_type=2``.
 
     :param imf3: (default: 2.3)
-        Logarithmic slope of the IMF over the range :math:`1.0 < M < imf\_upper\_limit
+        Logarithmic slope of the IMF over the range :math:`1.0 < M < \mathrm{imf\_upper\_limit}
         M_\odot`. Only used if ``imf_type=2``.
 
     :param vdmc: (default: 0.08)
@@ -267,14 +267,14 @@ class StellarPopulation(object):
         * 3: Compute a tabulated SFH, which is supplied through the
           ``set_tabular_sfh`` method.  See that method for details.
         * 4: Delayed tau-model. This is the same as option 1 except that the
-          tau-model component takes the form :math:`t\,e^{−t/\\tau}`.
+          tau-model component takes the form :math:`t\,e^{−t/\tau}`.
         * 5: Delayed tau-model with a transition at a time ``sf_trunc`` to a
           linearly decreasing SFH with the slope specified by ``sf_slope``. See
           Simha et al. 2014 for details.
 
     :param tau: (default: 1.0)
         Defines e-folding time for the SFH, in Gyr. Only used if ``sfh=1`` or
-        ``sfh=4``. The range is :math:`0.1 < \\tau < 10^2`.
+        ``sfh=4``. The range is :math:`0.1 < \tau < 10^2`.
 
     :param const: (default: 0.0)
         Defines the constant component of the SFH. This quantity is defined as
@@ -294,7 +294,7 @@ class StellarPopulation(object):
         :func:`fsps.StellarPopulation.compute_csp` method will compute the
         spectra and magnitudes only at this age, and will therefore only output
         one age result. The units are Gyr. (The default is to compute and
-        return results from :math:`t \\approx 0` to the maximum age in the
+        return results from :math:`t \approx 0` to the maximum age in the
         isochrones).
 
     :param fburst: (default: 0.0)
@@ -331,7 +331,7 @@ class StellarPopulation(object):
     :param dust_tesc: (default: 7.0)
         Stars younger than ``dust_tesc`` are attenuated by both ``dust1`` and
         ``dust2``, while stars older are attenuated by ``dust2`` only. Units
-        are :math:`\\log (\\mathrm{yrs})`.
+        are :math:`\log (\mathrm{yrs})`.
 
     :param dust1: (default: 0.0)
         Dust parameter describing the attenuation of young stellar light,
@@ -423,11 +423,7 @@ class StellarPopulation(object):
     """
 
     def __init__(
-        self,
-        compute_vega_mags=False,
-        vactoair_flag=False,
-        zcontinuous=0,
-        **kwargs
+        self, compute_vega_mags=False, vactoair_flag=False, zcontinuous=0, **kwargs
     ):
 
         # Set up the parameters to their default values.
@@ -534,13 +530,9 @@ class StellarPopulation(object):
 
     def _update_params(self):
         if self.params.dirtiness == 2:
-            driver.set_ssp_params(
-                *[self.params[k] for k in self.params.ssp_params]
-            )
+            driver.set_ssp_params(*[self.params[k] for k in self.params.ssp_params])
         if self.params.dirtiness >= 1:
-            driver.set_csp_params(
-                *[self.params[k] for k in self.params.csp_params]
-            )
+            driver.set_csp_params(*[self.params[k] for k in self.params.csp_params])
         self.params.dirtiness = 0
 
     def _compute_csp(self):
@@ -553,7 +545,7 @@ class StellarPopulation(object):
         self._stats = None
 
     def get_spectrum(self, zmet=None, tage=0.0, peraa=False):
-        """
+        r"""
         Return spectra for the current CSP.
 
         :param zmet: (default: None)
@@ -563,10 +555,10 @@ class StellarPopulation(object):
         :param tage: (default: 0.0)
             The age of the stellar population for which to obtain a
             spectrum. By default, this will compute a grid of ages from
-            :math:`t \\approx 0` to the maximum age in the isochrones.
+            :math:`t \approx 0` to the maximum age in the isochrones.
 
         :param peraa: (default: False)
-            If ``True``, return the spectrum in :math:`L_\odot/\AA`. Otherwise,
+            If ``True``, return the spectrum in :math:`L_\odot/A`. Otherwise,
             return the spectrum in the FSPS standard
             :math:`L_\odot/\mathrm{Hz}`.
 
@@ -574,7 +566,7 @@ class StellarPopulation(object):
             The wavelength grid in Angstroms.
 
         :returns spectrum:
-            The spectrum in :math:`L_\odot/\mathrm{Hz}` or :math:`L_\odot/\AA`.
+            The spectrum in :math:`L_\odot/\mathrm{Hz}` or :math:`L_\odot/A`.
             If an age was provided by the ``tage`` parameter then the result
             is a 1D array with ``NSPEC`` values. Otherwise, it is a 2D array
             with shape ``(NTFULL, NSPEC)``.
@@ -601,7 +593,7 @@ class StellarPopulation(object):
         return wavegrid, driver.get_spec(NSPEC, NTFULL) * factor[None, :]
 
     def get_mags(self, zmet=None, tage=0.0, redshift=None, bands=None):
-        """
+        r"""
         Get the magnitude of the CSP.
 
         :param zmet: (default: None)
@@ -656,9 +648,7 @@ class StellarPopulation(object):
         NSPEC = driver.get_nspec()
         band_array = np.ones(NBANDS, dtype=bool)
         if bands is not None:
-            user_sorted_inds = np.array(
-                [FILTERS[band.lower()].index for band in bands]
-            )
+            user_sorted_inds = np.array([FILTERS[band.lower()].index for band in bands])
             band_array[
                 np.array(
                     [i not in user_sorted_inds for i in range(NBANDS)],
@@ -681,7 +671,7 @@ class StellarPopulation(object):
                 return mags
 
     def _ztinterp(self, zpos, tpos, peraa=False):
-        """
+        r"""
         Return an SSP spectrum, mass, and luminosity interpolated to a target
         metallicity and age.  This effectively wraps the ZTINTERP subroutine.
         Only the SSPs bracketing a given metallicity will be regenerated, if
@@ -694,7 +684,7 @@ class StellarPopulation(object):
             The desired age, in Gyr.
 
         :param peraa: (default: False)
-            If true, return spectra in units of :math:`L_\odot/\AA`, otherwise
+            If true, return spectra in units of :math:`L_\odot/A`, otherwise
             :math:`L_\odot/\mathrm{Hz}`
 
         :returns spec:
@@ -731,7 +721,7 @@ class StellarPopulation(object):
             ``ssp_spec_zz`` array.
 
         :param peraa: (default: False)
-            If true, return spectra in units of :math:`L_\odot/\AA`, otherwise
+            If true, return spectra in units of :math:`L_\odot/A`, otherwise
             :math:`L_\odot/\mathrm{Hz}`
 
         :returns spec:
@@ -830,7 +820,7 @@ class StellarPopulation(object):
         return outspec
 
     def isochrones(self, outfile="pyfsps_tmp"):
-        """
+        r"""
         Write the isochrone data (age, mass, weights, phases, magnitudes, etc.)
         to a .cmd file, then read it into a huge numpy array.
 
@@ -874,7 +864,7 @@ class StellarPopulation(object):
         return cmd_data
 
     def set_tabular_sfh(self, age, sfr, Z=None):
-        """
+        r"""
         Set a tabular SFH for use with the ``sfh=3`` option.  See the FSPS
         documentation for information about tabular SFHs.  This SFH will be
         piecewise linearly interpolated.
@@ -902,15 +892,10 @@ class StellarPopulation(object):
             assert self._zcontinuous != 3
         else:
             assert len(Z) == ntab
-            assert np.all(
-                Z >= 0
-            ), "All values of Z must be greater than or equal 0."
-            assert (
-                self._zcontinuous == 3
-            ), "_zcontinuous must be 3 for multi-Z tabular."
+            assert np.all(Z >= 0), "All values of Z must be greater than or equal 0."
+            assert self._zcontinuous == 3, "_zcontinuous must be 3 for multi-Z tabular."
             assert self.params["add_neb_emission"] is False, (
-                "Cannot compute nebular emission "
-                "with multi-metallicity tabular SFH."
+                "Cannot compute nebular emission " "with multi-metallicity tabular SFH."
             )
 
         driver.set_sfh_tab(age * 1e9, sfr, Z)
@@ -923,7 +908,7 @@ class StellarPopulation(object):
             )
 
     def set_lsf(self, wave, sigma, wmin=None, wmax=None):
-        """
+        r"""
         Set a wavelength dependent Gaussian line-spread function that will be
         applied to the SSPs.  Only takes effect if ``smooth_lsf`` and
         ``smooth_velocity`` are True.
@@ -967,7 +952,7 @@ class StellarPopulation(object):
             )
 
     def smoothspec(self, wave, spec, sigma, minw=None, maxw=None):
-        """
+        r"""
         Smooth a spectrum by a gaussian with standard deviation given by sigma.
         Whether the smoothing is in velocity space or in wavelength space
         depends on the value of the value of smooth_velocity.
@@ -1002,7 +987,7 @@ class StellarPopulation(object):
         return outspec
 
     def filter_data(self):
-        """
+        r"""
         Return effective wavelengths, and vega and solar magnitudes
         of all filters.
 
@@ -1022,7 +1007,7 @@ class StellarPopulation(object):
 
     @property
     def wavelengths(self):
-        r"""The wavelength scale for the computed spectra, in :math:`\AA`"""
+        r"""The wavelength scale for the computed spectra, in Angstroms"""
         if self._wavelengths is None:
             NSPEC = driver.get_nspec()
             self._wavelengths = driver.get_lambda(NSPEC)
@@ -1030,7 +1015,7 @@ class StellarPopulation(object):
 
     @property
     def emline_wavelengths(self):
-        r"""Emission line wavelengths, in :math:`\AA`"""
+        r"""Emission line wavelengths, in Angstroms"""
         if self._emwavelengths is None:
             NLINE = driver.get_nemline()
             self._emwavelengths = driver.get_emlambda(NLINE)
@@ -1038,7 +1023,7 @@ class StellarPopulation(object):
 
     @property
     def zlegend(self):
-        """The available metallicities."""
+        r"""The available metallicities."""
         if self._zlegend is None:
             NZ = driver.get_nz()
             self._zlegend = driver.get_zlegend(NZ)
@@ -1046,7 +1031,7 @@ class StellarPopulation(object):
 
     @property
     def ssp_ages(self):
-        """The age grid of the SSPs, in log(years), used by FSPS."""
+        r"""The age grid of the SSPs, in log(years), used by FSPS."""
         if self._ssp_ages is None:
             NTFULL = driver.get_ntfull()
             self._ssp_ages = driver.get_timefull(NTFULL)
@@ -1054,12 +1039,12 @@ class StellarPopulation(object):
 
     @property
     def log_age(self):
-        """log10(age/yr)."""
+        r"""log10(age/yr)."""
         return self._stat(0)
 
     @property
     def stellar_mass(self):
-        """Surviving stellar mass in solar masses (including remnants if the
+        r"""Surviving stellar mass in solar masses (including remnants if the
         FSPS parameter ``add_stellar_remants=1``).
         """
         return self._stat(1)
@@ -1076,12 +1061,12 @@ class StellarPopulation(object):
 
     @property
     def dust_mass(self):
-        """Dust mass, in solar masses."""
+        r"""Dust mass, in solar masses."""
         return self._stat(4)
 
     @property
     def formed_mass(self):
-        """Integral of the SFH, in solar masses."""
+        r"""Integral of the SFH, in solar masses."""
         return self._stat(5)
 
     @property
@@ -1094,9 +1079,7 @@ class StellarPopulation(object):
             self._compute_csp()
 
         if self._stats is None:
-            self._stats = driver.get_stats(
-                driver.get_ntfull(), driver.get_nemline()
-            )
+            self._stats = driver.get_stats(driver.get_ntfull(), driver.get_nemline())
 
         return self._stats
 
@@ -1130,9 +1113,7 @@ class StellarPopulation(object):
         """
         from scipy.special import gammainc
 
-        assert (
-            self.params["sf_trunc"] <= 0
-        ), "sfr_avg not supported for sf_trunc > 0"
+        assert self.params["sf_trunc"] <= 0, "sfr_avg not supported for sf_trunc > 0"
         if self.params["sfh"] == 1:
             power = 1
         elif self.params["sfh"] == 4:
@@ -1155,9 +1136,7 @@ class StellarPopulation(object):
         tmax = (tage - sf_start) / tau
         normalized_times = (np.array([times, times - dt]).T - sf_start) / tau
 
-        tau_mass_frac = gammainc(power, normalized_times) / gammainc(
-            power, tmax
-        )
+        tau_mass_frac = gammainc(power, normalized_times) / gammainc(power, tmax)
         burst_in_past = tb <= normalized_times
         mass = (
             tau_mass_frac
@@ -1177,12 +1156,12 @@ class StellarPopulation(object):
 
     @property
     def isoc_library(self):
-        """The name of the isochrone library being used in FSPS."""
+        r"""The name of the isochrone library being used in FSPS."""
         return self.libraries[0]
 
     @property
     def spec_library(self):
-        """The name of the spectral library being used in FSPS."""
+        r"""The name of the spectral library being used in FSPS."""
         return self.libraries[1]
 
     @property
@@ -1293,9 +1272,7 @@ class ParameterSet(object):
         ), "zmet={0} out of range [1, {1}]".format(self._params["zmet"], NZ)
         assert self._params["dust_type"] in range(
             5
-        ), "dust_type={0} out of range [0, 4]".format(
-            self._params["dust_type"]
-        )
+        ), "dust_type={0} out of range [0, 4]".format(self._params["dust_type"])
         assert self._params["imf_type"] in range(
             6
         ), "imf_type={0} out of range [0, 5]".format(self._params["imf_type"])

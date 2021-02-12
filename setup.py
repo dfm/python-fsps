@@ -59,8 +59,6 @@ ext = Extension(
 
 class custom_build_ext(build_ext):
     def run(self):
-        # if not self.compiler and sys.platform.startswith("win"):
-        #     self.compiler = "mingw32"
         build_ext.run(self)
 
         # HACKS: Copy over any extra DLL files
@@ -71,9 +69,7 @@ class custom_build_ext(build_ext):
             for ext in self.extensions
         }
         for pkg_root in pkg_roots:
-            shared_lib_dir = pkg_root  # os.path.join(pkg_root, ".libs")
-            if not self.inplace:
-                shared_lib_dir = os.path.join(self.build_lib, shared_lib_dir)
+            shared_lib_dir = pkg_root
             for fn in os.listdir(self.extra_dll_dir):
                 if not os.path.isdir(shared_lib_dir):
                     os.makedirs(shared_lib_dir)

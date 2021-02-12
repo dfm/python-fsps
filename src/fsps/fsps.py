@@ -5,8 +5,8 @@ __all__ = ["StellarPopulation"]
 import os
 import numpy as np
 
-from ._fsps import driver  # noqa
-from .filters import FILTERS  # noqa
+from ._fsps import driver
+from .filters import FILTERS
 
 
 class StellarPopulation(object):

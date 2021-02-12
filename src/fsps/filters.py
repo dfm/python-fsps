@@ -11,8 +11,6 @@ __all__ = ["find_filter", "FILTERS", "get_filter", "list_filters"]
 import os
 import numpy as np
 
-# from pkg_resources import resource_stream, resource_exists
-
 # Cache for $SPS_HOME/data/magsun.dat parsed by numpy
 MSUN_TABLE = None
 
@@ -81,16 +79,12 @@ class Filter(object):
         try:
             return TRANS_CACHE[self.name]
         except KeyError as e:
-            e.args += "Could not find transmission data " "for {0}".format(
-                self.name
-            )
+            e.args += "Could not find transmission data " "for {0}".format(self.name)
             raise
 
     def _load_msun_table(self):
         global MSUN_TABLE
-        MSUN_TABLE = np.loadtxt(
-            os.path.expandvars("$SPS_HOME/data/magsun.dat")
-        )
+        MSUN_TABLE = np.loadtxt(os.path.expandvars("$SPS_HOME/data/magsun.dat"))
 
     def _load_lambda_eff_table(self):
         global LAMBDA_EFF_TABLE

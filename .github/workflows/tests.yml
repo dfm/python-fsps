@@ -33,13 +33,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip pytest
-          python -m pip install -e .
+          python -m pip install .
         env:
           DISTUTILS_USE_SDK: 1
           MSSdk: 1
-      - name: Copy dll file on windows (hacks)
-        if: runner.os == 'Windows'
-        run: cp src/fsps/.libs/* src/fsps
       - run: python -c 'import fsps;print(fsps.__version__)'
       - name: Run tests
         run: python -m pytest -v tests/tests.py

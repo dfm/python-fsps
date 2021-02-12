@@ -5,9 +5,10 @@ Prerequisites
 -------------
 
 Python-FSPS no longer has any compile time prerequisites (besides a working
-Fortran compiler), but it does require a clone of the `FSPS
-<https://github.com/cconroy20/fsps>`_ project for the data files.
-To get this set up, you can clone that repository using:
+Fortran compiler), but (if you're not installing using git, see the "development
+version" section below) it does require a clone of the `FSPS
+<https://github.com/cconroy20/fsps>`_ project for the data files. To get this
+set up, you can clone that repository using:
 
 .. code-block:: bash
 
@@ -54,9 +55,16 @@ root directory of the Python-FSPS repository:
     git submodule init
     git submodule update
 
-It is recommended that you install using `pip` as suggested above, and you can
-use `pip install -e .` to install an "editable" version (like you would get with
-`setup.py develop`). But if you want to use the `setup.py` script directly,
+If you install Python-FSPS using this method, you don't actually need a separate
+FSPS clone and you can just set the `SPS_HOME` variable as:
+
+.. code-block:: bash
+
+    export SPS_HOME=$(pwd)/src/fsps/libfsps
+
+It is recommended that you install using `pip` (even for a local clone), and you
+can use `pip install -e .` to install an "editable" version (like you would get
+with `setup.py develop`). But if you want to use the `setup.py` script directly,
 you'll need to install some prerequisites in advance:
 
 .. code-block:: bash

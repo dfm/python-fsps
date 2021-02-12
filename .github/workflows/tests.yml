@@ -43,6 +43,7 @@ jobs:
           SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
 
   docs:
+    if: github.event_name != 'pull_request'
     name: "docs"
     runs-on: ubuntu-latest
     steps:

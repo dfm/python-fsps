@@ -274,8 +274,8 @@ Parameter describing the metallicity, given in units of <span class="math notran
 (Z/Z_\odot)\)</span>.  Only used if <code class="docutils literal notranslate"><span class="pre">zcontinuous</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
 <li><p><strong>pmetals</strong> – (default: 2.0)
 The power for the metallicty distribution function.  The MDF is given by
-<span class="math notranslate nohighlight">\((Z \\, e^{{-Z}})^{{\mathrm{pmetals}}}\)</span> where <span class="math notranslate nohighlight">\(Z =
-z/(z_\\odot \\, 10^{{\mathrm{logzsol}}})\)</span> and z is the metallicity in
+<span class="math notranslate nohighlight">\((Z \, e^{-Z})^{\mathrm{pmetals}}\)</span> where <span class="math notranslate nohighlight">\(Z =
+z/(z_\odot \, 10^{\mathrm{logzsol}})\)</span> and z is the metallicity in
 linear units (i.e., <span class="math notranslate nohighlight">\(z_\odot = 0.019\)</span>).  Using a negative value
 will result in smoothing of the SSPs by a three-point triangular kernel
 before linear interpolation (in <span class="math notranslate nohighlight">\(\log Z\)</span>) to the requested
@@ -309,7 +309,7 @@ M_\odot\)</span>. Only used if <code class="docutils literal notranslate"><span 
 Logarithmic slope of the IMF over the range <span class="math notranslate nohighlight">\(0.5 &lt; M &lt; 1
 M_\odot\)</span>. Only used if <code class="docutils literal notranslate"><span class="pre">imf_type=2</span></code>.</p></li>
 <li><p><strong>imf3</strong> – (default: 2.3)
-Logarithmic slope of the IMF over the range <span class="math notranslate nohighlight">\(1.0 &lt; M &lt; imf\_upper\_limit
+Logarithmic slope of the IMF over the range <span class="math notranslate nohighlight">\(1.0 &lt; M &lt; \mathrm{imf\_upper\_limit}
 M_\odot\)</span>. Only used if <code class="docutils literal notranslate"><span class="pre">imf_type=2</span></code>.</p></li>
 <li><p><strong>vdmc</strong> – (default: 0.08)
 IMF parameter defined in van Dokkum (2008). Only used if
@@ -349,7 +349,7 @@ component and a burst) with parameters <code class="docutils literal notranslate
 <li><p>3: Compute a tabulated SFH, which is supplied through the
 <code class="docutils literal notranslate"><span class="pre">set_tabular_sfh</span></code> method.  See that method for details.</p></li>
 <li><p>4: Delayed tau-model. This is the same as option 1 except that the
-tau-model component takes the form <span class="math notranslate nohighlight">\(t\,e^{−t/\\tau}\)</span>.</p></li>
+tau-model component takes the form <span class="math notranslate nohighlight">\(t\,e^{−t/\tau}\)</span>.</p></li>
 <li><p>5: Delayed tau-model with a transition at a time <code class="docutils literal notranslate"><span class="pre">sf_trunc</span></code> to a
 linearly decreasing SFH with the slope specified by <code class="docutils literal notranslate"><span class="pre">sf_slope</span></code>. See
 Simha et al. 2014 for details.</p></li>
@@ -357,7 +357,7 @@ Simha et al. 2014 for details.</p></li>
 </p></li>
 <li><p><strong>tau</strong> – (default: 1.0)
 Defines e-folding time for the SFH, in Gyr. Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or
-<code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>. The range is <span class="math notranslate nohighlight">\(0.1 &lt; \\tau &lt; 10^2\)</span>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>. The range is <span class="math notranslate nohighlight">\(0.1 &lt; \tau &lt; 10^2\)</span>.</p></li>
 <li><p><strong>const</strong> – (default: 0.0)
 Defines the constant component of the SFH. This quantity is defined as
 the fraction of mass formed in a constant mode of SF; the range is
@@ -373,7 +373,7 @@ If set to a non-zero value, the
 <code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.StellarPopulation.compute_csp()</span></code> method will compute the
 spectra and magnitudes only at this age, and will therefore only output
 one age result. The units are Gyr. (The default is to compute and
-return results from <span class="math notranslate nohighlight">\(t \\approx 0\)</span> to the maximum age in the
+return results from <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the
 isochrones).</p></li>
 <li><p><strong>fburst</strong> – (default: 0.0)
 Deﬁnes the fraction of mass formed in an instantaneous burst of star
@@ -407,7 +407,7 @@ strength of the UV bump.</p></li>
 <li><p><strong>dust_tesc</strong> – (default: 7.0)
 Stars younger than <code class="docutils literal notranslate"><span class="pre">dust_tesc</span></code> are attenuated by both <code class="docutils literal notranslate"><span class="pre">dust1</span></code> and
 <code class="docutils literal notranslate"><span class="pre">dust2</span></code>, while stars older are attenuated by <code class="docutils literal notranslate"><span class="pre">dust2</span></code> only. Units
-are <span class="math notranslate nohighlight">\(\\log (\\mathrm{yrs})\)</span>.</p></li>
+are <span class="math notranslate nohighlight">\(\log (\mathrm{yrs})\)</span>.</p></li>
 <li><p><strong>dust1</strong> – (default: 0.0)
 Dust parameter describing the attenuation of young stellar light,
 i.e. where <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">&lt;=</span> <span class="pre">dust_tesc</span></code> (for details, see Conroy et al. 2009a).</p></li>
@@ -497,7 +497,7 @@ extrapolation.</p></li>
 <dl class="py method">
 <dt id="fsps.StellarPopulation.emline_wavelengths">
 <em class="property">property </em><code class="sig-name descname">emline_wavelengths</code><a class="headerlink" href="#fsps.StellarPopulation.emline_wavelengths" title="Permalink to this definition">¶</a></dt>
-<dd><p>Emission line wavelengths, in <span class="math notranslate nohighlight">\(\AA\)</span></p>
+<dd><p>Emission line wavelengths, in Angstroms</p>
 </dd></dl>
 
 <dl class="py method">
@@ -537,7 +537,7 @@ The (integer) index of the metallicity to use. By default, use the
 current value of <code class="docutils literal notranslate"><span class="pre">self.params[&quot;zmet&quot;]</span></code>.</p></li>
 <li><p><strong>tage</strong> – (default: 0.0)
 The age of the stellar population. By default, this will compute a
-grid of ages from <span class="math notranslate nohighlight">\(t pprox 0\)</span> to the maximum age in the
+grid of ages from <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the
 isochrones.</p></li>
 <li><p><strong>redshift</strong> – (default: None)
 Optionally redshift the spectrum first. If not supplied, the
@@ -578,7 +578,7 @@ The age of the stellar population for which to obtain a
 spectrum. By default, this will compute a grid of ages from
 <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the isochrones.</p></li>
 <li><p><strong>peraa</strong> – (default: False)
-If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the spectrum in <span class="math notranslate nohighlight">\(L_\odot/\AA\)</span>. Otherwise,
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the spectrum in <span class="math notranslate nohighlight">\(L_\odot/A\)</span>. Otherwise,
 return the spectrum in the FSPS standard
 <span class="math notranslate nohighlight">\(L_\odot/\mathrm{Hz}\)</span>.</p></li>
 </ul>
@@ -587,7 +587,7 @@ return the spectrum in the FSPS standard
 <dd class="field-even"><p>The wavelength grid in Angstroms.</p>
 </dd>
 <dt class="field-odd">Returns spectrum</dt>
-<dd class="field-odd"><p>The spectrum in <span class="math notranslate nohighlight">\(L_\odot/\mathrm{Hz}\)</span> or <span class="math notranslate nohighlight">\(L_\odot/\AA\)</span>.
+<dd class="field-odd"><p>The spectrum in <span class="math notranslate nohighlight">\(L_\odot/\mathrm{Hz}\)</span> or <span class="math notranslate nohighlight">\(L_\odot/A\)</span>.
 If an age was provided by the <code class="docutils literal notranslate"><span class="pre">tage</span></code> parameter then the result
 is a 1D array with <code class="docutils literal notranslate"><span class="pre">NSPEC</span></code> values. Otherwise, it is a 2D array
 with shape <code class="docutils literal notranslate"><span class="pre">(NTFULL,</span> <span class="pre">NSPEC)</span></code>.</p>
@@ -772,7 +772,7 @@ FSPS parameter <code class="docutils literal notranslate"><span class="pre">add_
 <dl class="py method">
 <dt id="fsps.StellarPopulation.wavelengths">
 <em class="property">property </em><code class="sig-name descname">wavelengths</code><a class="headerlink" href="#fsps.StellarPopulation.wavelengths" title="Permalink to this definition">¶</a></dt>
-<dd><p>The wavelength scale for the computed spectra, in <span class="math notranslate nohighlight">\(\AA\)</span></p>
+<dd><p>The wavelength scale for the computed spectra, in Angstroms</p>
 </dd></dl>
 
 <dl class="py method">

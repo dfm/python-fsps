@@ -22,18 +22,21 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install gfortran on macos
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - name: Link gfortran on macos (hacks)
         if: runner.os == 'macOS'
         run: ln -s `which gfortran-10` /usr/local/bin/gfortran
-      - if: runner.os == 'Windows'
-        run: |
-          echo "[build]" > setup.cfg
-          echo "compiler=mingw32" >> setup.cfg
-          cat setup.cfg
+      - name: Install 'msvc-runtime' on windows (hacks)
+        if: runner.os == 'Windows'
+        run: python -m pip install msvc-runtime
       - name: Install dependencies
         run: |
           python -m pip install -U pip pytest
           python -m pip install .
+        env:
+          DISTUTILS_USE_SDK: 1
+          MSSdk: 1
       - run: python -c 'import fsps;print(fsps.__version__)'
       - name: Run tests
         run: python -m pytest -v tests/tests.py

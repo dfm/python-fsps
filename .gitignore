@@ -12,3 +12,4 @@ dist
 .cache
 env
 fsps_version.py
+.vscode

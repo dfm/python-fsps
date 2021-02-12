@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import glob
 import setuptools  # noqa: magic
 import numpy.f2py
 from numpy.distutils.core import setup, Extension
+from numpy.distutils.command.build_ext import build_ext
 
 
 if not os.path.exists("src/fsps/libfsps/src/sps_vars.f90"):
@@ -28,7 +30,6 @@ numpy.f2py.run_main(
     ]
 )
 
-flags = ["-cpp", "-fPIC"]
 ext = Extension(
     "fsps._fsps",
     sources=[
@@ -51,8 +52,16 @@ ext = Extension(
         "src/fsps/fsps.f90",
         "src/fsps/_fsps.pyf",
     ],
-    extra_f90_compile_args=flags,
+    extra_f90_compile_args=["-cpp"],
 )
+
+
+class custom_build_ext(build_ext):
+    def run(self):
+        if not self.compiler and sys.platform.startswith("win"):
+            self.compiler = "mingw32"
+        build_ext.run(self)
+
 
 # The final setup command. Note: we override the `build_ext` command with our
 # custom version from above.
@@ -67,17 +76,6 @@ setup(
     package_dir={"": "src"},
     package_data={
         "": ["README.rst", "LICENSE.rst", "AUTHORS.rst"],
-        "fsps": [
-            "libfsps/data/*",
-            "libfsps/dust/*",
-            "libfsps/dust/*/*",
-            "libfsps/ISOCHRONES/*/*",
-            "libfsps/ISOCHRONES/*/*/*",
-            "libfsps/nebular/*",
-            "libfsps/OUTPUTS/*",
-            "libfsps/SPECTRA/*",
-            "libfsps/SPECTRA/*/*",
-        ],
     },
     include_package_data=True,
     install_requires=["numpy"],
@@ -90,5 +88,6 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
     ],
+    cmdclass={"build_ext": custom_build_ext},
     zip_safe=False,
 )

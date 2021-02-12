@@ -7,6 +7,7 @@ import setuptools  # noqa: magic
 import numpy.f2py
 from numpy.distutils.core import setup, Extension
 from numpy.distutils.command.build_ext import build_ext
+from distutils.file_util import copy_file
 
 
 if not os.path.exists("src/fsps/libfsps/src/sps_vars.f90"):
@@ -58,9 +59,28 @@ ext = Extension(
 
 class custom_build_ext(build_ext):
     def run(self):
-        if not self.compiler and sys.platform.startswith("win"):
-            self.compiler = "mingw32"
+        # if not self.compiler and sys.platform.startswith("win"):
+        #     self.compiler = "mingw32"
         build_ext.run(self)
+
+        # HACKS: Copy over any extra DLL files
+        # Note: numpy already tries to do this, but it doesn't do a very good job
+        # when using the `src/pkgname` layout. We'll fix that here.
+        pkg_roots = {
+            os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+            for ext in self.extensions
+        }
+        for pkg_root in pkg_roots:
+            shared_lib_dir = pkg_root  # os.path.join(pkg_root, ".libs")
+            if not self.inplace:
+                shared_lib_dir = os.path.join(self.build_lib, shared_lib_dir)
+            for fn in os.listdir(self.extra_dll_dir):
+                if not os.path.isdir(shared_lib_dir):
+                    os.makedirs(shared_lib_dir)
+                if not fn.lower().endswith(".dll"):
+                    continue
+                runtime_lib = os.path.join(self.extra_dll_dir, fn)
+                copy_file(runtime_lib, shared_lib_dir)
 
 
 # The final setup command. Note: we override the `build_ext` command with our

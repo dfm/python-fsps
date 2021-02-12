@@ -11,17 +11,19 @@ __all__ = [
 import os
 import sys
 
-here = os.path.dirname(os.path.abspath(__file__))
+# here = os.path.dirname(os.path.abspath(__file__))
 
-# A hack to handle extra dll libraries for some environments on Windows; ref:
-# https://github.com/numpy/numpy/blob/01c9bfe4f48d23ec2d2db50ffc58d6e5e42cbe93/numpy/distutils/misc_util.py#L2309
-extra_dll_dir = os.path.join(here, ".libs")
-if sys.platform == "win32" and os.path.isdir(extra_dll_dir):
-    if sys.version_info >= (3, 8):
-        os.add_dll_directory(extra_dll_dir)
-    else:
-        os.environ.setdefault("PATH", "")
-        os.environ["PATH"] += os.pathsep + extra_dll_dir
+# # A hack to handle extra dll libraries for some environments on Windows; ref:
+# # https://github.com/numpy/numpy/blob/01c9bfe4f48d23ec2d2db50ffc58d6e5e42cbe93/numpy/distutils/misc_util.py#L2309
+# extra_dll_dir = os.path.join(here, ".libs")
+# if sys.platform == "win32" and os.path.isdir(extra_dll_dir):
+#     print(extra_dll_dir)
+#     if sys.version_info >= (3, 8):
+#         print("hi!")
+#         os.add_dll_directory(extra_dll_dir)
+#     else:
+#         os.environ.setdefault("PATH", "")
+#         os.environ["PATH"] += os.pathsep + extra_dll_dir
 
 # Check the that SPS_HOME variable is set properly
 from .sps_home import check_sps_home  # noqa

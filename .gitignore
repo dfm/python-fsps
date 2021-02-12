@@ -13,3 +13,5 @@ dist
 env
 fsps_version.py
 .vscode
+*.dll
+.libs

@@ -27,9 +27,9 @@ jobs:
         run: ln -s `which gfortran-10` /usr/local/bin/gfortran
       # - uses: ilammy/msvc-dev-cmd@v1
       #   if: runner.os == 'Windows'
-      # - name: Install 'msvc-runtime' on windows (hacks)
-      #   if: runner.os == 'Windows'
-      #   run: python -m pip install msvc-runtime
+      - name: Install 'msvc-runtime' on windows (hacks)
+        if: runner.os == 'Windows'
+        run: python -m pip install msvc-runtime
       - name: Install dependencies
         run: |
           python -m pip install -U pip pytest

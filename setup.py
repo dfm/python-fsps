@@ -56,6 +56,8 @@ class build_fsps(build_ext):
 
         # Compile the library.
         flags = '-c -I{0} --f90flags=-cpp --f90flags=-fPIC'.format(fsps_dir)
+        if sys.platform.startswith("win"):
+            flags += " --compiler=mingw32"
         flags = flags.split()
         print("Running f2py on {0} with flags {1}".format(fns, flags))
         invoke_f2py(fns, flags, wd='fsps')

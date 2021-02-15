@@ -40,7 +40,7 @@ Python-FSPS is being actively developed on GitHub so you can got there to get
 the most recent development version. You can do this by cloning the `python-fsps
 repository <https://github.com/dfm/python-fsps>`_ and building:
 
-..code-block:: bash
+.. code-block:: bash
 
     git clone --recursive https://github.com/dfm/python-fsps.git
     cd python-fsps
@@ -71,21 +71,3 @@ you'll need to install some prerequisites in advance:
 
     python -m pip install numpy "setuptools_scm[toml]"
     python setup.py develop
-
-Troubleshooting
----------------
-Here are possible fixes for the most common installation issues:
-
-* Version mismatch.  Python-FSPS is built against specific versions of FSPS.
-  This can cause problems if you have a different version of FSPS.  Python-FSPS
-  attempts to check that you have a compatible version of FSPS during
-  installation, and if you do not it will print an error.  This requires that
-  you have `git` and that FSPS be under git version control.  If you do not
-  have the correct version, try:
-
-.. code-block:: bash
-
-      cd $SPS_HOME
-      git pull
-
-  to get and compile the most recent version. Then try to install Python-FSPS again.

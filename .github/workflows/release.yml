@@ -26,9 +26,9 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
 
-      - name: Install gfortran on macos
+      - name: Link gfortran on macos
         if: runner.os == 'macOS'
-        run: brew reinstall gfortran
+        run: brew unlink gfortran && brew link --overwrite gfortran
 
       - uses: joerick/cibuildwheel@v1.9.0
         env:

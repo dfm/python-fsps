@@ -1,7 +1,8 @@
 Building the documentation
 --------------------------
 
-To build and deploy the documentation, follow these steps:
+The docs are now built using GitHub actions so you shouldn't ever need to build
+them. But, to test, you can use the following steps:
 
 1. In this directory, run::
 

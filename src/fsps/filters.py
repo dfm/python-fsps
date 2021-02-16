@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Tools for working with the FSPS filter set.
@@ -7,14 +6,10 @@ This module uses filter information shipped with FSPS itself in
 ``$SPS_HOME/data``.
 """
 
-from __future__ import (division, print_function, absolute_import,
-                        unicode_literals)
-
 __all__ = ["find_filter", "FILTERS", "get_filter", "list_filters"]
 
 import os
 import numpy as np
-from pkg_resources import resource_stream, resource_exists
 
 # Cache for $SPS_HOME/data/magsun.dat parsed by numpy
 MSUN_TABLE = None
@@ -28,7 +23,6 @@ TRANS_CACHE = None
 
 
 class Filter(object):
-
     def __init__(self, index, name, fullname):
         self.index = index - 1
         self.name = name.lower()
@@ -85,19 +79,18 @@ class Filter(object):
         try:
             return TRANS_CACHE[self.name]
         except KeyError as e:
-            e.args += ("Could not find transmission data "
-                       "for {0}".format(self.name))
+            e.args += "Could not find transmission data " "for {0}".format(self.name)
             raise
 
     def _load_msun_table(self):
         global MSUN_TABLE
-        MSUN_TABLE = np.loadtxt(
-            os.path.expandvars("$SPS_HOME/data/magsun.dat"))
+        MSUN_TABLE = np.loadtxt(os.path.expandvars("$SPS_HOME/data/magsun.dat"))
 
     def _load_lambda_eff_table(self):
         global LAMBDA_EFF_TABLE
         LAMBDA_EFF_TABLE = np.loadtxt(
-            os.path.expandvars("$SPS_HOME/data/filter_lambda_eff.dat"))
+            os.path.expandvars("$SPS_HOME/data/filter_lambda_eff.dat")
+        )
 
     def _load_transmission_cache(self):
         """Parse the allfilters.dat file into the TRANS_CACHE."""
@@ -114,7 +107,9 @@ class Filter(object):
                     # Close out filter
                     if filter_index > -1:
                         TRANS_CACHE[names[filter_index]] = (
-                            np.array(lambdas), np.array(trans))
+                            np.array(lambdas),
+                            np.array(trans),
+                        )
                     # Start new filter
                     filter_index += 1
                     lambdas, trans = [], []
@@ -123,8 +118,9 @@ class Filter(object):
                         l, t = line.split()
                         lambdas.append(float(l))
                         trans.append(float(t))
-                    except(ValueError):
+                    except (ValueError):
                         pass
+
 
 def _load_filter_dict():
     """
@@ -132,7 +128,8 @@ def _load_filter_dict():
     """
     # Load filter table from FSPS
     filter_list_path = os.path.expandvars(
-        os.path.join("$SPS_HOME", "data", "FILTER_LIST"))
+        os.path.join("$SPS_HOME", "data", "FILTER_LIST")
+    )
     filters = {}
     with open(filter_list_path) as f:
         for line in f:
@@ -141,7 +138,7 @@ def _load_filter_dict():
                 fsps_id, key = columns[:2]
             else:
                 continue
-            comment = ' '.join(columns[2:])
+            comment = " ".join(columns[2:])
             filters[key.lower()] = Filter(int(fsps_id), key, comment)
 
     return filters
@@ -184,8 +181,10 @@ def get_filter(name):
     try:
         return FILTERS[name.lower()]
     except KeyError as e:
-        e.args += ("Filter {0} does not exist. "
-                   "Try using fsps.find_filter('{0}').".format(name),)
+        e.args += (
+            "Filter {0} does not exist. "
+            "Try using fsps.find_filter('{0}').".format(name),
+        )
         raise
 
 

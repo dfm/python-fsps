@@ -12,7 +12,6 @@
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
     <link rel="next" title="Modelling Stellar Populations" href="../stellarpop_api/" />
@@ -60,8 +59,9 @@
 <div class="section" id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>Python-FSPS no longer has any compile time prerequisites (besides a working
-Fortran compiler), but it does require a clone of the <a class="reference external" href="https://github.com/cconroy20/fsps">FSPS</a> project for the data files.
-To get this set up, you can clone that repository using:</p>
+Fortran compiler), but (if you’re not installing using git, see the “development
+version” section below) it does require a clone of the <a class="reference external" href="https://github.com/cconroy20/fsps">FSPS</a> project for the data files. To get this
+set up, you can clone that repository using:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SPS_HOME</span><span class="o">=</span><span class="s2">&quot;/path/where/you/want/to/download/fsps&quot;</span>
 git clone https://github.com/cconroy20/fsps.git <span class="nv">$SPS_HOME</span>
 </pre></div>
@@ -85,12 +85,11 @@ Python-FSPS is built against FSPS v3.0.</p>
 <p>Python-FSPS is being actively developed on GitHub so you can got there to get
 the most recent development version. You can do this by cloning the <a class="reference external" href="https://github.com/dfm/python-fsps">python-fsps
 repository</a> and building:</p>
-<p>..code-block:: bash</p>
-<blockquote>
-<div><p>git clone –recursive <a class="reference external" href="https://github.com/dfm/python-fsps.git">https://github.com/dfm/python-fsps.git</a>
-cd python-fsps
-python -m pip install .</p>
-</div></blockquote>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone --recursive https://github.com/dfm/python-fsps.git
+<span class="nb">cd</span> python-fsps
+python -m pip install .
+</pre></div>
+</div>
 <p>This repository incldes FSPS as a submodule, so if you forget the <cite>–recursive</cite>
 flag above, you can get the submodule by running the following commands in the
 root directory of the Python-FSPS repository:</p>
@@ -98,30 +97,17 @@ root directory of the Python-FSPS repository:</p>
 git submodule update
 </pre></div>
 </div>
-<p>It is recommended that you install using <cite>pip</cite> as suggested above, and you can
-use <cite>pip install -e .</cite> to install an “editable” version (like you would get with
-<cite>setup.py develop</cite>). But if you want to use the <cite>setup.py</cite> script directly,
+<p>If you install Python-FSPS using this method, you don’t actually need a separate
+FSPS clone and you can just set the <cite>SPS_HOME</cite> variable as:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SPS_HOME</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/src/fsps/libfsps
+</pre></div>
+</div>
+<p>It is recommended that you install using <cite>pip</cite> (even for a local clone), and you
+can use <cite>pip install -e .</cite> to install an “editable” version (like you would get
+with <cite>setup.py develop</cite>). But if you want to use the <cite>setup.py</cite> script directly,
 you’ll need to install some prerequisites in advance:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install numpy <span class="s2">&quot;setuptools_scm[toml]&quot;</span>
 python setup.py develop
-</pre></div>
-</div>
-</div>
-<div class="section" id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
-<p>Here are possible fixes for the most common installation issues:</p>
-<ul class="simple">
-<li><p>Version mismatch.  Python-FSPS is built against specific versions of FSPS.
-This can cause problems if you have a different version of FSPS.  Python-FSPS
-attempts to check that you have a compatible version of FSPS during
-installation, and if you do not it will print an error.  This requires that
-you have <cite>git</cite> and that FSPS be under git version control.  If you do not
-have the correct version, try:</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>    <span class="nb">cd</span> <span class="nv">$SPS_HOME</span>
-    git pull
-
-to get and compile the most recent version. Then try to install Python-FSPS again.
 </pre></div>
 </div>
 </div>
@@ -150,7 +136,6 @@ to get and compile the most recent version. Then try to install Python-FSPS agai
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#installing-stable-version">Installing stable version</a></li>
 <li><a class="reference internal" href="#installing-development-version">Installing development version</a></li>
-<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
 </ul>
 </li>
 </ul>

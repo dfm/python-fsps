@@ -17,6 +17,12 @@ mkdir -p latest
 cp -r ../_build/dirhtml/* latest/
 git add latest
 
+if [ "$STABLE" = "true" ]; then
+    rm -rf $VERSION
+    cp latest $VERSION
+    git add $VERSION
+fi
+
 # Push the results to GitHub
 if git -c user.name='gh-actions' -c user.email='gh-actions' commit -m "Updated docs [ci skip]"; then
     git push --force https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY gh-pages

@@ -96,4 +96,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
-          STABLE: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+          STABLE: ${{ github.event_name != 'release' }}
+
+          #  ${{ github.event_name == 'release' && github.event.action == 'published' }}

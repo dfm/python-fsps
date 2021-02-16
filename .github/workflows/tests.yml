@@ -1,8 +1,7 @@
 name: Tests
 on:
   release:
-    types:
-      - published
+    types: [published]
   push:
     branches: [main]
   pull_request:
@@ -75,7 +74,7 @@ jobs:
           SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
 
   docs:
-    if: github.event_name != 'pull_request'
+    # if: github.event_name != 'pull_request'
     name: "docs"
     runs-on: ubuntu-latest
     steps:

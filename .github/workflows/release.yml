@@ -22,11 +22,13 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Set up windows compilers
+        uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
 
-      - run: ln -s `which gfortran-10` /usr/local/bin/gfortran
+      - name: Install gfortran on macos
         if: runner.os == 'macOS'
+        run: brew install gfortran
 
       - uses: joerick/cibuildwheel@v1.9.0
         env:

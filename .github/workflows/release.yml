@@ -28,7 +28,7 @@ jobs:
 
       - name: Install gfortran on macos
         if: runner.os == 'macOS'
-        run: brew install gfortran
+        run: brew reinstall gfortran
 
       - uses: joerick/cibuildwheel@v1.9.0
         env:

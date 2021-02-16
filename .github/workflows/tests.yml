@@ -24,9 +24,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install gfortran on macos
+      - name: Link gfortran on macos
         if: runner.os == 'macOS'
-        run: brew install gfortran
+        run: brew unlink gfortran && brew link --overwrite gfortran
       - name: Set up windows compilers
         uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'

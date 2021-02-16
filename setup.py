@@ -3,123 +3,107 @@
 import os
 import sys
 import glob
-import shutil
+import setuptools  # noqa: magic
+import numpy.f2py
+from numpy.distutils.core import setup, Extension
+from numpy.distutils.command.build_ext import build_ext
+from distutils.file_util import copy_file
 
-try:
-    from setuptools import setup, Extension
-    from setuptools.command.build_ext import build_ext
-except ImportError:
-    from distutils.core import setup, Extension
-    from distutils.command.build_ext import build_ext
 
-def invoke_f2py(files, flags=[], wd=None):
-    from numpy.f2py import main
+if not os.path.exists("src/fsps/libfsps/src/sps_vars.f90"):
+    raise RuntimeError(
+        "It looks like FSPS is not included in your source distribution. "
+        "If you're installing using git, don't forget to include the "
+        "submodules using a recursive clone or by running: \n"
+        "git submodule init\n"
+        "git submodule update"
+    )
 
-    olddir = os.path.abspath(os.curdir)
-    oldargv = list(sys.argv)
-    try:
-        if wd is not None:
-            os.chdir(wd)
-        sys.argv = ['f2py']
-        sys.argv.extend(files)
-        sys.argv.extend(flags)
 
-        main()
-    finally:
-        sys.argv = oldargv
-        os.chdir(olddir)
+numpy.f2py.run_main(
+    [
+        "-m",
+        "_fsps",
+        "-h",
+        "src/fsps/_fsps.pyf",
+        "--overwrite-signature",
+        "src/fsps/fsps.f90",
+    ]
+)
 
-class build_fsps(build_ext):
+ext = Extension(
+    "fsps._fsps",
+    sources=[
+        "src/fsps/libfsps/src/sps_vars.f90",
+        "src/fsps/libfsps/src/sps_utils.f90",
+    ]
+    + [
+        f
+        for f in glob.glob("src/fsps/libfsps/src/*.f90")
+        if os.path.basename(f)
+        not in [
+            "autosps.f90",
+            "simple.f90",
+            "lesssimple.f90",
+            "sps_vars.f90",
+            "sps_utils.f90",
+        ]
+    ]
+    + [
+        "src/fsps/fsps.f90",
+        "src/fsps/_fsps.pyf",
+    ],
+    extra_f90_compile_args=["-cpp"],
+)
 
+
+class custom_build_ext(build_ext):
     def run(self):
-        # Generate the Fortran signature/interface.
-        files = ['fsps.f90']
-        flags = " -m _fsps -h fsps.pyf --overwrite-signature".split()
-        print("Running f2py on {0} with flags {1}".format(files, flags))
-        invoke_f2py(['fsps.f90'], flags, wd='fsps')
+        build_ext.run(self)
 
-        # Find the FSPS source files.
-        fsps_dir = os.path.join(os.environ["SPS_HOME"], "src")
-        fns = [f for f in glob.glob(os.path.join(fsps_dir, "*.o"))
-               if os.path.basename(f) not in ["autosps.o", "simple.o",
-                                              "lesssimple.o"]]
+        # HACKS: Copy over any extra DLL files
+        # Note: numpy already tries to do this, but it doesn't do a very good job
+        # when using the `src/pkgname` layout. We'll fix that here.
+        pkg_roots = {
+            os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+            for ext in self.extensions
+        }
+        for pkg_root in pkg_roots:
+            shared_lib_dir = pkg_root
+            for fn in os.listdir(self.extra_dll_dir):
+                if not os.path.isdir(shared_lib_dir):
+                    os.makedirs(shared_lib_dir)
+                if not fn.lower().endswith(".dll"):
+                    continue
+                runtime_lib = os.path.join(self.extra_dll_dir, fn)
+                copy_file(runtime_lib, shared_lib_dir)
 
-        # Check to make sure that all of the required modules exist.
-        flag = len(fns)
-        flag *= os.path.exists(os.path.join(fsps_dir, "sps_utils.mod"))
-        flag *= os.path.exists(os.path.join(fsps_dir, "sps_vars.mod"))
-        if not flag:
-            raise RuntimeError("You need to run make in $SPS_HOME/src first")
-
-        # Add the interface source files to the file list.
-        fns += ["fsps.f90", "fsps.pyf"]
-
-        # Compile the library.
-        flags = '-c -I{0} --f90flags=-cpp --f90flags=-fPIC'.format(fsps_dir)
-        if sys.platform.startswith("win"):
-            flags += " --compiler=mingw32"
-        flags = flags.split()
-        print("Running f2py on {0} with flags {1}".format(fns, flags))
-        invoke_f2py(fns, flags, wd='fsps')
-
-        # Move the compiled library to the correct directory.
-        infn = os.path.abspath(self.get_ext_filename("fsps._fsps"))
-        outfn = os.path.abspath(self.get_ext_fullpath("fsps._fsps"))
-        if infn != outfn:
-            try:
-                os.makedirs(os.path.dirname(outfn))
-            except os.error:
-                pass
-            print("Copying {0} to {1}".format(infn, outfn))
-            shutil.copyfile(infn, outfn)
-
-
-if "publish" in sys.argv[-1]:
-    os.system("python setup.py sdist upload")
-    sys.exit()
-
-
-# Hackishly inject a constant into builtins to enable importing of the
-# package before the library is built.
-if sys.version_info[0] < 3:
-    import __builtin__ as builtins
-else:
-    import builtins
-builtins.__FSPS_SETUP__ = True
-from fsps import __version__  # NOQA
-
-# This is a fake extension that is used to trick distutils into building our
-# real library using the `build_fsps` function above even when `install` is
-# called.
-ext = Extension("fsps._fsps", sources=["fsps/fsps.f90"])
 
 # The final setup command. Note: we override the `build_ext` command with our
 # custom version from above.
 setup(
     name="fsps",
     url="https://github.com/dfm/python-fsps",
-    version=__version__,
-    author="Dan Foreman-Mackey",
-    author_email="danfm@nyu.edu",
+    author="Python-FSPS developers",
+    author_email="foreman.mackey@gmail.com",
     description="Python bindings for Charlie Conroy's FSPS.",
     long_description=open("README.rst").read(),
     packages=["fsps"],
+    package_dir={"": "src"},
     package_data={
         "": ["README.rst", "LICENSE.rst", "AUTHORS.rst"],
-        "fsps": ["_fsps.so"],
     },
     include_package_data=True,
+    install_requires=["numpy"],
     ext_modules=[ext],
-    scripts=glob.glob("scripts/*.py"),
-    cmdclass={
-        "build_ext": build_fsps,
-    },
     classifiers=[
-        # "Development Status :: 5 - Production/Stable",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
     ],
+    cmdclass={"build_ext": custom_build_ext},
+    zip_safe=False,
 )

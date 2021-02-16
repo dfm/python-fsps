@@ -19,7 +19,7 @@ git add latest
 
 if [ "$STABLE" = "true" ]; then
     rm -rf $VERSION
-    cp latest $VERSION
+    cp -r latest $VERSION
     git add $VERSION
 fi
 

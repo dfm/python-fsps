@@ -1011,7 +1011,7 @@ class StellarPopulation(object):
         if self._wavelengths is None:
             NSPEC = driver.get_nspec()
             self._wavelengths = driver.get_lambda(NSPEC)
-        return self._wavelengths
+        return self._wavelengths.copy()
 
     @property
     def emline_wavelengths(self):
@@ -1019,7 +1019,7 @@ class StellarPopulation(object):
         if self._emwavelengths is None:
             NLINE = driver.get_nemline()
             self._emwavelengths = driver.get_emlambda(NLINE)
-        return self._emwavelengths
+        return self._emwavelengths.copy()
 
     @property
     def zlegend(self):

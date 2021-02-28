@@ -822,7 +822,9 @@ class StellarPopulation(object):
     def isochrones(self, outfile="pyfsps_tmp"):
         r"""
         Write the isochrone data (age, mass, weights, phases, magnitudes, etc.)
-        to a .cmd file, then read it into a huge numpy array.
+        to a .cmd file, then read it into a huge numpy array. Only parameters
+        listed in ``StellarPopulation.params.ssp_params`` affect the output of
+        this method.
 
         :param outfile: (default: 'pyfsps_tmp')
             The file root name of the .cmd file, which will be placed in the
@@ -847,9 +849,9 @@ class StellarPopulation(object):
         if self.params.dirty:
             self._compute_csp()
 
-        from . import ev, list_filters
+        from . import list_filters
 
-        absfile = os.path.join(ev, "OUTPUTS", outfile + ".cmd")
+        absfile = os.path.join(os.environ["SPS_HOME"], "OUTPUTS", outfile + ".cmd")
         driver.write_isoc(outfile)
 
         with open(absfile, "r") as f:

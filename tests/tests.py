@@ -241,6 +241,14 @@ def test_tabular(pop_and_params):
     assert not np.allclose(spec_onez / spec_multiz - 1.0, 0.0)
 
 
+def test_isochrones(pop_and_params):
+    # Just test that `isochrones()` method runs
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    pop.params['imf_type'] = 0
+    iso = pop.isochrones()
+
+
 def test_smooth_lsf(pop_and_params):
     pop, params = pop_and_params
     _reset_default_params(pop, params)

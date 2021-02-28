@@ -47,6 +47,8 @@ def test_filters():
     """Test all the filters got transmission data loaded.
     """
     flist = filters.list_filters()
+    # force trans cache to load
+    filters.FILTERS[flist[0]]._load_transmission_cache()
     for f in flist:
         assert f in filters.TRANS_CACHE, "transmission not loaded for {}".format(f)
 

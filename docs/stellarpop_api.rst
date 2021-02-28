@@ -15,10 +15,10 @@ and some dust with a Calzetti et al (2000) extinction curve::
    >>> sp = fsps.StellarPopulation(compute_vega_mags=False, zcontinuous=1,
                                    sfh=0, logzsol=0.0, dust_type=2, dust2=0.2)
    >>> sp.libraries
-   ('pdva', 'miles')
+   ('mist', 'miles')
 
-The last line indicates that we are using the Padova isochrones and MILES spectral library.
-These can be changed only within FSPS itself (which must recompiled and python-FSPS reinstalled for the changes to take effect.)
+The last line indicates that we are using the MIST isochrones and MILES spectral library.
+These can be changed only by reinstalling python-FSPS with appropriate flags.
 
 Let's get the AB magnitudes in SDSS bands, for an SSP that is 13.7 Gyr old::
 

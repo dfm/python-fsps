@@ -120,6 +120,8 @@ class Filter(object):
                         trans.append(float(t))
                     except (ValueError):
                         pass
+        # Close out the last filter
+        TRANS_CACHE[names[filter_index]] = (np.array(lambdas), np.array(trans))
 
 
 def _load_filter_dict():

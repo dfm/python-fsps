@@ -36,7 +36,10 @@ Python-FSPS is available as a package on `PyPI
 Choosing Stellar Libraries
 ---------------------------
 
-FSPS can use several different stellar isochrone and spectral libraries, but switching between these libraries in python-FSPS requires (re-)installing python-FSPS with specific compiler flags. The available libraries are described in more detail in the FSPS documentation, but their names are:
+FSPS can use several different stellar isochrone and spectral libraries, but
+switching between these libraries in python-FSPS requires (re-)installing
+python-FSPS with specific compiler flags. The available libraries are described
+in more detail in the FSPS documentation, but their names are:
 
 * Stellar Isochrone libraries
 

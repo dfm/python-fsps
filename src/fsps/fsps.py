@@ -39,8 +39,9 @@ class StellarPopulation(object):
         changed during initialization.
 
     :param zcontinuous: (default: 0)
-        Flag specifying how interpolation in metallicity is performed before
-        computing composite models:
+        Flag specifying how interpolation in metallicity of the simple stellar
+        populations (SSPs) is performed before computing composite stellar
+        population (CSP) models:
 
         * 0: No interpolation, use the metallicity index specified by ``zmet``.
         * 1: The SSPs are interpolated to the value of ``logzsol`` before the
@@ -259,7 +260,7 @@ class StellarPopulation(object):
         Defines the type of star formation history, normalized such that one
         solar mass of stars is formed over the full SFH. Default value is 0.
 
-        * 0: Compute an SSP.
+        * 0: Compute a simple stellar population (SSP).
         * 1: Tau-model. A six parameter SFH (tau model plus a constant
           component and a burst) with parameters ``tau``, ``const``,
           ``sf_start``, ``sf_trunc``, ``tburst``, and ``fburst`` (see below).
@@ -843,7 +844,7 @@ class StellarPopulation(object):
             * logt: log temperature (K)
             * logg: log gravity
             * phase: (see evtype)
-            * log(weight): IMF weight
+            * log(weight): IMF weight corresponding to a total of 1 Msol formed.
             * log(mdot): mass loss rate (Msol/yr)
         """
         if self.params.dirty:

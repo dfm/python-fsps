@@ -68,12 +68,14 @@ and some dust with a Calzetti et al (2000) extinction curve:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">fsps</span><span class="o">.</span><span class="n">StellarPopulation</span><span class="p">(</span><span class="n">compute_vega_mags</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">zcontinuous</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 <span class="go">                                sfh=0, logzsol=0.0, dust_type=2, dust2=0.2)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">libraries</span>
-<span class="go">(&#39;pdva&#39;, &#39;miles&#39;)</span>
+<span class="go">(&#39;mist&#39;, &#39;miles&#39;)</span>
 </pre></div>
 </div>
-<p>The last line indicates that we are using the Padova isochrones and MILES spectral library.
-These can be changed only within FSPS itself (which must recompiled and python-FSPS reinstalled for the changes to take effect.)</p>
-<p>Let’s get the AB magnitudes in SDSS bands, for an SSP that is 13.7 Gyr old:</p>
+<p>The last line indicates that we are using the MIST isochrones and MILES spectral
+library. These can be changed only by reinstalling python-FSPS with appropriate
+flags.</p>
+<p>Let’s get the AB magnitudes in SDSS bands, for a simple stellar population (SSP)
+that is 13.7 Gyr old:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sdss_bands</span> <span class="o">=</span> <span class="n">fsps</span><span class="o">.</span><span class="n">find_filter</span><span class="p">(</span><span class="s1">&#39;sdss&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sdss_bands</span><span class="p">)</span>
 <span class="go">[&#39;sdss_u&#39;, &#39;sdss_g&#39;, &#39;sdss_i&#39;, &#39;sdss_r&#39;, &#39;sdss_z&#39;]</span>
@@ -97,7 +99,8 @@ and the surviving stellar mass at 13.7 Gyr (both in units of <span class="math n
 <span class="go">0.57809244144339011</span>
 </pre></div>
 </div>
-<p>It is highly recommended that only one instance of <a class="reference internal" href="#fsps.StellarPopulation" title="fsps.StellarPopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">fsps.StellarPopulation</span></code></a> be used in a given program.</p>
+<p>It is highly recommended that only one instance of <a class="reference internal" href="#fsps.StellarPopulation" title="fsps.StellarPopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">fsps.StellarPopulation</span></code></a>
+be used in a given program.</p>
 </div>
 <div class="section" id="example-using-nebular-emission">
 <h2>Example using nebular emission<a class="headerlink" href="#example-using-nebular-emission" title="Permalink to this headline">¶</a></h2>
@@ -159,8 +162,9 @@ initialization.</p></li>
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, output wavelengths in air (rather than vac). Can only be
 changed during initialization.</p></li>
 <li><p><strong>zcontinuous</strong> – <p>(default: 0)
-Flag specifying how interpolation in metallicity is performed before
-computing composite models:</p>
+Flag specifying how interpolation in metallicity of the simple stellar
+populations (SSPs) is performed before computing composite stellar
+population (CSP) models:</p>
 <ul>
 <li><p>0: No interpolation, use the metallicity index specified by <code class="docutils literal notranslate"><span class="pre">zmet</span></code>.</p></li>
 <li><p>1: The SSPs are interpolated to the value of <code class="docutils literal notranslate"><span class="pre">logzsol</span></code> before the
@@ -341,7 +345,7 @@ Factor used to scale the IGM optical depth.</p></li>
 Defines the type of star formation history, normalized such that one
 solar mass of stars is formed over the full SFH. Default value is 0.</p>
 <ul>
-<li><p>0: Compute an SSP.</p></li>
+<li><p>0: Compute a simple stellar population (SSP).</p></li>
 <li><p>1: Tau-model. A six parameter SFH (tau model plus a constant
 component and a burst) with parameters <code class="docutils literal notranslate"><span class="pre">tau</span></code>, <code class="docutils literal notranslate"><span class="pre">const</span></code>,
 <code class="docutils literal notranslate"><span class="pre">sf_start</span></code>, <code class="docutils literal notranslate"><span class="pre">sf_trunc</span></code>, <code class="docutils literal notranslate"><span class="pre">tburst</span></code>, and <code class="docutils literal notranslate"><span class="pre">fburst</span></code> (see below).</p></li>
@@ -605,7 +609,9 @@ with shape <code class="docutils literal notranslate"><span class="pre">(NTFULL,
 <dt id="fsps.StellarPopulation.isochrones">
 <code class="sig-name descname"><span class="pre">isochrones</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pyfsps_tmp'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.isochrones" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the isochrone data (age, mass, weights, phases, magnitudes, etc.)
-to a .cmd file, then read it into a huge numpy array.</p>
+to a .cmd file, then read it into a huge numpy array. Only parameters
+listed in <code class="docutils literal notranslate"><span class="pre">StellarPopulation.params.ssp_params</span></code> affect the output of
+this method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>outfile</strong> – (default: ‘pyfsps_tmp’)
@@ -625,7 +631,7 @@ columns may be isochrone specific, but for Padova they are</p>
 <li><p>logt: log temperature (K)</p></li>
 <li><p>logg: log gravity</p></li>
 <li><p>phase: (see evtype)</p></li>
-<li><p>log(weight): IMF weight</p></li>
+<li><p>log(weight): IMF weight corresponding to a total of 1 Msol formed.</p></li>
 <li><p>log(mdot): mass loss rate (Msol/yr)</p></li>
 </ul>
 </dd>

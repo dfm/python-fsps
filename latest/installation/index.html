@@ -80,6 +80,41 @@ Python-FSPS is built against FSPS v3.0.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="choosing-stellar-libraries">
+<h2>Choosing Stellar Libraries<a class="headerlink" href="#choosing-stellar-libraries" title="Permalink to this headline">¶</a></h2>
+<p>FSPS can use several different stellar isochrone and spectral libraries, but
+switching between these libraries in python-FSPS requires (re-)installing
+python-FSPS with specific compiler flags. The available libraries are described
+in more detail in the FSPS documentation, but their names are:</p>
+<ul>
+<li><p>Stellar Isochrone libraries</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>MIST</cite> (default)</p></li>
+<li><p><cite>PADOVA</cite></p></li>
+<li><p><cite>PARSEC</cite></p></li>
+<li><p><cite>BPASS</cite> (in this case the spectral library and SSP parameters cannot be changed)</p></li>
+<li><p><cite>BASTI</cite></p></li>
+<li><p><cite>GENEVA</cite></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Stellar spectral libraries</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><cite>MILES</cite> (default)</p></li>
+<li><p><cite>BASEL</cite></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>Changing either library requires switching off the relevant default, which for isochrones is <cite>MIST</cite> and for spectra is <cite>MILES</cite>, and switching on the desired library. As an example, you can change to Padova isochrones and the BaSeL low resolution synthetic stellar library by re-installing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip uninstall fsps
+<span class="nv">FFLAGS</span><span class="o">=</span><span class="s2">&quot;-DMIST=0 -DPADOVA=1 -DMILES=0 -DBASEL=1&quot;</span> python -m pip install fsps --no-binary fsps
+</pre></div>
+</div>
+<p>where the <cite>–no-binary fsps</cite> flag is required to force building from source.</p>
+</div>
 <div class="section" id="installing-development-version">
 <h2>Installing development version<a class="headerlink" href="#installing-development-version" title="Permalink to this headline">¶</a></h2>
 <p>Python-FSPS is being actively developed on GitHub so you can got there to get
@@ -90,7 +125,7 @@ repository</a> and building:</p>
 python -m pip install .
 </pre></div>
 </div>
-<p>This repository incldes FSPS as a submodule, so if you forget the <cite>–recursive</cite>
+<p>Flags can be prepended to change the stellar libraries as described above. This repository includes FSPS as a submodule, so if you forget the <cite>–recursive</cite>
 flag above, you can get the submodule by running the following commands in the
 root directory of the Python-FSPS repository:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git submodule init
@@ -135,6 +170,7 @@ python setup.py develop
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#installing-stable-version">Installing stable version</a></li>
+<li><a class="reference internal" href="#choosing-stellar-libraries">Choosing Stellar Libraries</a></li>
 <li><a class="reference internal" href="#installing-development-version">Installing development version</a></li>
 </ul>
 </li>

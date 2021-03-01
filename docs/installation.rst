@@ -33,6 +33,37 @@ Python-FSPS is available as a package on `PyPI
 
     python -m pip install fsps
 
+Choosing Stellar Libraries
+---------------------------
+
+FSPS can use several different stellar isochrone and spectral libraries, but
+switching between these libraries in python-FSPS requires (re-)installing
+python-FSPS with specific compiler flags. The available libraries are described
+in more detail in the FSPS documentation, but their names are:
+
+* Stellar Isochrone libraries
+
+   - `MIST` (default)
+   - `PADOVA`
+   - `PARSEC`
+   - `BPASS` (in this case the spectral library and SSP parameters cannot be changed)
+   - `BASTI`
+   - `GENEVA`
+
+* Stellar spectral libraries
+
+   - `MILES` (default)
+   - `BASEL`
+
+Changing either library requires switching off the relevant default, which for isochrones is `MIST` and for spectra is `MILES`, and switching on the desired library. As an example, you can change to Padova isochrones and the BaSeL low resolution synthetic stellar library by re-installing:
+
+.. code-block:: bash
+
+    pip uninstall fsps
+    FFLAGS="-DMIST=0 -DPADOVA=1 -DMILES=0 -DBASEL=1" python -m pip install fsps --no-binary fsps
+
+where the `--no-binary fsps` flag is required to force building from source.
+
 Installing development version
 ------------------------------
 
@@ -46,7 +77,7 @@ repository <https://github.com/dfm/python-fsps>`_ and building:
     cd python-fsps
     python -m pip install .
 
-This repository incldes FSPS as a submodule, so if you forget the `--recursive`
+Flags can be prepended to change the stellar libraries as described above. This repository includes FSPS as a submodule, so if you forget the `--recursive`
 flag above, you can get the submodule by running the following commands in the
 root directory of the Python-FSPS repository:
 

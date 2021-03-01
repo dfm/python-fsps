@@ -39,8 +39,9 @@ class StellarPopulation(object):
         changed during initialization.
 
     :param zcontinuous: (default: 0)
-        Flag specifying how interpolation in metallicity is performed before
-        computing composite models:
+        Flag specifying how interpolation in metallicity of the simple stellar
+        populations (SSPs) is performed before computing composite stellar
+        population (CSP) models:
 
         * 0: No interpolation, use the metallicity index specified by ``zmet``.
         * 1: The SSPs are interpolated to the value of ``logzsol`` before the
@@ -259,7 +260,7 @@ class StellarPopulation(object):
         Defines the type of star formation history, normalized such that one
         solar mass of stars is formed over the full SFH. Default value is 0.
 
-        * 0: Compute an SSP.
+        * 0: Compute a simple stellar population (SSP).
         * 1: Tau-model. A six parameter SFH (tau model plus a constant
           component and a burst) with parameters ``tau``, ``const``,
           ``sf_start``, ``sf_trunc``, ``tburst``, and ``fburst`` (see below).
@@ -822,7 +823,9 @@ class StellarPopulation(object):
     def isochrones(self, outfile="pyfsps_tmp"):
         r"""
         Write the isochrone data (age, mass, weights, phases, magnitudes, etc.)
-        to a .cmd file, then read it into a huge numpy array.
+        to a .cmd file, then read it into a huge numpy array. Only parameters
+        listed in ``StellarPopulation.params.ssp_params`` affect the output of
+        this method.
 
         :param outfile: (default: 'pyfsps_tmp')
             The file root name of the .cmd file, which will be placed in the
@@ -841,15 +844,15 @@ class StellarPopulation(object):
             * logt: log temperature (K)
             * logg: log gravity
             * phase: (see evtype)
-            * log(weight): IMF weight
+            * log(weight): IMF weight corresponding to a total of 1 Msol formed.
             * log(mdot): mass loss rate (Msol/yr)
         """
         if self.params.dirty:
             self._compute_csp()
 
-        from . import ev, list_filters
+        from . import list_filters
 
-        absfile = os.path.join(ev, "OUTPUTS", outfile + ".cmd")
+        absfile = os.path.join(os.environ["SPS_HOME"], "OUTPUTS", outfile + ".cmd")
         driver.write_isoc(outfile)
 
         with open(absfile, "r") as f:
@@ -1011,7 +1014,7 @@ class StellarPopulation(object):
         if self._wavelengths is None:
             NSPEC = driver.get_nspec()
             self._wavelengths = driver.get_lambda(NSPEC)
-        return self._wavelengths
+        return self._wavelengths.copy()
 
     @property
     def emline_wavelengths(self):
@@ -1019,7 +1022,7 @@ class StellarPopulation(object):
         if self._emwavelengths is None:
             NLINE = driver.get_nemline()
             self._emwavelengths = driver.get_emlambda(NLINE)
-        return self._emwavelengths
+        return self._emwavelengths.copy()
 
     @property
     def zlegend(self):

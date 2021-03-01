@@ -15,12 +15,14 @@ and some dust with a Calzetti et al (2000) extinction curve::
    >>> sp = fsps.StellarPopulation(compute_vega_mags=False, zcontinuous=1,
                                    sfh=0, logzsol=0.0, dust_type=2, dust2=0.2)
    >>> sp.libraries
-   ('pdva', 'miles')
+   ('mist', 'miles')
 
-The last line indicates that we are using the Padova isochrones and MILES spectral library.
-These can be changed only within FSPS itself (which must recompiled and python-FSPS reinstalled for the changes to take effect.)
+The last line indicates that we are using the MIST isochrones and MILES spectral
+library. These can be changed only by reinstalling python-FSPS with appropriate
+flags.
 
-Let's get the AB magnitudes in SDSS bands, for an SSP that is 13.7 Gyr old::
+Let's get the AB magnitudes in SDSS bands, for a simple stellar population (SSP)
+that is 13.7 Gyr old::
 
    >>> sdss_bands = fsps.find_filter('sdss')
    >>> print(sdss_bands)
@@ -44,7 +46,8 @@ and the surviving stellar mass at 13.7 Gyr (both in units of :math:`M_\odot`)::
    >>> sp.stellar_mass
    0.57809244144339011
 
-It is highly recommended that only one instance of :class:`fsps.StellarPopulation` be used in a given program.
+It is highly recommended that only one instance of :class:`fsps.StellarPopulation`
+be used in a given program.
 
 Example using nebular emission
 ------------------------------

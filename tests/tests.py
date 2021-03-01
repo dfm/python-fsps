@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose
-from fsps import StellarPopulation
+from fsps import StellarPopulation, filters
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +43,19 @@ def test_libraries(pop_and_params):
     assert splib == pop.spec_library
 
 
+def test_filters():
+    """Test all the filters got transmission data loaded.
+    """
+    flist = filters.list_filters()
+    # force trans cache to load
+    filters.FILTERS[flist[0]]._load_transmission_cache()
+    for f in flist:
+        assert f in filters.TRANS_CACHE, "transmission not loaded for {}".format(f)
+
+
 def test_get_mags(pop_and_params):
+    """Basic test for supplying filter names to get_mags
+    """
     pop, params = pop_and_params
     fuv1 = pop.get_mags(bands=["galex_fuv"])[:, 0]
     mags = pop.get_mags()
@@ -80,6 +92,10 @@ def test_csp_dirtiness(pop_and_params):
 
 
 def test_redshift(pop_and_params):
+    """Test redshifting, make sure that
+        1. redshifting does not persist in cached arrays
+        2. specifying redshift via get_mags keyword or param key are consistent
+    """
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["sfh"] = 0
@@ -100,6 +116,8 @@ def test_redshift(pop_and_params):
 
 
 def test_nebemlineinspec(pop_and_params):
+    """Make sure nebular lines are actually added.
+    """
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["sfh"] = 4
@@ -167,6 +185,8 @@ def test_imf3(pop_and_params):
     pop.params["imf_type"] = 2
     pop.params["imf3"] = 2.3
     w, model1 = pop.get_spectrum(tage=0.2)
+
+    # check that changing the IMF does something
     pop.params["imf3"] = 8.3
     assert pop.params.dirtiness == 2
     w, model2 = pop.get_spectrum(tage=0.2)
@@ -221,6 +241,14 @@ def test_tabular(pop_and_params):
     pop.params["logzsol"] = np.log10(mwz / 0.019)
     w, spec_onez = pop.get_spectrum(tage=age.max())
     assert not np.allclose(spec_onez / spec_multiz - 1.0, 0.0)
+
+
+def test_isochrones(pop_and_params):
+    # Just test that `isochrones()` method runs
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    pop.params['imf_type'] = 0
+    iso = pop.isochrones()
 
 
 def test_smooth_lsf(pop_and_params):

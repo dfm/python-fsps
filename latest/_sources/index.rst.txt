@@ -38,8 +38,8 @@ These bindings are available under the `MIT License
 
 If you make use of this code, please reference these Python bindings,
 
-.. image:: https://img.shields.io/badge/DOI-10.5281/zenodo.12157-blue.svg?style=flat
-  :target: https://dx.doi.org/10.5281/zenodo.12157
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.591505.svg
+   :target: https://doi.org/10.5281/zenodo.591505
 
 and see the `FSPS homepage <https://github.com/cconroy20/fsps>`_ for additional usage
 restrictions and citation requirements.

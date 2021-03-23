@@ -19,8 +19,12 @@ jobs:
       - name: Create a PR
         uses: peter-evans/create-pull-request@v3
         with:
+          token: ${{ secrets.FSPS_BOT_TOKEN }}
+          commit-message: Updating FSPS
           branch: update-fsps
           branch-suffix: short-commit-hash
+          delete-branch: true
+          push-to-fork: python-fsps/python-fsps
           title: Updating FSPS
           body: Automatically updating the FSPS submodule
           

@@ -1,0 +1,26 @@
+name: Update FSPS
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 1"
+
+jobs:
+  update_fsps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 0
+      
+      - name: Update the submodule
+        run: git submodule foreach git pull origin master
+      
+      - name: Create a PR
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: update-fsps
+          branch-suffix: short-commit-hash
+          title: Updating FSPS
+          body: Automatically updating the FSPS submodule
+          

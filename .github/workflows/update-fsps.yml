@@ -22,7 +22,6 @@ jobs:
           token: ${{ secrets.FSPS_BOT_TOKEN }}
           commit-message: Updating FSPS
           branch: update-fsps
-          branch-suffix: short-commit-hash
           delete-branch: true
           push-to-fork: python-fsps/python-fsps
           title: Updating FSPS

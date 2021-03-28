@@ -19,7 +19,6 @@ jobs:
       - name: Create a PR
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.FSPS_BOT_TOKEN }}
           commit-message: Updating FSPS
           branch: update-fsps
           delete-branch: true

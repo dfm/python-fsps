@@ -1,9 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import pytest
+import os
+import sys
+import subprocess
+
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose
+
 from fsps import StellarPopulation, filters
+
+
+def test_fortran_error():
+    output = subprocess.check_output(
+        [
+            sys.executable,
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), "simple_test_script.py"
+            ),
+        ]
+    )
+    assert output.decode("ascii").strip() == "success"
 
 
 @pytest.fixture(scope="module")
@@ -44,8 +61,7 @@ def test_libraries(pop_and_params):
 
 
 def test_filters():
-    """Test all the filters got transmission data loaded.
-    """
+    """Test all the filters got transmission data loaded."""
     flist = filters.list_filters()
     # force trans cache to load
     filters.FILTERS[flist[0]]._load_transmission_cache()
@@ -54,8 +70,7 @@ def test_filters():
 
 
 def test_get_mags(pop_and_params):
-    """Basic test for supplying filter names to get_mags
-    """
+    """Basic test for supplying filter names to get_mags"""
     pop, params = pop_and_params
     fuv1 = pop.get_mags(bands=["galex_fuv"])[:, 0]
     mags = pop.get_mags()
@@ -93,8 +108,8 @@ def test_csp_dirtiness(pop_and_params):
 
 def test_redshift(pop_and_params):
     """Test redshifting, make sure that
-        1. redshifting does not persist in cached arrays
-        2. specifying redshift via get_mags keyword or param key are consistent
+    1. redshifting does not persist in cached arrays
+    2. specifying redshift via get_mags keyword or param key are consistent
     """
     pop, params = pop_and_params
     _reset_default_params(pop, params)
@@ -116,8 +131,7 @@ def test_redshift(pop_and_params):
 
 
 def test_nebemlineinspec(pop_and_params):
-    """Make sure nebular lines are actually added.
-    """
+    """Make sure nebular lines are actually added."""
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["sfh"] = 4
@@ -247,7 +261,7 @@ def test_isochrones(pop_and_params):
     # Just test that `isochrones()` method runs
     pop, params = pop_and_params
     _reset_default_params(pop, params)
-    pop.params['imf_type'] = 0
+    pop.params["imf_type"] = 0
     iso = pop.isochrones()
 
 

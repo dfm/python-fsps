@@ -23,7 +23,8 @@ jobs:
           commit-message: Updating FSPS
           branch: update-fsps
           delete-branch: true
-          push-to-fork: python-fsps/python-fsps
           title: Updating FSPS
-          body: Automatically updating the FSPS submodule
-          
+          body: |
+            Automatically updating the FSPS submodule
+            
+            **Maintainers should close and then re-open this PR to get the tests to run.**

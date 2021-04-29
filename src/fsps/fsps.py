@@ -1168,6 +1168,12 @@ class StellarPopulation(object):
         return self.libraries[1]
 
     @property
+    def dust_library(self):
+        r"""The name of the spectral library being used in FSPS."""
+        return self.libraries[2]
+
+
+    @property
     def libraries(self):
         if self._libraries is None:
             self._libraries = driver.get_libraries()

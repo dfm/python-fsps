@@ -34,6 +34,7 @@ def prettify(fig, ax, label=None):
     if label is not None:
         ax.text(0.63, 0.85, label, transform=ax.transAxes, fontsize=16)
 
+    fig.tight_layout()
     return fig, ax
 
 
@@ -48,6 +49,8 @@ if __name__ == "__main__":
     pl.rc('ytick', right=True)
 
     sps = fsps.StellarPopulation(zcontinuous=1)
+    libraries = sps.libraries
+    print(libraries)
     os.makedirs("./figures", exist_ok=True)
     pdf = PdfPages('./figures/features.pdf')
 
@@ -59,7 +62,7 @@ if __name__ == "__main__":
     sps.params['imf_type'] = 2  # kroupa
     sps.params['imf3'] = 2.3
     fig, ax, spec = makefig(sps)
-    fig, ax = prettify(fig, ax, label=r"$\tau=5$, Age$=13.7$,\n$\log Z/Z_\odot=0.0$")
+    fig, ax = prettify(fig, ax, label=r"$\tau=5$, Age$=13.7$,\\n$\log Z/Z_\odot=0.0$")
     pdf.savefig(fig)
     pl.close(fig)
 
@@ -87,14 +90,14 @@ if __name__ == "__main__":
     # Dust temperature
     sps.params['duste_umin'] = 10
     fig, ax, spec = makefig(sps, oldspec=spec)
-    fig, ax = prettify(fig, ax, label=r"Dust SED\n(Draine)")
+    fig, ax = prettify(fig, ax, label=r"Dust SED")
     pdf.savefig(fig)
     pl.close(fig)
 
     # AGN emission
     sps.params['fagn'] = 0.3
     fig, ax, spec = makefig(sps, oldspec=spec)
-    fig, ax = prettify(fig, ax, label=r"AGN dust\n(Nenkova)")
+    fig, ax = prettify(fig, ax, label=r"AGN dust\\n(Nenkova)")
     pdf.savefig(fig)
     pl.close(fig)
 
@@ -102,7 +105,7 @@ if __name__ == "__main__":
     sps.params['add_neb_emission'] = True
     sps.params['gas_logu'] = -3.5
     fig, ax, spec = makefig(sps, oldspec=spec)
-    fig, ax = prettify(fig, ax, label=r"Neb. emission\n(Byler)")
+    fig, ax = prettify(fig, ax, label=r"Neb. emission\\n(Byler)")
     pdf.savefig(fig)
     pl.close(fig)
 
@@ -125,7 +128,7 @@ if __name__ == "__main__":
     sps.params['zred'] = 6.0
     sps.params['add_igm_absorption'] = True
     fig, ax, spec = makefig(sps, oldspec=spec)
-    fig, ax = prettify(fig, ax, label=r"IGM attenuation\n(Madau, $z=6$)")
+    fig, ax = prettify(fig, ax, label=r"IGM attenuation\\n(Madau, $z=6$)")
     pdf.savefig(fig)
     pl.close(fig)
 

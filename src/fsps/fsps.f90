@@ -514,14 +514,16 @@ contains
 
   end subroutine
 
-  subroutine get_libraries(isocname,specname)
+  subroutine get_libraries(isocname,specname,dustname)
 
     implicit none
 
     character(4), intent(out) :: isocname
     character(5), intent(out) :: specname
+    character(6), intent(out) :: dustname
     isocname = isoc_type
     specname = spec_type
+    dustname = str_dustem
 
   end subroutine
 

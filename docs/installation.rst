@@ -19,9 +19,9 @@ Where, on different systems, you might have to specify the `SPS_HOME`
 environment variable. Python-FSPS requires that variable to be set and it will
 fail to import if it is set incorrectly.
 
-Python-FSPS is built against specific versions of the FSPS Fortran API, so it is
-important that you have a recent version of FSPS through git. Currently
-Python-FSPS is built against FSPS v3.0.
+Python-FSPS is built against specific versions of the FSPS Fortran API and data
+files, so it is important that you have a recent version of FSPS through git.
+Currently Python-FSPS is built against FSPS v3.2.
 
 Installing stable version
 -------------------------
@@ -55,7 +55,15 @@ in more detail in the FSPS documentation, but their names are:
    - `MILES` (default)
    - `BASEL`
 
-Changing either library requires switching off the relevant default, which for isochrones is `MIST` and for spectra is `MILES`, and switching on the desired library. As an example, you can change to Padova isochrones and the BaSeL low resolution synthetic stellar library by re-installing:
+* Dust emission libraries
+
+   - `DL07` (default)
+   - `THEMIS`
+
+Changing any of these libraries requires switching off the relevant default,
+which for isochrones is `MIST` and for spectra is `MILES`, and switching on the
+desired library. As an example, you can change to Padova isochrones and the
+BaSeL low resolution synthetic stellar library by re-installing:
 
 .. code-block:: bash
 
@@ -77,9 +85,10 @@ repository <https://github.com/dfm/python-fsps>`_ and building:
     cd python-fsps
     python -m pip install .
 
-Flags can be prepended to change the stellar libraries as described above. This repository includes FSPS as a submodule, so if you forget the `--recursive`
-flag above, you can get the submodule by running the following commands in the
-root directory of the Python-FSPS repository:
+Flags can be prepended to change the stellar libraries as described above. This
+repository includes FSPS as a submodule, so if you forget the `--recursive` flag
+above, you can get the submodule by running the following commands in the root
+directory of the Python-FSPS repository:
 
 .. code-block:: bash
 

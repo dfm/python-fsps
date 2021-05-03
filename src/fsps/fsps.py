@@ -1159,17 +1159,17 @@ class StellarPopulation(object):
 
     @property
     def isoc_library(self):
-        r"""The name of the isochrone library being used in FSPS."""
+        r"""The name of the stellar isochrone library being used in FSPS."""
         return self.libraries[0]
 
     @property
     def spec_library(self):
-        r"""The name of the spectral library being used in FSPS."""
+        r"""The name of the stellar spectral library being used in FSPS."""
         return self.libraries[1]
 
     @property
-    def dust_library(self):
-        r"""The name of the spectral library being used in FSPS."""
+    def duste_library(self):
+        r"""The name of the dust emission SED library being used in FSPS."""
         return self.libraries[2]
 
 

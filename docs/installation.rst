@@ -19,9 +19,9 @@ Where, on different systems, you might have to specify the `SPS_HOME`
 environment variable. Python-FSPS requires that variable to be set and it will
 fail to import if it is set incorrectly.
 
-Python-FSPS is built against specific versions of the FSPS Fortran API, so it is
-important that you have a recent version of FSPS through git. Currently
-Python-FSPS is built against FSPS v3.2.
+Python-FSPS is built against specific versions of the FSPS Fortran API and data
+files, so it is important that you have a recent version of FSPS through git.
+Currently Python-FSPS is built against FSPS v3.2.
 
 Installing stable version
 -------------------------

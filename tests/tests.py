@@ -55,9 +55,10 @@ def test_libraries(pop_and_params):
     """This does not require or build clean SSPs"""
     pop, params = pop_and_params
     _reset_default_params(pop, params)
-    ilib, splib = pop.libraries
+    ilib, splib, dlib = pop.libraries
     assert ilib == pop.isoc_library
     assert splib == pop.spec_library
+    assert dlib == pop.duste_library
 
 
 def test_filters():

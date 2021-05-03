@@ -68,7 +68,7 @@ and some dust with a Calzetti et al (2000) extinction curve:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">fsps</span><span class="o">.</span><span class="n">StellarPopulation</span><span class="p">(</span><span class="n">compute_vega_mags</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">zcontinuous</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 <span class="go">                                sfh=0, logzsol=0.0, dust_type=2, dust2=0.2)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">libraries</span>
-<span class="go">(&#39;mist&#39;, &#39;miles&#39;)</span>
+<span class="go">(&#39;mist&#39;, &#39;miles&#39;, &#39;DL07&#39;)</span>
 </pre></div>
 </div>
 <p>The last line indicates that we are using the MIST isochrones and MILES spectral
@@ -493,6 +493,12 @@ extrapolation.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="fsps.StellarPopulation.duste_library">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">duste_library</span></code><a class="headerlink" href="#fsps.StellarPopulation.duste_library" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the dust emission SED library being used in FSPS.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="fsps.StellarPopulation.emline_luminosity">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">emline_luminosity</span></code><a class="headerlink" href="#fsps.StellarPopulation.emline_luminosity" title="Permalink to this definition">¶</a></dt>
 <dd><p>emission line luminosities, in <span class="math notranslate nohighlight">\(L_\odot\)</span>. shape=(ne)</p>
@@ -602,7 +608,7 @@ with shape <code class="docutils literal notranslate"><span class="pre">(NTFULL,
 <dl class="py method">
 <dt id="fsps.StellarPopulation.isoc_library">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">isoc_library</span></code><a class="headerlink" href="#fsps.StellarPopulation.isoc_library" title="Permalink to this definition">¶</a></dt>
-<dd><p>The name of the isochrone library being used in FSPS.</p>
+<dd><p>The name of the stellar isochrone library being used in FSPS.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -759,7 +765,7 @@ broadening.</p></li>
 <dl class="py method">
 <dt id="fsps.StellarPopulation.spec_library">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">spec_library</span></code><a class="headerlink" href="#fsps.StellarPopulation.spec_library" title="Permalink to this definition">¶</a></dt>
-<dd><p>The name of the spectral library being used in FSPS.</p>
+<dd><p>The name of the stellar spectral library being used in FSPS.</p>
 </dd></dl>
 
 <dl class="py method">

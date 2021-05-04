@@ -1,0 +1,851 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modelling Stellar Populations &#8212; Python FSPS  documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Working with Filters" href="../filters_api/" />
+    <link rel="prev" title="Installation" href="../installation/" />   
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=0.9, maximum-scale=0.9"
+/>
+
+<!-- https://www.google.com/fonts#UsePlace:use/Collection:Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro -->
+<link
+  href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro"
+  rel="stylesheet"
+  type="text/css"
+/>
+
+<link rel="shortcut icon" href="../_static/favicon.png" />
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../filters_api/" title="Working with Filters"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../installation/" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Python FSPS  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Modelling Stellar Populations</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="modelling-stellar-populations">
+<h1>Modelling Stellar Populations<a class="headerlink" href="#modelling-stellar-populations" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="#fsps.StellarPopulation" title="fsps.StellarPopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">fsps.StellarPopulation</span></code></a> drives FSPS and is generally the only API needed.
+<a class="reference internal" href="../filters_api/#fsps.find_filter" title="fsps.find_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.find_filter()</span></code></a> can also be used interactively to search for a filter (see also <a class="reference internal" href="../filters/"><span class="doc">Table of FSPS Filters</span></a>).</p>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Lets start by initializing a simple stellar population
+with solar metallicity
+and some dust with a Calzetti et al (2000) extinction curve:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fsps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">fsps</span><span class="o">.</span><span class="n">StellarPopulation</span><span class="p">(</span><span class="n">compute_vega_mags</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">zcontinuous</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="go">                                sfh=0, logzsol=0.0, dust_type=2, dust2=0.2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">libraries</span>
+<span class="go">(&#39;mist&#39;, &#39;miles&#39;, &#39;DL07&#39;)</span>
+</pre></div>
+</div>
+<p>The last line indicates that we are using the MIST isochrones and MILES spectral
+library. These can be changed only by reinstalling python-FSPS with appropriate
+flags.</p>
+<p>Let’s get the AB magnitudes in SDSS bands, for a simple stellar population (SSP)
+that is 13.7 Gyr old:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sdss_bands</span> <span class="o">=</span> <span class="n">fsps</span><span class="o">.</span><span class="n">find_filter</span><span class="p">(</span><span class="s1">&#39;sdss&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sdss_bands</span><span class="p">)</span>
+<span class="go">[&#39;sdss_u&#39;, &#39;sdss_g&#39;, &#39;sdss_i&#39;, &#39;sdss_r&#39;, &#39;sdss_z&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">get_mags</span><span class="p">(</span><span class="n">tage</span><span class="o">=</span><span class="mf">13.7</span><span class="p">,</span> <span class="n">bands</span><span class="o">=</span><span class="n">sdss_bands</span><span class="p">)</span>
+<span class="go">array([ 9.85484694,  7.8785663 ,  6.56580511,  6.99828574,  6.16779663])</span>
+</pre></div>
+</div>
+<p>Now we can change a parameter (say, lower the metallicity) and get a new set of magnitudes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;logzsol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">get_mags</span><span class="p">(</span><span class="n">tage</span><span class="o">=</span><span class="mf">13.7</span><span class="p">,</span> <span class="n">bands</span><span class="o">=</span><span class="n">sdss_bands</span><span class="p">)</span>
+<span class="go">array([ 8.5626572 ,  7.07918435,  6.05304881,  6.38592117,  5.84199   ])</span>
+</pre></div>
+</div>
+<p>We can also get the spectrum, here in units of <span class="math notranslate nohighlight">\(L_\odot/\mathrm{Hz}\)</span>,
+as well as the total stellar mass formed by 13.7 Gyr
+and the surviving stellar mass at 13.7 Gyr (both in units of <span class="math notranslate nohighlight">\(M_\odot\)</span>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wave</span><span class="p">,</span> <span class="n">spec</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">get_spectrum</span><span class="p">(</span><span class="n">tage</span><span class="o">=</span><span class="mf">13.7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">formed_mass</span>
+<span class="go">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">stellar_mass</span>
+<span class="go">0.57809244144339011</span>
+</pre></div>
+</div>
+<p>It is highly recommended that only one instance of <a class="reference internal" href="#fsps.StellarPopulation" title="fsps.StellarPopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">fsps.StellarPopulation</span></code></a>
+be used in a given program.</p>
+</div>
+<div class="section" id="example-using-nebular-emission">
+<h2>Example using nebular emission<a class="headerlink" href="#example-using-nebular-emission" title="Permalink to this headline">¶</a></h2>
+<p>We initialize a simple stellar population and set the flag to
+include nebular emission:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">fsps</span><span class="o">.</span><span class="n">StellarPopulation</span><span class="p">(</span><span class="n">zcontinuous</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="go">                                add_neb_emission=1)</span>
+</pre></div>
+</div>
+<p>We can change the stellar metallicity, the gas phase metallicity, the
+gas ionization parameter, and then return the total spectrum at 1 Myr:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;logzsol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;gas_logz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;gas_logu&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wave</span><span class="p">,</span> <span class="n">spec</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">get_spectrum</span><span class="p">(</span><span class="n">tage</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note: for the nebular model to be fully self-consistent, the gas phase
+metallicity and the stellar metallicity should be set to the same value.
+This effectively adds the emission spectrum to the same stellar spectrum
+that was used as the ionizing spectrum in Cloudy.
+If users choose to vary the gas phase metallicity at constant stellar
+metallicity, expect non-hydrogenic emission lines to be accurate within 1-15%.</p>
+<p>Emission line wavelengths and line luminosities can be accessed through
+the stellar population object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">emline_wavelengths</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span><span class="o">.</span><span class="n">emline_luminosity</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="fsps.StellarPopulation">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">fsps.</span></code><code class="sig-name descname"><span class="pre">StellarPopulation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compute_vega_mags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vactoair_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zcontinuous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main interface to use when interacting with FSPS from Python.
+Most of the Fortran API is exposed through Python hooks with various
+features added for user friendliness. It is recommended to only
+instantiate one StellarPopulation object in a given program. When
+initializing, you can set any of the parameters of the system using keyword
+arguments. Below, you’ll find a list of the options that you can include
+(with the comments taken directly from the <a class="reference external" href="https://github.com/cconroy20/fsps/blob/master/doc/MANUAL.pdf">FSPS docs</a>). Unless
+otherwise noted, you can change these values later using the <code class="docutils literal notranslate"><span class="pre">params</span></code>
+property—which is <code class="docutils literal notranslate"><span class="pre">dict</span></code>-like.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sp</span> <span class="o">=</span> <span class="n">StellarPopulation</span><span class="p">(</span><span class="n">imf_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">zcontinuous</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;imf_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;logzsol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.3</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sfh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compute_vega_mags</strong> – (default: False)
+A switch that sets the zero points of the magnitude system: <code class="docutils literal notranslate"><span class="pre">True</span></code>
+uses Vega magnitudes versus AB magnitudes. Can only be changed during
+initialization.</p></li>
+<li><p><strong>vactoair_flag</strong> – (default: False)
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, output wavelengths in air (rather than vac). Can only be
+changed during initialization.</p></li>
+<li><p><strong>zcontinuous</strong> – <p>(default: 0)
+Flag specifying how interpolation in metallicity of the simple stellar
+populations (SSPs) is performed before computing composite stellar
+population (CSP) models:</p>
+<ul>
+<li><p>0: No interpolation, use the metallicity index specified by <code class="docutils literal notranslate"><span class="pre">zmet</span></code>.</p></li>
+<li><p>1: The SSPs are interpolated to the value of <code class="docutils literal notranslate"><span class="pre">logzsol</span></code> before the
+spectra and magnitudes are computed, and the value of <code class="docutils literal notranslate"><span class="pre">zmet</span></code> is
+ignored.</p></li>
+<li><p>2: The SSPs are convolved with a metallicity distribution function
+specified by the <code class="docutils literal notranslate"><span class="pre">logzsol</span></code> and <code class="docutils literal notranslate"><span class="pre">pmetals</span></code> parameters. The value of
+<code class="docutils literal notranslate"><span class="pre">zmet</span></code> is ignored.</p></li>
+<li><p>3: Use all available SSP metallicities when computing the composite
+model, for use exclusively with tabular SFHs where the metallicity
+evolution as function of age is given (see <cite>set_tabular_sfh()</cite>).  The
+values of <code class="docutils literal notranslate"><span class="pre">zmet</span></code> and <code class="docutils literal notranslate"><span class="pre">logzsol</span></code> are ignored.  Furthermore
+<code class="docutils literal notranslate"><span class="pre">add_neb_emission</span></code> must be set to False.</p></li>
+</ul>
+<p>Can only be changed during initialization.</p>
+</p></li>
+<li><p><strong>add_agb_dust_model</strong> – (default: True)
+Switch to turn on/off the AGB circumstellar dust model presented in
+Villaume (2014). NB: The AGB dust emission is scaled by the parameter
+<cite>agb_dust</cite>.</p></li>
+<li><p><strong>add_dust_emission</strong> – (default: True)
+Switch to turn on/off the Draine &amp; Li 2007 dust emission model.</p></li>
+<li><p><strong>add_igm_absorption</strong> – (default: False)
+Switch to include IGM absorption via Madau (1995).  The <code class="docutils literal notranslate"><span class="pre">zred</span></code>
+parameter must be non-zero for this switch to have any effect. The
+optical depth can be scaled using the <code class="docutils literal notranslate"><span class="pre">igm_factor</span></code> parameter.</p></li>
+<li><p><strong>add_neb_emission</strong> – (default: False)
+Switch to turn on/off a nebular emission model (both continuum and line
+emission), based on Cloudy models from Nell Byler.  Contrary to FSPS,
+this option is turned off by default.</p></li>
+<li><p><strong>add_neb_continuum</strong> – (default: True)
+Switch to turn on/off the nebular continuum component (automatically
+turned off if <code class="docutils literal notranslate"><span class="pre">add_neb_emission</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>).</p></li>
+<li><p><strong>add_stellar_remnants</strong> – (default: True)
+Switch to add stellar remnants in the stellar mass computation.</p></li>
+<li><p><strong>redshift_colors</strong> – (default: False)
+Flag specifying how to compute magnitudes. This has no effect in
+python-FSPS. Magnitudes are always computed at a fixed redshift
+specified by <code class="docutils literal notranslate"><span class="pre">zred</span></code> or the <code class="docutils literal notranslate"><span class="pre">redshift</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">get_mags</span></code>.
+See <cite>get_mags</cite> for details.</p></li>
+<li><p><strong>compute_light_ages</strong> – (default: False)
+Flag specifying whether to compute light- and mass-weighted ages.  If
+<code class="docutils literal notranslate"><span class="pre">True</span></code> then the returned spectra are actually light-weighted ages (in
+Gyr) at every wavelength, the returned magnitudes are filter
+transmission weighted averages of these, the <code class="docutils literal notranslate"><span class="pre">log_lbol</span></code> attribute is
+the bolometric luminosity weighted age, and the <code class="docutils literal notranslate"><span class="pre">stellar_mass</span></code>
+attribute gives the mass-weighted age.</p></li>
+<li><p><strong>nebemlineinspec</strong> – (default: True)
+Flag to include the emission line fluxes in the spectrum. Turning this off
+is a significant speedup in model calculation time. If not set, the line luminosities
+are still computed.</p></li>
+<li><p><strong>smooth_velocity</strong> – (default: True)
+Switch to choose smoothing in velocity space (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or wavelength
+space.</p></li>
+<li><p><strong>smooth_lsf</strong> – (default: False)
+Switch to apply smoothing of the SSPs by a wavelength dependent line
+spread function. See the <code class="docutils literal notranslate"><span class="pre">set_lsf()</span></code> method for details.  Only takes
+effect if <code class="docutils literal notranslate"><span class="pre">smooth_velocity</span></code> is True.</p></li>
+<li><p><strong>cloudy_dust</strong> – (default: False)
+Switch to include dust in the Cloudy tables.</p></li>
+<li><p><strong>agb_dust</strong> – (default: 1.0)
+Scales the circumstellar AGB dust emission.</p></li>
+<li><p><strong>tpagb_norm_type</strong> – <p>(default: 2)
+Flag specifying TP-AGB normalization scheme:</p>
+<ul>
+<li><p>0: default Padova 2007 isochrones</p></li>
+<li><p>1: Conroy &amp; Gunn 2010 normalization</p></li>
+<li><p>2: Villaume, Conroy, Johnson 2015 normalization</p></li>
+</ul>
+</p></li>
+<li><p><strong>dell</strong> – (default: 0.0)
+Shift in <span class="math notranslate nohighlight">\(\log L_\mathrm{bol}\)</span> of the TP-AGB isochrones. Note
+that the meaning of this parameter and the one below has changed to
+reflect the updated calibrations presented in Conroy &amp; Gunn (2009).
+That is, these parameters now refer to a modification about the
+calibrations presented in that paper.  Only has effect if
+<code class="docutils literal notranslate"><span class="pre">tpagb_norm_type=1</span></code>.</p></li>
+<li><p><strong>delt</strong> – (default: 0.0)
+Shift in <span class="math notranslate nohighlight">\(\log T_\mathrm{eff}\)</span> of the TP-AGB isochrones.  Only
+has effect if <code class="docutils literal notranslate"><span class="pre">tpagb_norm_type=1</span></code>.</p></li>
+<li><p><strong>redgb</strong> – (default: 1.0)
+Modify weight given to RGB.  Only available with BaSTI isochrone set.</p></li>
+<li><p><strong>agb</strong> – (default: 1.0)
+Modify weight given to TP-AGB.  This only has effect for FSPS v3.1 or
+higher.</p></li>
+<li><p><strong>fcstar</strong> – (default: 1.0)
+Fraction of stars that the Padova isochrones identify as Carbon stars
+that FSPS assigns to a Carbon star spectrum. Set this to 0.0 if for
+example the users wishes to turn all Carbon stars into regular M-type
+stars.</p></li>
+<li><p><strong>sbss</strong> – (default: 0.0)
+Specific frequency of blue straggler stars. See Conroy et al. (2009a)
+for details and a plausible range.</p></li>
+<li><p><strong>fbhb</strong> – (default: 0.0)
+Fraction of horizontal branch stars that are blue. The blue HB stars
+are uniformly spread in <span class="math notranslate nohighlight">\(\log T_\mathrm{eff}\)</span> to <span class="math notranslate nohighlight">\(10^4\)</span>
+K. See Conroy et al. (2009a) for details and a plausible range.</p></li>
+<li><p><strong>pagb</strong> – (default: 1.0)
+Weight given to the post–AGB phase. A value of 0.0 turns off post-AGB
+stars; a value of 1.0 implies that the Vassiliadis &amp; Wood (1994) tracks
+are implemented as–is.</p></li>
+<li><p><strong>zred</strong> – (default: 0.0)
+Redshift. If this value is non-zero and if <code class="docutils literal notranslate"><span class="pre">redshift_colors=1</span></code>, the
+magnitudes will be computed for the spectrum placed at redshift
+<code class="docutils literal notranslate"><span class="pre">zred</span></code>.</p></li>
+<li><p><strong>zmet</strong> – (default: 1)
+The metallicity is specified as an integer ranging between 1 and nz. If
+<code class="docutils literal notranslate"><span class="pre">zcontinuous</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> then this parameter is ignored.</p></li>
+<li><p><strong>logzsol</strong> – (default: 0.0)
+Parameter describing the metallicity, given in units of <span class="math notranslate nohighlight">\(\log
+(Z/Z_\odot)\)</span>.  Only used if <code class="docutils literal notranslate"><span class="pre">zcontinuous</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
+<li><p><strong>pmetals</strong> – (default: 2.0)
+The power for the metallicty distribution function.  The MDF is given by
+<span class="math notranslate nohighlight">\((Z \, e^{-Z})^{\mathrm{pmetals}}\)</span> where <span class="math notranslate nohighlight">\(Z =
+z/(z_\odot \, 10^{\mathrm{logzsol}})\)</span> and z is the metallicity in
+linear units (i.e., <span class="math notranslate nohighlight">\(z_\odot = 0.019\)</span>).  Using a negative value
+will result in smoothing of the SSPs by a three-point triangular kernel
+before linear interpolation (in <span class="math notranslate nohighlight">\(\log Z\)</span>) to the requested
+metallicity. Only used if <code class="docutils literal notranslate"><span class="pre">zcontinuous</span> <span class="pre">=</span> <span class="pre">2</span></code>.</p></li>
+<li><p><strong>imf_type</strong> – <p>(default: 2)
+Common variable defining the IMF type:</p>
+<ul>
+<li><p>0: Salpeter (1955)</p></li>
+<li><p>1: Chabrier (2003)</p></li>
+<li><p>2: Kroupa (2001)</p></li>
+<li><p>3: van Dokkum (2008)</p></li>
+<li><p>4: Dave (2008)</p></li>
+<li><p>5: tabulated piece-wise power law IMF, specified in <code class="docutils literal notranslate"><span class="pre">imf.dat</span></code> file
+located in the data directory</p></li>
+</ul>
+</p></li>
+<li><p><strong>imf_upper_limit</strong> – (default: 120)
+The upper limit of the IMF, in solar masses. Note that if this is
+above the maximum mass in the isochrones then those stars will not
+contribute to the spectrum but will affect the overall IMF
+normalization.</p></li>
+<li><p><strong>imf_lower_limit</strong> – (default: 0.08)
+The lower limit of the IMF, in solar masses.  Note that if this is
+below the minimum mass in the isochrones then those stars will not
+contribute to the spectrum but will affect the overall IMF
+normalization.</p></li>
+<li><p><strong>imf1</strong> – (default: 1.3)
+Logarithmic slope of the IMF over the range <span class="math notranslate nohighlight">\(0.08 &lt; M &lt; 0.5
+M_\odot\)</span>. Only used if <code class="docutils literal notranslate"><span class="pre">imf_type=2</span></code>.</p></li>
+<li><p><strong>imf2</strong> – (default: 2.3)
+Logarithmic slope of the IMF over the range <span class="math notranslate nohighlight">\(0.5 &lt; M &lt; 1
+M_\odot\)</span>. Only used if <code class="docutils literal notranslate"><span class="pre">imf_type=2</span></code>.</p></li>
+<li><p><strong>imf3</strong> – (default: 2.3)
+Logarithmic slope of the IMF over the range <span class="math notranslate nohighlight">\(1.0 &lt; M &lt; \mathrm{imf\_upper\_limit}
+M_\odot\)</span>. Only used if <code class="docutils literal notranslate"><span class="pre">imf_type=2</span></code>.</p></li>
+<li><p><strong>vdmc</strong> – (default: 0.08)
+IMF parameter defined in van Dokkum (2008). Only used if
+<code class="docutils literal notranslate"><span class="pre">imf_type=3</span></code>.</p></li>
+<li><p><strong>mdave</strong> – (default: 0.5)
+IMF parameter defined in Dave (2008). Only used if <code class="docutils literal notranslate"><span class="pre">imf_type=4</span></code>.</p></li>
+<li><p><strong>evtype</strong> – (default: -1)
+Compute SSPs for only the given evolutionary type. All phases used when
+set to -1.</p></li>
+<li><p><strong>masscut</strong> – (default: 150.0)
+Truncate the IMF above this value.</p></li>
+<li><p><strong>sigma_smooth</strong> – (default: 0.0)
+If smooth_velocity is True, this gives the velocity dispersion in km/s.
+Otherwise, it gives the width of the gaussian wavelength smoothing in
+Angstroms.  These widths are in terms of <span class="math notranslate nohighlight">\(\sigma\)</span>, <em>not</em> FWHM.</p></li>
+<li><p><strong>min_wave_smooth</strong> – (default: 1e3)
+Minimum wavelength to consider when smoothing the spectrum.</p></li>
+<li><p><strong>max_wave_smooth</strong> – (default: 1e4)
+Maximum wavelength to consider when smoothing the spectrum.</p></li>
+<li><p><strong>gas_logu</strong> – (default: -2)
+Log of the gas ionization parameter; relevant only for the nebular
+emission model.</p></li>
+<li><p><strong>gas_logz</strong> – (default: 0.0)
+Log of the gas-phase metallicity; relevant only for the nebular
+emission model.  In units of <span class="math notranslate nohighlight">\(\log (Z/Z_\odot)\)</span>.</p></li>
+<li><p><strong>igm_factor</strong> – (default: 1.0)
+Factor used to scale the IGM optical depth.</p></li>
+<li><p><strong>sfh</strong> – <p>(default: 0)
+Defines the type of star formation history, normalized such that one
+solar mass of stars is formed over the full SFH. Default value is 0.</p>
+<ul>
+<li><p>0: Compute a simple stellar population (SSP).</p></li>
+<li><p>1: Tau-model. A six parameter SFH (tau model plus a constant
+component and a burst) with parameters <code class="docutils literal notranslate"><span class="pre">tau</span></code>, <code class="docutils literal notranslate"><span class="pre">const</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sf_start</span></code>, <code class="docutils literal notranslate"><span class="pre">sf_trunc</span></code>, <code class="docutils literal notranslate"><span class="pre">tburst</span></code>, and <code class="docutils literal notranslate"><span class="pre">fburst</span></code> (see below).</p></li>
+<li><p>2: This option is not supported in Python-FSPS.</p></li>
+<li><p>3: Compute a tabulated SFH, which is supplied through the
+<code class="docutils literal notranslate"><span class="pre">set_tabular_sfh</span></code> method.  See that method for details.</p></li>
+<li><p>4: Delayed tau-model. This is the same as option 1 except that the
+tau-model component takes the form <span class="math notranslate nohighlight">\(t\,e^{−t/\tau}\)</span>.</p></li>
+<li><p>5: Delayed tau-model with a transition at a time <code class="docutils literal notranslate"><span class="pre">sf_trunc</span></code> to a
+linearly decreasing SFH with the slope specified by <code class="docutils literal notranslate"><span class="pre">sf_slope</span></code>. See
+Simha et al. 2014 for details.</p></li>
+</ul>
+</p></li>
+<li><p><strong>tau</strong> – (default: 1.0)
+Defines e-folding time for the SFH, in Gyr. Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or
+<code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>. The range is <span class="math notranslate nohighlight">\(0.1 &lt; \tau &lt; 10^2\)</span>.</p></li>
+<li><p><strong>const</strong> – (default: 0.0)
+Defines the constant component of the SFH. This quantity is defined as
+the fraction of mass formed in a constant mode of SF; the range is
+therefore <span class="math notranslate nohighlight">\(0 \le C \le 1\)</span>. Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or <code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>.</p></li>
+<li><p><strong>sf_start</strong> – (default: 0.0)
+Start time of the SFH, in Gyr. Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or <code class="docutils literal notranslate"><span class="pre">sfh=4</span></code> or
+<code class="docutils literal notranslate"><span class="pre">sfh=5</span></code>.</p></li>
+<li><p><strong>sf_trunc</strong> – (default: 0.0)
+Truncation time of the SFH, in Gyr. If set to 0.0, there is no
+trunction.  Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or <code class="docutils literal notranslate"><span class="pre">sfh=4</span></code> or <code class="docutils literal notranslate"><span class="pre">sfh=5</span></code>.</p></li>
+<li><p><strong>tage</strong> – (default: 0.0)
+If set to a non-zero value, the
+<code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.StellarPopulation.compute_csp()</span></code> method will compute the
+spectra and magnitudes only at this age, and will therefore only output
+one age result. The units are Gyr. (The default is to compute and
+return results from <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the
+isochrones).</p></li>
+<li><p><strong>fburst</strong> – (default: 0.0)
+Deﬁnes the fraction of mass formed in an instantaneous burst of star
+formation. Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or <code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>.</p></li>
+<li><p><strong>tburst</strong> – (default: 11.0)
+Defines the age of the Universe when the burst occurs. If <code class="docutils literal notranslate"><span class="pre">tburst</span> <span class="pre">&gt;</span>
+<span class="pre">tage</span></code> then there is no burst. Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or <code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>.</p></li>
+<li><p><strong>sf_slope</strong> – (default: 0.0)
+For <code class="docutils literal notranslate"><span class="pre">sfh=5</span></code>, this is the slope of the SFR after time <code class="docutils literal notranslate"><span class="pre">sf_trunc</span></code>.</p></li>
+<li><p><strong>dust_type</strong> – <p>(default: 0)
+Common variable deﬁning the extinction curve for dust around old stars:</p>
+<ul>
+<li><p>0: power law with index dust index set by <code class="docutils literal notranslate"><span class="pre">dust_index</span></code>.</p></li>
+<li><p>1: Milky Way extinction law (with the <span class="math notranslate nohighlight">\(R = A_V /E(B - V)\)</span> value
+given by <code class="docutils literal notranslate"><span class="pre">mwr</span></code>) parameterized by Cardelli et al. (1989), with
+variable UV bump strength (see <code class="docutils literal notranslate"><span class="pre">uvb</span></code> below).</p></li>
+<li><p>2: Calzetti et al. (2000) attenuation curve. Note that if this value
+is set then the dust attenuation is applied to all starlight equally
+(not split by age), and therefore the only relevant parameter is
+<code class="docutils literal notranslate"><span class="pre">dust2</span></code>, which sets the overall normalization (you must set
+<code class="docutils literal notranslate"><span class="pre">dust1=0.0</span></code> for this to work correctly).</p></li>
+<li><p>3: allows the user to access a variety of attenuation curve models
+from Witt &amp; Gordon (2000) using the parameters <code class="docutils literal notranslate"><span class="pre">wgp1</span></code> and
+<code class="docutils literal notranslate"><span class="pre">wgp2</span></code>. In this case the parameters <code class="docutils literal notranslate"><span class="pre">dust1</span></code> and <code class="docutils literal notranslate"><span class="pre">dust2</span></code> have no
+effect because the WG00 models specify the full attenuation curve.</p></li>
+<li><p>4: Kriek &amp; Conroy (2013) attenuation curve.  In this model the slope
+of the curve, set by the parameter <code class="docutils literal notranslate"><span class="pre">dust_index</span></code>, is linked to the
+strength of the UV bump.</p></li>
+</ul>
+</p></li>
+<li><p><strong>dust_tesc</strong> – (default: 7.0)
+Stars younger than <code class="docutils literal notranslate"><span class="pre">dust_tesc</span></code> are attenuated by both <code class="docutils literal notranslate"><span class="pre">dust1</span></code> and
+<code class="docutils literal notranslate"><span class="pre">dust2</span></code>, while stars older are attenuated by <code class="docutils literal notranslate"><span class="pre">dust2</span></code> only. Units
+are <span class="math notranslate nohighlight">\(\log (\mathrm{yrs})\)</span>.</p></li>
+<li><p><strong>dust1</strong> – (default: 0.0)
+Dust parameter describing the attenuation of young stellar light,
+i.e. where <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">&lt;=</span> <span class="pre">dust_tesc</span></code> (for details, see Conroy et al. 2009a).</p></li>
+<li><p><strong>dust2</strong> – (default: 0.0)
+Dust parameter describing the attenuation of old stellar light,
+i.e. where <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">&gt;</span> <span class="pre">dust_tesc</span></code> (for details, see Conroy et al. 2009a).</p></li>
+<li><p><strong>dust_clumps</strong> – (default: -99.)
+Dust parameter describing the dispersion of a Gaussian PDF density
+distribution for the old dust. Setting this value to -99.0 sets the
+distribution to a uniform screen. See Conroy et al. (2009b) for
+details.  Values other than -99 are no longer supported.</p></li>
+<li><p><strong>frac_nodust</strong> – (default: 0.0)
+Fraction of starlight that is not attenuated by the diffuse dust
+component (i.e. that is not affected by <code class="docutils literal notranslate"><span class="pre">dust2</span></code>).</p></li>
+<li><p><strong>frac_obrun</strong> – (default: 0.0)
+Fraction of the young stars (age &lt; dust_tesc) that are not attenuated
+by <code class="docutils literal notranslate"><span class="pre">dust1</span></code>, representing runaway OB stars.  These stars are still
+attenuated by <code class="docutils literal notranslate"><span class="pre">dust2</span></code>.</p></li>
+<li><p><strong>dust_index</strong> – (default: -0.7)
+Power law index of the attenuation curve. Only used when
+<code class="docutils literal notranslate"><span class="pre">dust_type=0</span></code>.</p></li>
+<li><p><strong>dust1_index</strong> – (default: -1.0)
+Power law index of the attenuation curve affecting stars younger than
+dust_tesc corresponding to <code class="docutils literal notranslate"><span class="pre">dust1</span></code>. Used for all dust types.</p></li>
+<li><p><strong>mwr</strong> – (default: 3.1)
+The ratio of total to selective absorption which characterizes the MW
+extinction curve: <span class="math notranslate nohighlight">\(R = A_V /E(B - V)\)</span>. Only used when
+<code class="docutils literal notranslate"><span class="pre">dust_type=1</span></code>.</p></li>
+<li><p><strong>uvb</strong> – (default: 1.0)
+Parameter characterizing the strength of the 2175A extinction feature
+with respect to the standard Cardelli et al. determination for the
+MW. Only used when <code class="docutils literal notranslate"><span class="pre">dust_type=1</span></code>.</p></li>
+<li><p><strong>wgp1</strong> – (default: 1)
+Integer specifying the optical depth in the Witt &amp; Gordon (2000)
+models. Values range from 1 − 18, corresponding to optical depths of
+0.25, 0.50, 0.75, 1.00, 1.50, 2.00, 2.50, 3.00, 3.50, 4.00, 4.50,
+5.00, 5.50, 6.00, 7.00, 8.00, 9.00, 10.0. Note that these optical
+depths are defined differently from the optical depths defined by
+the parameters <code class="docutils literal notranslate"><span class="pre">dust1</span></code> and <code class="docutils literal notranslate"><span class="pre">dust2</span></code>. See Witt &amp; Gordon (2000)
+for details.</p></li>
+<li><p><strong>wgp2</strong> – (default: 1)
+Integer specifying the type of large-scale geometry and extinction
+curve. Values range from 1-6, corresponding to MW+dusty, MW+shell,
+MW+cloudy, SMC+dusty, SMC+shell, SMC+cloudy. Dusty, shell, and cloudy
+specify the geometry and are described in Witt &amp; Gordon (2000).</p></li>
+<li><p><strong>wgp3</strong> – (default: 1)
+Integer specifying the local geometry for the Witt &amp; Gordon (2000)
+dust models. A value of 0 corresponds to a homogeneous distribution,
+and a value of 1 corresponds to a clumpy distribution. See Witt &amp;
+Gordon (2000) for details.</p></li>
+<li><p><strong>duste_gamma</strong> – (default: 0.01)
+Parameter of the Draine &amp; Li (2007) dust emission model. Specifies the
+relative contribution of dust heated at a radiation field strength of
+<span class="math notranslate nohighlight">\(U_\mathrm{min}\)</span> and dust heated at <span class="math notranslate nohighlight">\(U_\mathrm{min} &lt; U \le
+U_\mathrm{max}\)</span>. Allowable range is 0.0 – 1.0.</p></li>
+<li><p><strong>duste_umin</strong> – (default: 1.0)
+Parameter of the Draine &amp; Li (2007) dust emission model. Specifies the
+minimum radiation field strength in units of the MW value. Valid range
+is 0.1 – 25.0.</p></li>
+<li><p><strong>duste_qpah</strong> – (default: 3.5)
+Parameter of the Draine &amp; Li (2007) dust emission model. Specifies the
+grain size distribution through the fraction of grain mass in
+PAHs. This parameter has units of % and a valid range of 0.0 − 10.0.</p></li>
+<li><p><strong>fagn</strong> – (default: 0.0)
+The total luminosity of the AGN, expressed as a fraction of the
+bolometric stellar luminosity (so it can be greater than 1). The shape
+of the AGN SED is from the Nenkova et al. 2008 templates.</p></li>
+<li><p><strong>agn_tau</strong> – (default: 10)
+Optical depth of the AGN dust torus, which affects the shape of the AGN
+SED.  Outside the range (5, 150) the AGN SED is an
+extrapolation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="fsps.StellarPopulation.dust_mass">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">dust_mass</span></code><a class="headerlink" href="#fsps.StellarPopulation.dust_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dust mass, in solar masses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.duste_library">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">duste_library</span></code><a class="headerlink" href="#fsps.StellarPopulation.duste_library" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the dust emission SED library being used in FSPS.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.emline_luminosity">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">emline_luminosity</span></code><a class="headerlink" href="#fsps.StellarPopulation.emline_luminosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>emission line luminosities, in <span class="math notranslate nohighlight">\(L_\odot\)</span>. shape=(ne)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.emline_wavelengths">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">emline_wavelengths</span></code><a class="headerlink" href="#fsps.StellarPopulation.emline_wavelengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emission line wavelengths, in Angstroms</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.filter_data">
+<code class="sig-name descname"><span class="pre">filter_data</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.filter_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return effective wavelengths, and vega and solar magnitudes
+of all filters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns lambda_eff</dt>
+<dd class="field-odd"><p>Effective wavelength of each filter.</p>
+</dd>
+<dt class="field-even">Returns magvega</dt>
+<dd class="field-even"><p>The AB magnitude of Vega (used to convert between AB and Vega
+systems).</p>
+</dd>
+<dt class="field-odd">Returns magsun</dt>
+<dd class="field-odd"><p>The AB absolute magnitude of the Sun.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.formed_mass">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">formed_mass</span></code><a class="headerlink" href="#fsps.StellarPopulation.formed_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integral of the SFH, in solar masses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.get_mags">
+<code class="sig-name descname"><span class="pre">get_mags</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zmet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redshift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.get_mags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the magnitude of the CSP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zmet</strong> – (default: None)
+The (integer) index of the metallicity to use. By default, use the
+current value of <code class="docutils literal notranslate"><span class="pre">self.params[&quot;zmet&quot;]</span></code>.</p></li>
+<li><p><strong>tage</strong> – (default: 0.0)
+The age of the stellar population. By default, this will compute a
+grid of ages from <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the
+isochrones.</p></li>
+<li><p><strong>redshift</strong> – (default: None)
+Optionally redshift the spectrum first. If not supplied, the
+redshift given by <code class="docutils literal notranslate"><span class="pre">StellarPopulation.params[&quot;zred&quot;]</span></code> is assumed.
+If supplied, the value of <code class="docutils literal notranslate"><span class="pre">zred</span></code> is ignored (and IGM attenuation
+will not work properly).</p></li>
+<li><p><strong>bands</strong> – (default: None)
+The names of the filters that you would like to compute the
+magnitude for. This should correspond to the result of
+<a class="reference internal" href="../filters_api/#fsps.find_filter" title="fsps.find_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.find_filter()</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns mags</dt>
+<dd class="field-even"><p>The magnitude grid. If an age was was provided by the <code class="docutils literal notranslate"><span class="pre">tage</span></code>
+parameter then the result is a 1D array with <code class="docutils literal notranslate"><span class="pre">NBANDS</span></code> values.
+Otherwise, it is a 2D array with shape <code class="docutils literal notranslate"><span class="pre">(NTFULL,</span> <span class="pre">NBANDS)</span></code>. If a
+particular set of bands was requested then this return value will
+be properly compressed along that axis, ordered according to the
+<code class="docutils literal notranslate"><span class="pre">bands</span></code> argument. If <code class="docutils literal notranslate"><span class="pre">redshift</span></code> is not 0, the units are
+apparent observed frame magnitude <span class="math notranslate nohighlight">\(m\)</span> assuming
+<span class="math notranslate nohighlight">\(\Omega_m=0.3, \Omega_\Lambda=0.7\)</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.get_spectrum">
+<code class="sig-name descname"><span class="pre">get_spectrum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zmet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peraa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.get_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return spectra for the current CSP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zmet</strong> – (default: None)
+The (integer) index of the metallicity to use. By default, use
+the current value of <code class="docutils literal notranslate"><span class="pre">self.params[&quot;zmet&quot;]</span></code>.</p></li>
+<li><p><strong>tage</strong> – (default: 0.0)
+The age of the stellar population for which to obtain a
+spectrum. By default, this will compute a grid of ages from
+<span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the isochrones.</p></li>
+<li><p><strong>peraa</strong> – (default: False)
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the spectrum in <span class="math notranslate nohighlight">\(L_\odot/A\)</span>. Otherwise,
+return the spectrum in the FSPS standard
+<span class="math notranslate nohighlight">\(L_\odot/\mathrm{Hz}\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns wavelengths</dt>
+<dd class="field-even"><p>The wavelength grid in Angstroms.</p>
+</dd>
+<dt class="field-odd">Returns spectrum</dt>
+<dd class="field-odd"><p>The spectrum in <span class="math notranslate nohighlight">\(L_\odot/\mathrm{Hz}\)</span> or <span class="math notranslate nohighlight">\(L_\odot/A\)</span>.
+If an age was provided by the <code class="docutils literal notranslate"><span class="pre">tage</span></code> parameter then the result
+is a 1D array with <code class="docutils literal notranslate"><span class="pre">NSPEC</span></code> values. Otherwise, it is a 2D array
+with shape <code class="docutils literal notranslate"><span class="pre">(NTFULL,</span> <span class="pre">NSPEC)</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.isoc_library">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">isoc_library</span></code><a class="headerlink" href="#fsps.StellarPopulation.isoc_library" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the stellar isochrone library being used in FSPS.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.isochrones">
+<code class="sig-name descname"><span class="pre">isochrones</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pyfsps_tmp'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.isochrones" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the isochrone data (age, mass, weights, phases, magnitudes, etc.)
+to a .cmd file, then read it into a huge numpy array. Only parameters
+listed in <code class="docutils literal notranslate"><span class="pre">StellarPopulation.params.ssp_params</span></code> affect the output of
+this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>outfile</strong> – (default: ‘pyfsps_tmp’)
+The file root name of the .cmd file, which will be placed in the
+$SPS_HOME/OUTPUTS/ directory</p>
+</dd>
+<dt class="field-even">Returns dat</dt>
+<dd class="field-even"><p>A huge numpy structured array containing information about every
+isochrone point for the current metallicity.  In general the
+columns may be isochrone specific, but for Padova they are</p>
+<ul class="simple">
+<li><p>age: log age, yrs</p></li>
+<li><p>log(Z): log metallicity</p></li>
+<li><p>mini: initial stellar mass in solar masses</p></li>
+<li><p>mact: actual stellar mass (accounting for mass loss)</p></li>
+<li><p>logl: log bolometric luminosity, solar units</p></li>
+<li><p>logt: log temperature (K)</p></li>
+<li><p>logg: log gravity</p></li>
+<li><p>phase: (see evtype)</p></li>
+<li><p>log(weight): IMF weight corresponding to a total of 1 Msol formed.</p></li>
+<li><p>log(mdot): mass loss rate (Msol/yr)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.log_age">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">log_age</span></code><a class="headerlink" href="#fsps.StellarPopulation.log_age" title="Permalink to this definition">¶</a></dt>
+<dd><p>log10(age/yr).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.log_lbol">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">log_lbol</span></code><a class="headerlink" href="#fsps.StellarPopulation.log_lbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>log(bolometric luminosity / <span class="math notranslate nohighlight">\(L_\odot\)</span>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.set_lsf">
+<code class="sig-name descname"><span class="pre">set_lsf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wave</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.set_lsf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a wavelength dependent Gaussian line-spread function that will be
+applied to the SSPs.  Only takes effect if <code class="docutils literal notranslate"><span class="pre">smooth_lsf</span></code> and
+<code class="docutils literal notranslate"><span class="pre">smooth_velocity</span></code> are True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wave</strong> – Wavelength in angstroms, sorted ascending.  If <cite>wmin</cite> or <cite>wmax</cite>
+are not specified they are taken from the minimum and maximum of
+this array.  ndarray.</p></li>
+<li><p><strong>sigma</strong> – The dispersion of the Gaussian LSF at the wavelengths given by
+<cite>wave</cite>, in km/s.  If 0, no smoothing is applied at that wavelength.
+ndarray of same shape as <cite>wave</cite>.</p></li>
+<li><p><strong>wmin</strong> – (optional)
+The minimum wavelength (in AA) for which smoothing will be
+applied. If not given, it is taken from the minimum of <cite>wave</cite>.</p></li>
+<li><p><strong>wmax</strong> – (optional)
+The maximum wavelength (in AA) for which smoothing will be
+applied. If not given, it is taken from the maximum of <cite>wave</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.set_tabular_sfh">
+<code class="sig-name descname"><span class="pre">set_tabular_sfh</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">age</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.set_tabular_sfh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a tabular SFH for use with the <code class="docutils literal notranslate"><span class="pre">sfh=3</span></code> option.  See the FSPS
+documentation for information about tabular SFHs.  This SFH will be
+piecewise linearly interpolated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>age</strong> – Time since the beginning of the universe in Gyr.  Must be
+increasing.  ndarray of shape (ntab,)</p></li>
+<li><p><strong>sfr</strong> – The SFR at each <code class="docutils literal notranslate"><span class="pre">age</span></code>, in Msun/yr.  Must be an ndarray same
+length as <code class="docutils literal notranslate"><span class="pre">age</span></code>, and contain at least one non-zero value.</p></li>
+<li><p><strong>Z</strong> – (optional)
+The metallicity at each age, in units of absolute metallicity
+(e.g. Z=0.019 for solar with the Padova isochrones and MILES
+stellar library).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.sfr">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">sfr</span></code><a class="headerlink" href="#fsps.StellarPopulation.sfr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Star formation rate (<span class="math notranslate nohighlight">\(M_\odot/yr\)</span>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.sfr_avg">
+<code class="sig-name descname"><span class="pre">sfr_avg</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.sfr_avg" title="Permalink to this definition">¶</a></dt>
+<dd><p>The average SFR between <code class="docutils literal notranslate"><span class="pre">time</span></code>-<code class="docutils literal notranslate"><span class="pre">dt</span></code> and <code class="docutils literal notranslate"><span class="pre">time</span></code>, given the
+SFH parameters, for <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or <code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>.  Like SFHSTAT in FSPS.
+Requires scipy, as it uses gamma functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times</strong> – (default, None)
+The times (in Gyr of cosmic time) at which the average SFR over the
+last <code class="docutils literal notranslate"><span class="pre">dt</span></code> is desired.  if <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses the current value of the
+<code class="docutils literal notranslate"><span class="pre">tage</span></code> in the parameter set. Scalar or iterable.</p></li>
+<li><p><strong>dt</strong> – (default: 0.1)
+The time interval over which the recent SFR is averaged, in Gyr.
+defaults to 100 Myr (i.e. sfr8).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns sfr_avg</dt>
+<dd class="field-even"><p>The SFR at <code class="docutils literal notranslate"><span class="pre">tage</span></code> averaged over the last <code class="docutils literal notranslate"><span class="pre">dt</span></code> Gyr, in units of
+solar masses per year, such that <span class="math notranslate nohighlight">\(1 M_\odot\)</span> formed by
+<code class="docutils literal notranslate"><span class="pre">tage</span></code>.  Same shape as <code class="docutils literal notranslate"><span class="pre">times</span></code>.  For <code class="docutils literal notranslate"><span class="pre">times</span> <span class="pre">&lt;</span> <span class="pre">sf_start</span> <span class="pre">+</span> <span class="pre">dt</span></code>
+the value of <code class="docutils literal notranslate"><span class="pre">sfr_avg</span></code> is <code class="docutils literal notranslate"><span class="pre">nan</span></code>, for <code class="docutils literal notranslate"><span class="pre">times</span> <span class="pre">&gt;</span> <span class="pre">tage</span></code> the value
+is 0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.smoothspec">
+<code class="sig-name descname"><span class="pre">smoothspec</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wave</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.smoothspec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth a spectrum by a gaussian with standard deviation given by sigma.
+Whether the smoothing is in velocity space or in wavelength space
+depends on the value of the value of smooth_velocity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wave</strong> – The input wavelength grid.</p></li>
+<li><p><strong>spec</strong> – The input spectrum.</p></li>
+<li><p><strong>sigma</strong> – The standard deviation of the gaussian broadening function.</p></li>
+<li><p><strong>minw</strong> – Optionally set the minimum wavelength to consider when
+broadening.</p></li>
+<li><p><strong>maxw</strong> – Optionally set the maximum wavelength to consider when
+broadening.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns outspec</dt>
+<dd class="field-even"><p>The smoothed spectrum, on the same wavelength grid as the input.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.spec_library">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">spec_library</span></code><a class="headerlink" href="#fsps.StellarPopulation.spec_library" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the stellar spectral library being used in FSPS.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.ssp_ages">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">ssp_ages</span></code><a class="headerlink" href="#fsps.StellarPopulation.ssp_ages" title="Permalink to this definition">¶</a></dt>
+<dd><p>The age grid of the SSPs, in log(years), used by FSPS.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.stellar_mass">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">stellar_mass</span></code><a class="headerlink" href="#fsps.StellarPopulation.stellar_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surviving stellar mass in solar masses (including remnants if the
+FSPS parameter <code class="docutils literal notranslate"><span class="pre">add_stellar_remants=1</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.wavelengths">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">wavelengths</span></code><a class="headerlink" href="#fsps.StellarPopulation.wavelengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>The wavelength scale for the computed spectra, in Angstroms</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="fsps.StellarPopulation.zlegend">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">zlegend</span></code><a class="headerlink" href="#fsps.StellarPopulation.zlegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>The available metallicities.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo">
+    <a href="../">
+        <img class="logo" src="../_static/pyfsps_logo.svg" alt="Logo"/>
+    </a>
+</p>
+
+<p>
+    Python-FSPS is a set of bindings to Charlie Conroy's
+    <a href="https://github.com/cconroy20/fsps">
+      Flexible Stellar Population Synthesis</a> Fortran library.
+</p>
+  <h3><a href="../">Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Modelling Stellar Populations</a><ul>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#example-using-nebular-emission">Example using nebular emission</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../">Documentation overview</a><ul>
+      <li>Previous: <a href="../installation/" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="../filters_api/" title="next chapter">Working with Filters</a></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+<div class="footer">&copy; Copyright 2013-2021 Python-FSPS developers.</div>
+  </body>
+</html>

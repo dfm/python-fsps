@@ -64,4 +64,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./joss
           publish_branch: joss-paper
-          # force_orphan: true
+          force_orphan: true

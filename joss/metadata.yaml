@@ -1,7 +1,7 @@
 variables:
   archive_doi: "TBD"
   formatted_doi: "TBD"
-  repository: "https://github.com/exoplanet-dev/exoplanet"
+  repository: "https://github.com/dfm/python-fsps"
   doi_batch_id: "N/A"
   editor_url: "https://example.com"
   review_issue_url: "N/A"
@@ -9,7 +9,7 @@ variables:
 
 metadata:
   logo_path: "figures/joss-logo.png"
-  citation_author: "Foreman-Mackey"
+  citation_author: "Johnson, B. D."
   issue: "TBD"
   page: "TBD"
   volume: "TBD"

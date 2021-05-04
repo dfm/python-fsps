@@ -29,8 +29,6 @@ def prettify(fig, ax, label=None):
     return fig, ax
 
 
-pl.rc("text", usetex=True)
-pl.rc("font", family="serif")
 pl.rc("axes", grid=False)
 pl.rc("xtick", direction="in")
 pl.rc("ytick", direction="in")

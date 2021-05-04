@@ -16,3 +16,4 @@ fsps_version.py
 *.dll
 .libs
 demos/figures
+joss/figures/*.png

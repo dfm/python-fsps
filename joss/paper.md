@@ -36,7 +36,7 @@ Some words about why Python and the impact of the Python bindings.
 Give some examples and maybe a figure (\autoref{fig:example}) describing the
 usage.
 
-![Here's an example figure.\label{fig:example}](figure.png)
+![Here's an example figure.\label{fig:example}](figures/figure.png)
 
 # Acknowledgements
 

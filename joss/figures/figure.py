@@ -23,9 +23,7 @@ def prettify(fig, ax, label=None):
     ax.set_ylabel(r"$\lambda \, f_\lambda$", fontsize=20)
     ax.tick_params(axis="both", which="major", labelsize=16)
     if label is not None:
-        ax.text(0.63, 0.85, label, transform=ax.transAxes, fontsize=16)
-
-    fig.tight_layout()
+        ax.set_title(label, fontsize=16)
     return fig, ax
 
 
@@ -47,7 +45,7 @@ sps.params["imf_type"] = 2  # kroupa
 sps.params["imf3"] = 2.3
 fig, ax, spec = makefig(sps)
 fig, ax = prettify(
-    fig, ax, label=r"$\tau=5$, Age$=13.7$,\\n$\log Z/Z_\odot=0.0$"
+    fig, ax, label=r"$\tau=5$; Age$=13.7$; $\log Z/Z_\odot=0.0$"
 )
 
 pl.savefig("figure.png", dpi=200, bbox_inches="tight")

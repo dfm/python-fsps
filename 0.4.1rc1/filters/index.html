@@ -1,0 +1,979 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Table of FSPS Filters &#8212; Python FSPS  documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="prev" title="Working with Filters" href="../filters_api/" />   
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=0.9, maximum-scale=0.9"
+/>
+
+<!-- https://www.google.com/fonts#UsePlace:use/Collection:Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro -->
+<link
+  href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic,700italic|Source+Code+Pro"
+  rel="stylesheet"
+  type="text/css"
+/>
+
+<link rel="shortcut icon" href="../_static/favicon.png" />
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex/" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../filters_api/" title="Working with Filters"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../">Python FSPS  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Table of FSPS Filters</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="table-of-fsps-filters">
+<h1>Table of FSPS Filters<a class="headerlink" href="#table-of-fsps-filters" title="Permalink to this headline">¶</a></h1>
+<p>For convenience, we provide provide a table of filters supported by FSPS.
+These filters can be referred to by providing their <em>Name</em> string, which is case-insensitive.
+For example, to model an SED in HST/ACS F660W and F814W bandpasses:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fsps</span>
+<span class="n">sp</span> <span class="o">=</span> <span class="n">fsps</span><span class="o">.</span><span class="n">StellarPopulation</span><span class="p">()</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">get_mags</span><span class="p">(</span><span class="n">bands</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;WFC_ACS_F606W&#39;</span><span class="p">,</span> <span class="s1">&#39;WFC_ACS_F814W&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 2%" />
+<col style="width: 11%" />
+<col style="width: 7%" />
+<col style="width: 6%" />
+<col style="width: 11%" />
+<col style="width: 63%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>ID</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>M_sun Vega</p></th>
+<th class="head"><p>M_sun AB</p></th>
+<th class="head"><p>lambda_eff (Å)</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>v</p></td>
+<td><p>4.81</p></td>
+<td><p>4.81</p></td>
+<td><p>5477.6</p></td>
+<td><p>Johnson V (from Bessell 1990 via M. Blanton) - this defines the Vega system</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>u</p></td>
+<td><p>5.55</p></td>
+<td><p>6.35</p></td>
+<td><p>3584.8</p></td>
+<td><p>Johnson U (from Bessell 1990 via M. Blanton)</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>b</p></td>
+<td><p>5.46</p></td>
+<td><p>5.35</p></td>
+<td><p>4370.9</p></td>
+<td><p>Johnson B (from Bessell 1990 via M. Blanton)</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>buser_b2</p></td>
+<td><p>5.41</p></td>
+<td><p>5.30</p></td>
+<td><p>4433.5</p></td>
+<td><p>Buser B2  (from BC03)</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>cousins_r</p></td>
+<td><p>4.41</p></td>
+<td><p>4.60</p></td>
+<td><p>6576.9</p></td>
+<td><p>Cousins R (from Bessell 1990 via M. Blanton)</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>cousins_i</p></td>
+<td><p>4.10</p></td>
+<td><p>4.52</p></td>
+<td><p>7891.2</p></td>
+<td><p>Cousins I (from Bessell 1990 via M. Blanton)</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>cfht_b</p></td>
+<td><p>5.41</p></td>
+<td><p>5.28</p></td>
+<td><p>4418.6</p></td>
+<td><p>CFHT B-band (from Blanton’s kcorrect)</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>cfht_r</p></td>
+<td><p>4.37</p></td>
+<td><p>4.59</p></td>
+<td><p>6616.0</p></td>
+<td><p>CFHT R-band (from Blanton’s kcorrect)</p></td>
+</tr>
+<tr class="row-even"><td><p>9</p></td>
+<td><p>cfht_i</p></td>
+<td><p>4.08</p></td>
+<td><p>4.52</p></td>
+<td><p>8166.0</p></td>
+<td><p>CFHT I-band (from Blanton’s kcorrect)</p></td>
+</tr>
+<tr class="row-odd"><td><p>10</p></td>
+<td><p>2mass_j</p></td>
+<td><p>3.67</p></td>
+<td><p>4.56</p></td>
+<td><p>12387.7</p></td>
+<td><p>2MASS J filter (total response w/atm)</p></td>
+</tr>
+<tr class="row-even"><td><p>11</p></td>
+<td><p>2mass_h</p></td>
+<td><p>3.34</p></td>
+<td><p>4.70</p></td>
+<td><p>16488.9</p></td>
+<td><p>2MASS H filter (total response w/atm)</p></td>
+</tr>
+<tr class="row-odd"><td><p>12</p></td>
+<td><p>2mass_ks</p></td>
+<td><p>3.30</p></td>
+<td><p>5.14</p></td>
+<td><p>21635.6</p></td>
+<td><p>2MASS Ks filter (total response w/atm)</p></td>
+</tr>
+<tr class="row-even"><td><p>13</p></td>
+<td><p>sdss_u</p></td>
+<td><p>5.47</p></td>
+<td><p>6.39</p></td>
+<td><p>3556.5</p></td>
+<td><p>SDSS Camera u Response Function, airmass = 1.3 (June 2001)</p></td>
+</tr>
+<tr class="row-odd"><td><p>14</p></td>
+<td><p>sdss_g</p></td>
+<td><p>5.23</p></td>
+<td><p>5.12</p></td>
+<td><p>4702.5</p></td>
+<td><p>SDSS Camera g Response Function, airmass = 1.3 (June 2001)</p></td>
+</tr>
+<tr class="row-even"><td><p>15</p></td>
+<td><p>sdss_r</p></td>
+<td><p>4.50</p></td>
+<td><p>4.64</p></td>
+<td><p>6175.6</p></td>
+<td><p>SDSS Camera r Response Function, airmass = 1.3 (June 2001)</p></td>
+</tr>
+<tr class="row-odd"><td><p>16</p></td>
+<td><p>sdss_i</p></td>
+<td><p>4.18</p></td>
+<td><p>4.53</p></td>
+<td><p>7489.9</p></td>
+<td><p>SDSS Camera i Response Function, airmass = 1.3 (June 2001)</p></td>
+</tr>
+<tr class="row-even"><td><p>17</p></td>
+<td><p>sdss_z</p></td>
+<td><p>4.00</p></td>
+<td><p>4.51</p></td>
+<td><p>8946.8</p></td>
+<td><p>SDSS Camera z Response Function, airmass = 1.3 (June 2001)</p></td>
+</tr>
+<tr class="row-odd"><td><p>18</p></td>
+<td><p>wfpc2_f255w</p></td>
+<td><p>7.44</p></td>
+<td><p>9.06</p></td>
+<td><p>2601.0</p></td>
+<td><p>HST WFPC2 F255W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>19</p></td>
+<td><p>wfpc2_f300w</p></td>
+<td><p>6.05</p></td>
+<td><p>7.40</p></td>
+<td><p>2994.3</p></td>
+<td><p>HST WFPC2 F300W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>20</p></td>
+<td><p>wfpc2_f336w</p></td>
+<td><p>5.46</p></td>
+<td><p>6.64</p></td>
+<td><p>3359.2</p></td>
+<td><p>HST WFPC2 F336W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>21</p></td>
+<td><p>wfpc2_f439w</p></td>
+<td><p>5.51</p></td>
+<td><p>5.36</p></td>
+<td><p>4311.7</p></td>
+<td><p>HST WFPC2 F439W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>22</p></td>
+<td><p>wfpc2_f450w</p></td>
+<td><p>5.31</p></td>
+<td><p>5.22</p></td>
+<td><p>4555.6</p></td>
+<td><p>HST WFPC2 F450W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>23</p></td>
+<td><p>wfpc2_f555w</p></td>
+<td><p>4.83</p></td>
+<td><p>4.82</p></td>
+<td><p>5438.9</p></td>
+<td><p>HST WFPC2 F555W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>24</p></td>
+<td><p>wfpc2_f606w</p></td>
+<td><p>4.61</p></td>
+<td><p>4.70</p></td>
+<td><p>5996.8</p></td>
+<td><p>HST WFPC2 F606W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>25</p></td>
+<td><p>wfpc2_f814w</p></td>
+<td><p>4.11</p></td>
+<td><p>4.52</p></td>
+<td><p>8012.3</p></td>
+<td><p>HST WFPC2 F814W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>26</p></td>
+<td><p>wfpc2_f850lp</p></td>
+<td><p>4.00</p></td>
+<td><p>4.52</p></td>
+<td><p>9129.0</p></td>
+<td><p>HST WFPC2 F850LP (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>27</p></td>
+<td><p>wfc_acs_f435w</p></td>
+<td><p>5.48</p></td>
+<td><p>5.38</p></td>
+<td><p>4318.1</p></td>
+<td><p>HST ACS F435W  (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>28</p></td>
+<td><p>wfc_acs_f475w</p></td>
+<td><p>5.21</p></td>
+<td><p>5.10</p></td>
+<td><p>4744.3</p></td>
+<td><p>HST ACS F475W  (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>29</p></td>
+<td><p>wfc_acs_f555w</p></td>
+<td><p>4.85</p></td>
+<td><p>4.84</p></td>
+<td><p>5359.5</p></td>
+<td><p>HST ACS F555W (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>30</p></td>
+<td><p>wfc_acs_f606w</p></td>
+<td><p>4.64</p></td>
+<td><p>4.72</p></td>
+<td><p>5912.4</p></td>
+<td><p>HST ACS F606W  (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>31</p></td>
+<td><p>wfc_acs_f625w</p></td>
+<td><p>4.47</p></td>
+<td><p>4.63</p></td>
+<td><p>6310.5</p></td>
+<td><p>HST ACS F625W  (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>32</p></td>
+<td><p>wfc_acs_f775w</p></td>
+<td><p>4.14</p></td>
+<td><p>4.53</p></td>
+<td><p>7693.3</p></td>
+<td><p>HST ACS F775W  (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>33</p></td>
+<td><p>wfc_acs_f814w</p></td>
+<td><p>4.10</p></td>
+<td><p>4.52</p></td>
+<td><p>8059.6</p></td>
+<td><p>HST ACS F814W  (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>34</p></td>
+<td><p>wfc_acs_f850lp</p></td>
+<td><p>4.00</p></td>
+<td><p>4.51</p></td>
+<td><p>9054.5</p></td>
+<td><p>HST ACS F850LP  (<a class="reference external" href="http://acs.pha.jhu.edu/instrument/photometry/">http://acs.pha.jhu.edu/instrument/photometry/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>35</p></td>
+<td><p>wfc3_uvis_f218w</p></td>
+<td><p>8.95</p></td>
+<td><p>10.71</p></td>
+<td><p>2226.5</p></td>
+<td><p>HST WFC3 UVIS F218W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-odd"><td><p>36</p></td>
+<td><p>wfc3_uvis_f225w</p></td>
+<td><p>8.37</p></td>
+<td><p>10.10</p></td>
+<td><p>2372.5</p></td>
+<td><p>HST WFC3 UVIS F225W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-even"><td><p>37</p></td>
+<td><p>wfc3_uvis_f275w</p></td>
+<td><p>6.99</p></td>
+<td><p>8.54</p></td>
+<td><p>2710.1</p></td>
+<td><p>HST WFC3 UVIS F275W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-odd"><td><p>38</p></td>
+<td><p>wfc3_uvis_f336w</p></td>
+<td><p>5.47</p></td>
+<td><p>6.65</p></td>
+<td><p>3355.1</p></td>
+<td><p>HST WFC3 UVIS F336W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-even"><td><p>39</p></td>
+<td><p>wfc3_uvis_f390w</p></td>
+<td><p>5.64</p></td>
+<td><p>5.85</p></td>
+<td><p>3924.4</p></td>
+<td><p>HST WFC3 UVIS F390W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-odd"><td><p>40</p></td>
+<td><p>wfc3_uvis_f438w</p></td>
+<td><p>5.49</p></td>
+<td><p>5.34</p></td>
+<td><p>4326.5</p></td>
+<td><p>HST WFC3 UVIS F438W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-even"><td><p>41</p></td>
+<td><p>wfc3_uvis_f475w</p></td>
+<td><p>5.19</p></td>
+<td><p>5.08</p></td>
+<td><p>4773.7</p></td>
+<td><p>HST WFC3 UVIS F475W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-odd"><td><p>42</p></td>
+<td><p>wfc3_uvis_f555w</p></td>
+<td><p>4.89</p></td>
+<td><p>4.86</p></td>
+<td><p>5308.2</p></td>
+<td><p>HST WFC3 UVIS F555W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-even"><td><p>43</p></td>
+<td><p>wfc3_uvis_f606w</p></td>
+<td><p>4.65</p></td>
+<td><p>4.73</p></td>
+<td><p>5887.4</p></td>
+<td><p>HST WFC3 UVIS F606W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-odd"><td><p>44</p></td>
+<td><p>wfc3_uvis_f775w</p></td>
+<td><p>4.15</p></td>
+<td><p>4.53</p></td>
+<td><p>7648.5</p></td>
+<td><p>HST WFC3 UVIS F775W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-even"><td><p>45</p></td>
+<td><p>wfc3_uvis_f814w</p></td>
+<td><p>4.11</p></td>
+<td><p>4.52</p></td>
+<td><p>8029.5</p></td>
+<td><p>HST WFC3 UVIS F814W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-odd"><td><p>46</p></td>
+<td><p>wfc3_uvis_f850lp</p></td>
+<td><p>4.00</p></td>
+<td><p>4.52</p></td>
+<td><p>9168.9</p></td>
+<td><p>HST WFC3 UVIS F850LP (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>) Chip #1</p></td>
+</tr>
+<tr class="row-even"><td><p>47</p></td>
+<td><p>wfc3_ir_f098m</p></td>
+<td><p>3.96</p></td>
+<td><p>4.51</p></td>
+<td><p>9862.9</p></td>
+<td><p>HST WFC3 IR F098M (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>48</p></td>
+<td><p>wfc3_ir_f105w</p></td>
+<td><p>3.89</p></td>
+<td><p>4.53</p></td>
+<td><p>10550.7</p></td>
+<td><p>HST WFC3 IR F105W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>49</p></td>
+<td><p>wfc3_ir_f110w</p></td>
+<td><p>3.79</p></td>
+<td><p>4.54</p></td>
+<td><p>11534.4</p></td>
+<td><p>HST WFC3 IR F110W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>50</p></td>
+<td><p>wfc3_ir_f125w</p></td>
+<td><p>3.67</p></td>
+<td><p>4.56</p></td>
+<td><p>12486.1</p></td>
+<td><p>HST WFC3 IR F125W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>51</p></td>
+<td><p>wfc3_ir_f140w</p></td>
+<td><p>3.52</p></td>
+<td><p>4.60</p></td>
+<td><p>13923.9</p></td>
+<td><p>HST WFC3 IR F140W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>52</p></td>
+<td><p>wfc3_ir_f160w</p></td>
+<td><p>3.40</p></td>
+<td><p>4.65</p></td>
+<td><p>15370.8</p></td>
+<td><p>HST WFC3 IR F160W (<a class="reference external" href="http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/">http://www.stsci.edu/~WFC3/UVIS/SystemThroughput/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>53</p></td>
+<td><p>irac_1</p></td>
+<td><p>3.21</p></td>
+<td><p>5.99</p></td>
+<td><p>35569.7</p></td>
+<td><p>Spitzer IRAC Channel 1 (3.6um)</p></td>
+</tr>
+<tr class="row-odd"><td><p>54</p></td>
+<td><p>irac_2</p></td>
+<td><p>3.16</p></td>
+<td><p>6.41</p></td>
+<td><p>45020.4</p></td>
+<td><p>Spitzer IRAC Channel 2 (4.5um)</p></td>
+</tr>
+<tr class="row-even"><td><p>55</p></td>
+<td><p>irac_3</p></td>
+<td><p>3.12</p></td>
+<td><p>6.87</p></td>
+<td><p>57454.1</p></td>
+<td><p>Spitzer IRAC Channel 3 (5.8um)</p></td>
+</tr>
+<tr class="row-odd"><td><p>56</p></td>
+<td><p>irac_4</p></td>
+<td><p>3.09</p></td>
+<td><p>7.47</p></td>
+<td><p>79162.1</p></td>
+<td><p>Spitzer IRAC Channel 4 (8.0um)</p></td>
+</tr>
+<tr class="row-even"><td><p>57</p></td>
+<td><p>isaac_ks</p></td>
+<td><p>3.30</p></td>
+<td><p>5.13</p></td>
+<td><p>21622.1</p></td>
+<td><p>ISAAC Ks</p></td>
+</tr>
+<tr class="row-odd"><td><p>58</p></td>
+<td><p>fors_v</p></td>
+<td><p>4.78</p></td>
+<td><p>4.79</p></td>
+<td><p>5536.1</p></td>
+<td><p>FORS V</p></td>
+</tr>
+<tr class="row-even"><td><p>59</p></td>
+<td><p>fors_r</p></td>
+<td><p>4.41</p></td>
+<td><p>4.60</p></td>
+<td><p>6564.6</p></td>
+<td><p>FORS R</p></td>
+</tr>
+<tr class="row-odd"><td><p>60</p></td>
+<td><p>nicmos_f110w</p></td>
+<td><p>3.82</p></td>
+<td><p>4.54</p></td>
+<td><p>11248.6</p></td>
+<td><p>HST NICMOS F110W</p></td>
+</tr>
+<tr class="row-even"><td><p>61</p></td>
+<td><p>nicmos_f160w</p></td>
+<td><p>3.37</p></td>
+<td><p>4.68</p></td>
+<td><p>16060.4</p></td>
+<td><p>HST NICMOS F160W</p></td>
+</tr>
+<tr class="row-odd"><td><p>62</p></td>
+<td><p>galex_fuv</p></td>
+<td><p>14.91</p></td>
+<td><p>17.24</p></td>
+<td><p>1535.1</p></td>
+<td><p>GALEX FUV</p></td>
+</tr>
+<tr class="row-even"><td><p>63</p></td>
+<td><p>galex_nuv</p></td>
+<td><p>8.41</p></td>
+<td><p>10.15</p></td>
+<td><p>2300.7</p></td>
+<td><p>GALEX NUV</p></td>
+</tr>
+<tr class="row-odd"><td><p>64</p></td>
+<td><p>des_g</p></td>
+<td><p>5.17</p></td>
+<td><p>5.08</p></td>
+<td><p>4800.9</p></td>
+<td><p>DES g  (from Huan Lin, for DES camera)</p></td>
+</tr>
+<tr class="row-even"><td><p>65</p></td>
+<td><p>des_r</p></td>
+<td><p>4.46</p></td>
+<td><p>4.62</p></td>
+<td><p>6362.6</p></td>
+<td><p>DES r  (from Huan Lin, for DES camera)</p></td>
+</tr>
+<tr class="row-odd"><td><p>66</p></td>
+<td><p>des_i</p></td>
+<td><p>4.13</p></td>
+<td><p>4.52</p></td>
+<td><p>7750.1</p></td>
+<td><p>DES i  (from Huan Lin, for DES camera)</p></td>
+</tr>
+<tr class="row-even"><td><p>67</p></td>
+<td><p>des_z</p></td>
+<td><p>4.00</p></td>
+<td><p>4.52</p></td>
+<td><p>9153.7</p></td>
+<td><p>DES z  (from Huan Lin, for DES camera)</p></td>
+</tr>
+<tr class="row-odd"><td><p>68</p></td>
+<td><p>des_y</p></td>
+<td><p>3.96</p></td>
+<td><p>4.51</p></td>
+<td><p>9907.8</p></td>
+<td><p>DES Y  (from Huan Lin, for DES camera)</p></td>
+</tr>
+<tr class="row-even"><td><p>69</p></td>
+<td><p>wfcam_z</p></td>
+<td><p>4.01</p></td>
+<td><p>4.52</p></td>
+<td><p>8826.3</p></td>
+<td><p>WFCAM (UKIRT) Z  (from Hewett et al. 2006, via A. Smith)</p></td>
+</tr>
+<tr class="row-odd"><td><p>70</p></td>
+<td><p>wfcam_y</p></td>
+<td><p>3.91</p></td>
+<td><p>4.51</p></td>
+<td><p>10314.1</p></td>
+<td><p>WFCAM (UKIRT) Y  (from Hewett et al. 2006, via A. Smith)</p></td>
+</tr>
+<tr class="row-even"><td><p>71</p></td>
+<td><p>wfcam_j</p></td>
+<td><p>3.65</p></td>
+<td><p>4.56</p></td>
+<td><p>12500.9</p></td>
+<td><p>WFCAM (UKIRT) J  (from Hewett et al. 2006, via A. Smith)</p></td>
+</tr>
+<tr class="row-odd"><td><p>72</p></td>
+<td><p>wfcam_h</p></td>
+<td><p>3.35</p></td>
+<td><p>4.70</p></td>
+<td><p>16359.1</p></td>
+<td><p>WFCAM (UKIRT) H  (from Hewett et al. 2006, via A. Smith)</p></td>
+</tr>
+<tr class="row-even"><td><p>73</p></td>
+<td><p>wfcam_k</p></td>
+<td><p>3.30</p></td>
+<td><p>5.17</p></td>
+<td><p>22084.0</p></td>
+<td><p>WFCAM (UKIRT) K  (from Hewett et al. 2006, via A. Smith)</p></td>
+</tr>
+<tr class="row-odd"><td><p>74</p></td>
+<td><p>steidel_un</p></td>
+<td><p>5.44</p></td>
+<td><p>6.34</p></td>
+<td><p>3602.5</p></td>
+<td><p>Steidel Un (via A. Shapley; see Steidel et al. 2003)</p></td>
+</tr>
+<tr class="row-even"><td><p>75</p></td>
+<td><p>steidel_g</p></td>
+<td><p>5.19</p></td>
+<td><p>5.08</p></td>
+<td><p>4753.2</p></td>
+<td><p>Steidel G  (via A. Shapley; see Steidel et al. 2003)</p></td>
+</tr>
+<tr class="row-odd"><td><p>76</p></td>
+<td><p>steidel_rs</p></td>
+<td><p>4.33</p></td>
+<td><p>4.58</p></td>
+<td><p>6781.4</p></td>
+<td><p>Steidel Rs (via A. Shapley; see Steidel et al. 2003)</p></td>
+</tr>
+<tr class="row-even"><td><p>77</p></td>
+<td><p>steidel_i</p></td>
+<td><p>4.09</p></td>
+<td><p>4.52</p></td>
+<td><p>7985.7</p></td>
+<td><p>Steidel I  (via A. Shapley; see Steidel et al. 2003)</p></td>
+</tr>
+<tr class="row-odd"><td><p>78</p></td>
+<td><p>megacam_u</p></td>
+<td><p>5.68</p></td>
+<td><p>6.03</p></td>
+<td><p>3802.9</p></td>
+<td><p>CFHT MegaCam u* (<a class="reference external" href="cadcwww.dao.nrc.ca/megapipe/docs/filters.html">cadcwww.dao.nrc.ca/megapipe/docs/filters.html</a>, Dec 2010)</p></td>
+</tr>
+<tr class="row-even"><td><p>79</p></td>
+<td><p>megacam_g</p></td>
+<td><p>5.14</p></td>
+<td><p>5.05</p></td>
+<td><p>4844.4</p></td>
+<td><p>CFHT MegaCam g’ (<a class="reference external" href="cadcwww.dao.nrc.ca/megapipe/docs/filters.html">cadcwww.dao.nrc.ca/megapipe/docs/filters.html</a>, Dec 2010)</p></td>
+</tr>
+<tr class="row-odd"><td><p>80</p></td>
+<td><p>megacam_r</p></td>
+<td><p>4.48</p></td>
+<td><p>4.63</p></td>
+<td><p>6247.7</p></td>
+<td><p>CFHT MegaCam r’ (<a class="reference external" href="cadcwww.dao.nrc.ca/megapipe/docs/filters.html">cadcwww.dao.nrc.ca/megapipe/docs/filters.html</a>, Dec 2010)</p></td>
+</tr>
+<tr class="row-even"><td><p>81</p></td>
+<td><p>megacam_i</p></td>
+<td><p>4.17</p></td>
+<td><p>4.53</p></td>
+<td><p>7538.7</p></td>
+<td><p>CFHT MegaCam i’ (<a class="reference external" href="cadcwww.dao.nrc.ca/megapipe/docs/filters.html">cadcwww.dao.nrc.ca/megapipe/docs/filters.html</a>, Dec 2010)</p></td>
+</tr>
+<tr class="row-odd"><td><p>82</p></td>
+<td><p>megacam_z</p></td>
+<td><p>4.00</p></td>
+<td><p>4.51</p></td>
+<td><p>8860.0</p></td>
+<td><p>CFHT MegaCam z’ (<a class="reference external" href="cadcwww.dao.nrc.ca/megapipe/docs/filters.html">cadcwww.dao.nrc.ca/megapipe/docs/filters.html</a>, Dec 2010)</p></td>
+</tr>
+<tr class="row-even"><td><p>83</p></td>
+<td><p>wise_w1</p></td>
+<td><p>3.22</p></td>
+<td><p>5.89</p></td>
+<td><p>33682.1</p></td>
+<td><p>WISE W1, 3.4um (<a class="reference external" href="http://www.astro.ucla.edu/~wright/WISE/passbands.html">http://www.astro.ucla.edu/~wright/WISE/passbands.html</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>84</p></td>
+<td><p>wise_w2</p></td>
+<td><p>3.16</p></td>
+<td><p>6.45</p></td>
+<td><p>46178.9</p></td>
+<td><p>WISE W2, 4.6um (<a class="reference external" href="http://www.astro.ucla.edu/~wright/WISE/passbands.html">http://www.astro.ucla.edu/~wright/WISE/passbands.html</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>85</p></td>
+<td><p>wise_w3</p></td>
+<td><p>3.06</p></td>
+<td><p>8.19</p></td>
+<td><p>120717.6</p></td>
+<td><p>WISE W3, 12um (<a class="reference external" href="http://www.astro.ucla.edu/~wright/WISE/passbands.html">http://www.astro.ucla.edu/~wright/WISE/passbands.html</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>86</p></td>
+<td><p>wise_w4</p></td>
+<td><p>3.01</p></td>
+<td><p>9.62</p></td>
+<td><p>221933.5</p></td>
+<td><p>WISE W4, 22um (<a class="reference external" href="http://www.astro.ucla.edu/~wright/WISE/passbands.html">http://www.astro.ucla.edu/~wright/WISE/passbands.html</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>87</p></td>
+<td><p>uvot_w2</p></td>
+<td><p>8.47</p></td>
+<td><p>10.29</p></td>
+<td><p>2057.9</p></td>
+<td><p>UVOT W2 (from Erik Hoversten, 2011)</p></td>
+</tr>
+<tr class="row-odd"><td><p>88</p></td>
+<td><p>uvot_m2</p></td>
+<td><p>8.84</p></td>
+<td><p>10.60</p></td>
+<td><p>2246.9</p></td>
+<td><p>UVOT M2 (from Erik Hoversten, 2011)</p></td>
+</tr>
+<tr class="row-even"><td><p>89</p></td>
+<td><p>uvot_w1</p></td>
+<td><p>6.91</p></td>
+<td><p>8.47</p></td>
+<td><p>2582.6</p></td>
+<td><p>UVOT W1 (from Erik Hoversten, 2011)</p></td>
+</tr>
+<tr class="row-odd"><td><p>90</p></td>
+<td><p>mips_24</p></td>
+<td><p>3.00</p></td>
+<td><p>9.74</p></td>
+<td><p>235917.9</p></td>
+<td><p>Spitzer MIPS 24um</p></td>
+</tr>
+<tr class="row-even"><td><p>91</p></td>
+<td><p>mips_70</p></td>
+<td><p>2.95</p></td>
+<td><p>12.05</p></td>
+<td><p>708981.4</p></td>
+<td><p>Spitzer MIPS 70um</p></td>
+</tr>
+<tr class="row-odd"><td><p>92</p></td>
+<td><p>mips_160</p></td>
+<td><p>2.92</p></td>
+<td><p>13.78</p></td>
+<td><p>1553640.7</p></td>
+<td><p>Spitzer MIPS 160um</p></td>
+</tr>
+<tr class="row-even"><td><p>93</p></td>
+<td><p>scuba_450wb</p></td>
+<td><p>2.87</p></td>
+<td><p>16.13</p></td>
+<td><p>4561884.3</p></td>
+<td><p>SCUBA 450WB (<a class="reference external" href="www.jach.hawaii.edu/JCMT/continuum/background/background.html">www.jach.hawaii.edu/JCMT/continuum/background/background.html</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>94</p></td>
+<td><p>scuba_850wb</p></td>
+<td><p>2.84</p></td>
+<td><p>17.50</p></td>
+<td><p>8563901.9</p></td>
+<td><p>SCUBA 850WB (<a class="reference external" href="www.jach.hawaii.edu/JCMT/continuum/background/background.html">www.jach.hawaii.edu/JCMT/continuum/background/background.html</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>95</p></td>
+<td><p>pacs_70</p></td>
+<td><p>2.95</p></td>
+<td><p>12.07</p></td>
+<td><p>707688.0</p></td>
+<td><p>Herschel PACS   70um</p></td>
+</tr>
+<tr class="row-odd"><td><p>96</p></td>
+<td><p>pacs_100</p></td>
+<td><p>2.94</p></td>
+<td><p>12.82</p></td>
+<td><p>1007889.7</p></td>
+<td><p>Herschel PACS  100um</p></td>
+</tr>
+<tr class="row-even"><td><p>97</p></td>
+<td><p>pacs_160</p></td>
+<td><p>2.92</p></td>
+<td><p>13.81</p></td>
+<td><p>1618854.2</p></td>
+<td><p>Herschel PACS  160um</p></td>
+</tr>
+<tr class="row-odd"><td><p>98</p></td>
+<td><p>spire_250</p></td>
+<td><p>2.90</p></td>
+<td><p>14.78</p></td>
+<td><p>2482638.8</p></td>
+<td><p>Herschel SPIRE 250um</p></td>
+</tr>
+<tr class="row-even"><td><p>99</p></td>
+<td><p>spire_350</p></td>
+<td><p>2.88</p></td>
+<td><p>15.52</p></td>
+<td><p>3483962.4</p></td>
+<td><p>Herschel SPIRE 350um</p></td>
+</tr>
+<tr class="row-odd"><td><p>100</p></td>
+<td><p>spire_500</p></td>
+<td><p>2.86</p></td>
+<td><p>16.27</p></td>
+<td><p>5000972.5</p></td>
+<td><p>Herschel SPIRE 500um</p></td>
+</tr>
+<tr class="row-even"><td><p>101</p></td>
+<td><p>iras_12</p></td>
+<td><p>3.06</p></td>
+<td><p>8.05</p></td>
+<td><p>110332.1</p></td>
+<td><p>IRAS 12um</p></td>
+</tr>
+<tr class="row-odd"><td><p>102</p></td>
+<td><p>iras_25</p></td>
+<td><p>3.01</p></td>
+<td><p>9.62</p></td>
+<td><p>230701.4</p></td>
+<td><p>IRAS 25um</p></td>
+</tr>
+<tr class="row-even"><td><p>103</p></td>
+<td><p>iras_60</p></td>
+<td><p>2.97</p></td>
+<td><p>11.50</p></td>
+<td><p>581751.6</p></td>
+<td><p>IRAS 60um</p></td>
+</tr>
+<tr class="row-odd"><td><p>104</p></td>
+<td><p>iras_100</p></td>
+<td><p>2.94</p></td>
+<td><p>12.77</p></td>
+<td><p>994956.5</p></td>
+<td><p>IRAS 100um</p></td>
+</tr>
+<tr class="row-even"><td><p>105</p></td>
+<td><p>bessell_l</p></td>
+<td><p>3.21</p></td>
+<td><p>5.96</p></td>
+<td><p>34800.1</p></td>
+<td><p>Bessell L band  (Bessell &amp; Brett 1988)</p></td>
+</tr>
+<tr class="row-odd"><td><p>106</p></td>
+<td><p>bessell_lp</p></td>
+<td><p>3.19</p></td>
+<td><p>6.12</p></td>
+<td><p>38275.9</p></td>
+<td><p>Bessell L’ band (Bessell &amp; Brett 1988)</p></td>
+</tr>
+<tr class="row-even"><td><p>107</p></td>
+<td><p>bessell_m</p></td>
+<td><p>3.15</p></td>
+<td><p>6.51</p></td>
+<td><p>47328.3</p></td>
+<td><p>Bessell M band  (Bessell &amp; Brett 1988)</p></td>
+</tr>
+<tr class="row-odd"><td><p>108</p></td>
+<td><p>stromgren_u</p></td>
+<td><p>5.34</p></td>
+<td><p>6.47</p></td>
+<td><p>3478.5</p></td>
+<td><p>Stromgren u (Bessell 2011)</p></td>
+</tr>
+<tr class="row-even"><td><p>109</p></td>
+<td><p>stromgren_v</p></td>
+<td><p>5.67</p></td>
+<td><p>5.53</p></td>
+<td><p>4107.9</p></td>
+<td><p>Stromgren v (Bessell 2011)</p></td>
+</tr>
+<tr class="row-odd"><td><p>110</p></td>
+<td><p>stromgren_b</p></td>
+<td><p>5.22</p></td>
+<td><p>5.06</p></td>
+<td><p>4665.3</p></td>
+<td><p>Stromgren b (Bessell 2011)</p></td>
+</tr>
+<tr class="row-even"><td><p>111</p></td>
+<td><p>stromgren_y</p></td>
+<td><p>4.81</p></td>
+<td><p>4.80</p></td>
+<td><p>5459.0</p></td>
+<td><p>Stromgren y (Bessell 2011)</p></td>
+</tr>
+<tr class="row-odd"><td><p>112</p></td>
+<td><p>1500a</p></td>
+<td><p>15.67</p></td>
+<td><p>18.05</p></td>
+<td><p>1498.5</p></td>
+<td><p>Idealized 1500A bandpass with 15% bandwidth, FWHM = 225A from M. Dickinson</p></td>
+</tr>
+<tr class="row-even"><td><p>113</p></td>
+<td><p>2300a</p></td>
+<td><p>8.85</p></td>
+<td><p>10.62</p></td>
+<td><p>2297.7</p></td>
+<td><p>Idealized 2300A bandpass with 15% bandwidth, FWHM = 345A from M. Dickinson</p></td>
+</tr>
+<tr class="row-odd"><td><p>114</p></td>
+<td><p>2800a</p></td>
+<td><p>6.72</p></td>
+<td><p>8.20</p></td>
+<td><p>2797.1</p></td>
+<td><p>Idealized 2800A bandpass with 15% bandwidth, FWHM = 420A from M. Dickinson</p></td>
+</tr>
+<tr class="row-even"><td><p>115</p></td>
+<td><p>jwst_f070w</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>JWST F070W (<a class="reference external" href="http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/">http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>116</p></td>
+<td><p>jwst_f090w</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>JWST F090W (<a class="reference external" href="http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/">http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>117</p></td>
+<td><p>jwst_f115w</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>JWST F115W (<a class="reference external" href="http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/">http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>118</p></td>
+<td><p>jwst_f150w</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>JWST F150W (<a class="reference external" href="http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/">http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>119</p></td>
+<td><p>jwst_f200w</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>JWST F200W (<a class="reference external" href="http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/">http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>120</p></td>
+<td><p>jwst_f277w</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>JWST F277W (<a class="reference external" href="http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/">http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/</a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>121</p></td>
+<td><p>jwst_f356w</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>JWST F356W (<a class="reference external" href="http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/">http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/</a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>122</p></td>
+<td><p>jwst_f444w</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>nan</p></td>
+<td><p>JWST F444W (<a class="reference external" href="http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/">http://www.stsci.edu/jwst/instruments/nircam/instrumentdesign/filters/</a>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo">
+    <a href="../">
+        <img class="logo" src="../_static/pyfsps_logo.svg" alt="Logo"/>
+    </a>
+</p>
+
+<p>
+    Python-FSPS is a set of bindings to Charlie Conroy's
+    <a href="https://github.com/cconroy20/fsps">
+      Flexible Stellar Population Synthesis</a> Fortran library.
+</p><h3>Related Topics</h3>
+<ul>
+  <li><a href="../">Documentation overview</a><ul>
+      <li>Previous: <a href="../filters_api/" title="previous chapter">Working with Filters</a></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search/" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+<div class="footer">&copy; Copyright 2013-2021 Python-FSPS developers.</div>
+  </body>
+</html>

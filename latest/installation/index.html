@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Installation &#8212; Python FSPS  documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/flasky.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -54,9 +55,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="installation">
+  <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="prerequisites">
+<section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>Python-FSPS no longer has any compile time prerequisites (besides a working
 Fortran compiler), but (if you’re not installing using git, see the “development
@@ -72,15 +73,15 @@ fail to import if it is set incorrectly.</p>
 <p>Python-FSPS is built against specific versions of the FSPS Fortran API and data
 files, so it is important that you have a recent version of FSPS through git.
 Currently Python-FSPS is built against FSPS v3.2.</p>
-</div>
-<div class="section" id="installing-stable-version">
+</section>
+<section id="installing-stable-version">
 <h2>Installing stable version<a class="headerlink" href="#installing-stable-version" title="Permalink to this headline">¶</a></h2>
 <p>Python-FSPS is available as a package on <a class="reference external" href="https://pypi.org/project/fsps/">PyPI</a> that you can install using <cite>pip</cite>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install fsps
 </pre></div>
 </div>
-</div>
-<div class="section" id="choosing-stellar-libraries">
+</section>
+<section id="choosing-stellar-libraries">
 <h2>Choosing Stellar Libraries<a class="headerlink" href="#choosing-stellar-libraries" title="Permalink to this headline">¶</a></h2>
 <p>FSPS can use several different stellar isochrone and spectral libraries, but
 switching between these libraries in python-FSPS requires (re-)installing
@@ -125,8 +126,8 @@ BaSeL low resolution synthetic stellar library by re-installing:</p>
 </pre></div>
 </div>
 <p>where the <cite>–no-binary fsps</cite> flag is required to force building from source.</p>
-</div>
-<div class="section" id="installing-development-version">
+</section>
+<section id="installing-development-version">
 <h2>Installing development version<a class="headerlink" href="#installing-development-version" title="Permalink to this headline">¶</a></h2>
 <p>Python-FSPS is being actively developed on GitHub so you can got there to get
 the most recent development version. You can do this by cloning the <a class="reference external" href="https://github.com/dfm/python-fsps">python-fsps
@@ -157,8 +158,8 @@ you’ll need to install some prerequisites in advance:</p>
 python setup.py develop
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

@@ -231,6 +231,14 @@ class StellarPopulation(object):
         Compute SSPs for only the given evolutionary type. All phases used when
         set to -1.
 
+    :param use_wr_spectra: (default: 1)
+        Turn on/off the WR spectral library.  If off (0), will use the main
+        default library instead
+
+    :param logt_wmb_hot: (default: 0.0)
+        Use the Eldridge (2017) WMBasic hot star library above this value of
+        :math:`\log T_\mathrm{eff}` or 25,000K, whichever is larger.
+
     :param masscut: (default: 150.0)
         Truncate the IMF above this value.
 
@@ -464,6 +472,8 @@ class StellarPopulation(object):
             vdmc=0.08,
             mdave=0.5,
             evtype=-1,
+            use_wr_spectra=1,
+            logt_wmb_hot=0.0,
             masscut=150.0,
             sigma_smooth=0.0,
             min_wave_smooth=1e3,
@@ -1205,6 +1215,8 @@ class ParameterSet(object):
         "masscut",
         "fcstar",
         "evtype",
+        "use_wr_spectra",
+        "logt_wmb_hot",
         "smooth_lsf",
     ]
 
@@ -1280,8 +1292,8 @@ class ParameterSet(object):
             1, NZ + 1
         ), "zmet={0} out of range [1, {1}]".format(self._params["zmet"], NZ)
         assert self._params["dust_type"] in range(
-            5
-        ), "dust_type={0} out of range [0, 4]".format(self._params["dust_type"])
+            7
+        ), "dust_type={0} out of range [0, 6]".format(self._params["dust_type"])
         assert self._params["imf_type"] in range(
             6
         ), "imf_type={0} out of range [0, 5]".format(self._params["imf_type"])

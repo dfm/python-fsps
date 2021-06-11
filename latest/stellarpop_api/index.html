@@ -324,6 +324,12 @@ IMF parameter defined in Dave (2008). Only used if <code class="docutils literal
 <li><p><strong>evtype</strong> – (default: -1)
 Compute SSPs for only the given evolutionary type. All phases used when
 set to -1.</p></li>
+<li><p><strong>use_wr_spectra</strong> – (default: 1)
+Turn on/off the WR spectral library.  If off (0), will use the main
+default library instead</p></li>
+<li><p><strong>logt_wmb_hot</strong> – (default: 0.0)
+Use the Eldridge (2017) WMBasic hot star library above this value of
+<span class="math notranslate nohighlight">\(\log T_\mathrm{eff}\)</span> or 25,000K, whichever is larger.</p></li>
 <li><p><strong>masscut</strong> – (default: 150.0)
 Truncate the IMF above this value.</p></li>
 <li><p><strong>sigma_smooth</strong> – (default: 0.0)
@@ -389,7 +395,7 @@ Defines the age of the Universe when the burst occurs. If <code class="docutils 
 <li><p><strong>sf_slope</strong> – (default: 0.0)
 For <code class="docutils literal notranslate"><span class="pre">sfh=5</span></code>, this is the slope of the SFR after time <code class="docutils literal notranslate"><span class="pre">sf_trunc</span></code>.</p></li>
 <li><p><strong>dust_type</strong> – <p>(default: 0)
-Common variable deﬁning the extinction curve for dust around old stars:</p>
+Common variable deﬁning the attenuation curve for dust around ‘old’ stars:</p>
 <ul>
 <li><p>0: power law with index dust index set by <code class="docutils literal notranslate"><span class="pre">dust_index</span></code>.</p></li>
 <li><p>1: Milky Way extinction law (with the <span class="math notranslate nohighlight">\(R = A_V /E(B - V)\)</span> value
@@ -406,7 +412,9 @@ from Witt &amp; Gordon (2000) using the parameters <code class="docutils literal
 effect because the WG00 models specify the full attenuation curve.</p></li>
 <li><p>4: Kriek &amp; Conroy (2013) attenuation curve.  In this model the slope
 of the curve, set by the parameter <code class="docutils literal notranslate"><span class="pre">dust_index</span></code>, is linked to the
-strength of the UV bump.</p></li>
+strength of the UV bump and is the <em>offset</em> in slope from Calzetti.</p></li>
+<li><p>5: The SMC bar extinction curve from Gordon et al. (2003)</p></li>
+<li><p>6: The Reddy et al. (2015) attenuation curve.</p></li>
 </ul>
 </p></li>
 <li><p><strong>dust_tesc</strong> – (default: 7.0)
@@ -547,9 +555,9 @@ systems).</p>
 The (integer) index of the metallicity to use. By default, use the
 current value of <code class="docutils literal notranslate"><span class="pre">self.params[&quot;zmet&quot;]</span></code>.</p></li>
 <li><p><strong>tage</strong> – (default: 0.0)
-The age of the stellar population. By default, this will compute a
-grid of ages from <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the
-isochrones.</p></li>
+The age of the stellar population in Gyr. By default, this will
+compute a grid of ages from <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age
+in the isochrones.</p></li>
 <li><p><strong>redshift</strong> – (default: None)
 Optionally redshift the spectrum first. If not supplied, the
 redshift given by <code class="docutils literal notranslate"><span class="pre">StellarPopulation.params[&quot;zred&quot;]</span></code> is assumed.
@@ -585,7 +593,7 @@ apparent observed frame magnitude <span class="math notranslate nohighlight">\(m
 The (integer) index of the metallicity to use. By default, use
 the current value of <code class="docutils literal notranslate"><span class="pre">self.params[&quot;zmet&quot;]</span></code>.</p></li>
 <li><p><strong>tage</strong> – (default: 0.0)
-The age of the stellar population for which to obtain a
+The age of the stellar population in Gyr) for which to obtain a
 spectrum. By default, this will compute a grid of ages from
 <span class="math notranslate nohighlight">\(t \approx 0\)</span> to the maximum age in the isochrones.</p></li>
 <li><p><strong>peraa</strong> – (default: False)

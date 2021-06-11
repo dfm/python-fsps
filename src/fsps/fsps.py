@@ -231,6 +231,14 @@ class StellarPopulation(object):
         Compute SSPs for only the given evolutionary type. All phases used when
         set to -1.
 
+    :param use_wr_spectra: (default: 1)
+        Turn on/off the WR spectral library.  If off (0), will use the main
+        default library instead
+
+    :param logt_wmb_hot: (default: 0.0)
+        Use the Eldridge (2017) WMBasic hot star library above this value of
+        :math:`\log T_\mathrm{eff}` or 25,000K, whichever is larger.
+
     :param masscut: (default: 150.0)
         Truncate the IMF above this value.
 
@@ -310,7 +318,7 @@ class StellarPopulation(object):
         For ``sfh=5``, this is the slope of the SFR after time ``sf_trunc``.
 
     :param dust_type: (default: 0)
-        Common variable deﬁning the extinction curve for dust around old stars:
+        Common variable deﬁning the attenuation curve for dust around 'old' stars:
 
         * 0: power law with index dust index set by ``dust_index``.
         * 1: Milky Way extinction law (with the :math:`R = A_V /E(B - V)` value
@@ -327,7 +335,9 @@ class StellarPopulation(object):
           effect because the WG00 models specify the full attenuation curve.
         * 4: Kriek & Conroy (2013) attenuation curve.  In this model the slope
           of the curve, set by the parameter ``dust_index``, is linked to the
-          strength of the UV bump.
+          strength of the UV bump and is the *offset* in slope from Calzetti.
+        * 5: The SMC bar extinction curve from Gordon et al. (2003)
+        * 6: The Reddy et al. (2015) attenuation curve.
 
     :param dust_tesc: (default: 7.0)
         Stars younger than ``dust_tesc`` are attenuated by both ``dust1`` and
@@ -464,6 +474,8 @@ class StellarPopulation(object):
             vdmc=0.08,
             mdave=0.5,
             evtype=-1,
+            use_wr_spectra=1,
+            logt_wmb_hot=0.0,
             masscut=150.0,
             sigma_smooth=0.0,
             min_wave_smooth=1e3,
@@ -554,7 +566,7 @@ class StellarPopulation(object):
             the current value of ``self.params["zmet"]``.
 
         :param tage: (default: 0.0)
-            The age of the stellar population for which to obtain a
+            The age of the stellar population in Gyr) for which to obtain a
             spectrum. By default, this will compute a grid of ages from
             :math:`t \approx 0` to the maximum age in the isochrones.
 
@@ -602,9 +614,9 @@ class StellarPopulation(object):
             current value of ``self.params["zmet"]``.
 
         :param tage: (default: 0.0)
-            The age of the stellar population. By default, this will compute a
-            grid of ages from :math:`t \approx 0` to the maximum age in the
-            isochrones.
+            The age of the stellar population in Gyr. By default, this will
+            compute a grid of ages from :math:`t \approx 0` to the maximum age
+            in the isochrones.
 
         :param redshift: (default: None)
             Optionally redshift the spectrum first. If not supplied, the
@@ -1205,6 +1217,8 @@ class ParameterSet(object):
         "masscut",
         "fcstar",
         "evtype",
+        "use_wr_spectra",
+        "logt_wmb_hot",
         "smooth_lsf",
     ]
 
@@ -1280,8 +1294,8 @@ class ParameterSet(object):
             1, NZ + 1
         ), "zmet={0} out of range [1, {1}]".format(self._params["zmet"], NZ)
         assert self._params["dust_type"] in range(
-            5
-        ), "dust_type={0} out of range [0, 4]".format(self._params["dust_type"])
+            7
+        ), "dust_type={0} out of range [0, 6]".format(self._params["dust_type"])
         assert self._params["imf_type"] in range(
             6
         ), "imf_type={0} out of range [0, 5]".format(self._params["imf_type"])

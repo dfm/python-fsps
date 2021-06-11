@@ -44,18 +44,20 @@ contains
                             imf1,imf2,imf3,vdmc,mdave,dell,&
                             delt,sbss,fbhb,pagb,add_stellar_remnants0,&
                             tpagb_norm_type0,add_agb_dust_model0,agb_dust,&
-                            redgb,agb,masscut,fcstar,evtype,smooth_lsf0)
+                            redgb,agb,masscut,fcstar,evtype,use_wr_spectra0,&
+                            logt_wmb_hot0,smooth_lsf0)
 
     ! Set the parameters that affect the SSP computation.
 
     implicit none
 
     integer, intent(in) :: imf_type0,add_stellar_remnants0,tpagb_norm_type0,&
-                           add_agb_dust_model0,smooth_lsf0
+                           add_agb_dust_model0,use_wr_spectra0,smooth_lsf0
     double precision, intent(in) :: imf_upper_limit0, imf_lower_limit0,&
                                     imf1,imf2,imf3,vdmc,mdave,dell,&
                                     delt,sbss,fbhb,pagb,agb_dust,&
-                                    redgb,agb,masscut,fcstar,evtype
+                                    redgb,agb,masscut,fcstar,evtype,&
+                                    logt_wmb_hot0
 
     imf_type=imf_type0
     imf_upper_limit=imf_upper_limit0
@@ -63,6 +65,8 @@ contains
     add_stellar_remnants=add_stellar_remnants0
     tpagb_norm_type=tpagb_norm_type0
     add_agb_dust_model=add_agb_dust_model0
+    use_wr_spectra=use_wr_spectra0
+    logt_wmb_hot=logt_wmb_hot0
     smooth_lsf=smooth_lsf0
     pset%imf1=imf1
     pset%imf2=imf2

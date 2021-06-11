@@ -318,7 +318,7 @@ class StellarPopulation(object):
         For ``sfh=5``, this is the slope of the SFR after time ``sf_trunc``.
 
     :param dust_type: (default: 0)
-        Common variable deﬁning the extinction curve for dust around old stars:
+        Common variable deﬁning the attenuation curve for dust around 'old' stars:
 
         * 0: power law with index dust index set by ``dust_index``.
         * 1: Milky Way extinction law (with the :math:`R = A_V /E(B - V)` value
@@ -335,7 +335,9 @@ class StellarPopulation(object):
           effect because the WG00 models specify the full attenuation curve.
         * 4: Kriek & Conroy (2013) attenuation curve.  In this model the slope
           of the curve, set by the parameter ``dust_index``, is linked to the
-          strength of the UV bump.
+          strength of the UV bump and is the *offset* in slope from Calzetti.
+        * 5: The SMC bar extinction curve from Gordon et al. (2003)
+        * 6: The Reddy et al. (2015) attenuation curve.
 
     :param dust_tesc: (default: 7.0)
         Stars younger than ``dust_tesc`` are attenuated by both ``dust1`` and
@@ -564,7 +566,7 @@ class StellarPopulation(object):
             the current value of ``self.params["zmet"]``.
 
         :param tage: (default: 0.0)
-            The age of the stellar population for which to obtain a
+            The age of the stellar population in Gyr) for which to obtain a
             spectrum. By default, this will compute a grid of ages from
             :math:`t \approx 0` to the maximum age in the isochrones.
 
@@ -612,9 +614,9 @@ class StellarPopulation(object):
             current value of ``self.params["zmet"]``.
 
         :param tage: (default: 0.0)
-            The age of the stellar population. By default, this will compute a
-            grid of ages from :math:`t \approx 0` to the maximum age in the
-            isochrones.
+            The age of the stellar population in Gyr. By default, this will
+            compute a grid of ages from :math:`t \approx 0` to the maximum age
+            in the isochrones.
 
         :param redshift: (default: None)
             Optionally redshift the spectrum first. If not supplied, the

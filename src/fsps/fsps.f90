@@ -14,10 +14,10 @@ module driver
   integer :: is_setup=0
 
   !f2py intent(hide) has_ssp
-  integer, dimension(nz) :: has_ssp=0
+  integer, dimension(nz,nafe) :: has_ssp=0
 
   !f2py intent(hide) has_ssp_age
-  integer, dimension(nz,nt) :: has_ssp_age=0
+  integer, dimension(nz,nafe,nt) :: has_ssp_age=0
 
 
 contains
@@ -88,8 +88,8 @@ contains
     pset%evtype=evtype
     pset%frac_xrb=frac_xrb
 
-    has_ssp(:) = 0
-    has_ssp_age(:,:) = 0
+    has_ssp(:,:) = 0
+    has_ssp_age(:,:,:) = 0
 
   end subroutine
 
@@ -97,9 +97,10 @@ contains
                             compute_light_ages0,nebemlineinspec0,&
                             dust_type0,add_dust_emission0,add_neb_emission0,&
                             add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
-                            zmet,sfh,wgp1,wgp2,wgp3,tau,&
-                            const,tage,fburst,tburst,dust1,dust2,dust3,&
-                            logzsol,zred,pmetals,dust_clumps,frac_nodust,&
+                            zmet,afeindx,sfh,wgp1,wgp2,wgp3,&
+                            tau,const,tage,fburst,tburst,&
+                            dust1,dust2,dust3,&
+                            logzsol,afe,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             dust1_index,sf_start,sf_trunc,sf_slope,&
                             duste_gamma,duste_umin,duste_qpah,&
@@ -114,10 +115,10 @@ contains
                            compute_light_ages0,nebemlineinspec0,&
                            dust_type0,add_dust_emission0,add_neb_emission0,&
                            add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
-                           zmet,sfh,wgp1,wgp2,wgp3
+                           zmet,afeindx,sfh,wgp1,wgp2,wgp3
     double precision, intent(in) :: tau,&
                             const,tage,fburst,tburst,dust1,dust2,dust3,&
-                            logzsol,zred,pmetals,dust_clumps,frac_nodust,&
+                            logzsol,afe,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             dust1_index,sf_start,sf_trunc,sf_slope,&
                             duste_gamma,duste_umin,duste_qpah,&
@@ -136,6 +137,7 @@ contains
     add_igm_absorption=add_igm_absorption0
 
     pset%zmet=zmet
+    pset%afeindx=afeindx
     pset%sfh=sfh
     pset%wgp1=wgp1
     pset%wgp2=wgp2
@@ -150,6 +152,7 @@ contains
     pset%dust2=dust2
     pset%dust3=dust3
     pset%logzsol=logzsol
+    pset%afe=afe
     pset%zred=zred
     pset%pmetals=pmetals
     pset%dust_clumps=dust_clumps
@@ -182,26 +185,29 @@ contains
     ! Loop over the metallicity grid and compute all the SSPs.
 
     implicit none
-    integer :: zi
+    integer :: zi, ai
     do zi=1,nz
-      call ssp(zi)
+      do ai=1,nafe
+        call ssp(zi, ai)
+      enddo
     enddo
 
   end subroutine
 
-  subroutine ssp(zi)
+  subroutine ssp(zi,ai)
 
-    ! Compute a SSP at a single metallicity.
+    ! Compute a SSP at a single metallicity gridpoint.
 
     implicit none
-    integer, intent(in) :: zi
+    integer, intent(in) :: zi, ai
     pset%zmet = zi
-    call ssp_gen(pset, mass_ssp_zz(:,zi),lbol_ssp_zz(:,zi),&
-         spec_ssp_zz(:,:,zi))
+    pset%afeindx = ai
+    call ssp_gen(pset, mass_ssp_zz(:,zi,ai),lbol_ssp_zz(:,zi,ai),&
+         spec_ssp_zz(:,:,zi,ai))
     if (minval(pset%ssp_gen_age) .eq. 1) then
-       has_ssp(zi) = 1
+       has_ssp(zi,ai) = 1
     endif
-    has_ssp_age(zi,:) = pset%ssp_gen_age
+    has_ssp_age(zi,ai,:) = pset%ssp_gen_age
 
   end subroutine
 
@@ -214,60 +220,70 @@ contains
     integer, intent(in) :: ns,n_age,ztype
     double precision, dimension(ns,n_age) :: spec
     double precision, dimension(n_age) :: mass,lbol
-    integer :: zlo,zmet
-    double precision :: zpos
+    integer :: zlo,zmet,alo,afeidx
+    double precision :: zpos, apos
     character(100) :: outfile
 
     if (ztype .eq. 0) then
        ! Build the SSP for one metallicity, then feed to compsp
        zmet = pset%zmet
-       if (has_ssp(zmet) .eq. 0) then
-          call ssp(zmet)
+       afeidx = pset%afeindx
+       if (has_ssp(zmet,afeidx) .eq. 0) then
+          call ssp(zmet,afeidx)
        endif
        !mass = mass_ssp_zz(:,zmet)
        !lbol = lbol_ssp_zz(:,zmet)
        !spec = spec_ssp_zz(:,:,zmet)
-       call compsp(0,1,outfile,mass_ssp_zz(:,zmet),lbol_ssp_zz(:,zmet),&
-            spec_ssp_zz(:,:,zmet),pset,ocompsp)
+       call compsp(0,1,outfile,mass_ssp_zz(:,zmet,afeidx),&
+                               lbol_ssp_zz(:,zmet,afeidx),&
+                               spec_ssp_zz(:,:,zmet,afeidx),pset,ocompsp)
     endif
 
     if (ztype .eq. 1) then
        zpos = pset%logzsol
+       apos = pset%afe
        ! Find the bracketing metallicity indices and generate ssps if
        ! necessary, then interpolate, and feed the result to compsp
        zlo = max(min(locate(log10(zlegend/zsol),zpos),nz-1),1)
+       alo = max(min(locate(afe_val,apos),nafe-1),1)
        do zmet=zlo,zlo+1
-          if (has_ssp(zmet) .eq. 0) then
-             call ssp(zmet)
-          endif
+          do afeidx=alo,alo+1
+             if ((has_ssp(zmet,afeidx) .eq. 0).and.(afeidx.le.nafe)) then
+                call ssp(zmet,afeidx)
+             endif
+          enddo
        enddo
-       call ztinterp(zpos,spec,lbol,mass)
+       call ztinterp(zpos,apos,spec,lbol,mass)
        call compsp(0,1,outfile,mass,lbol,spec,pset,ocompsp)
     endif
 
     if (ztype .eq. 2) then
        zpos = pset%logzsol
+       apos = pset%afe
        ! Build the SSPs for *every* metallicity if necessary, then
        ! comvolve with the MDF, and then feed to compsp
        do zmet=1,nz
-          if (has_ssp(zmet) .eq. 0) then
-             call ssp(zmet)
-          endif
+          do afeidx=1,nafe
+             if (has_ssp(zmet,afeidx) .eq. 0) then
+                call ssp(zmet,afeidx)
+             endif
+          enddo
        enddo
-       call ztinterp(zpos,spec,lbol,mass,zpow=pset%pmetals)
+       call ztinterp(zpos,apos,spec,lbol,mass,zpow=pset%pmetals)
        call compsp(0,1,outfile,mass,lbol,spec,pset,ocompsp)
     endif
 
     if (ztype .eq. 3) then
        ! Build the SSPs for *every* metallicity and feed all of them to compsp
        ! for z-dependent tabular
+       afeidx = pset%afeindx
        do zmet=1,nz
-          if (has_ssp(zmet) .eq. 0) then
-             call ssp(zmet)
+          if (has_ssp(zmet,afeidx) .eq. 0) then
+             call ssp(zmet,afeidx)
           endif
        enddo
-       call compsp(0,nz,outfile,mass_ssp_zz,lbol_ssp_zz,&
-            spec_ssp_zz,pset,ocompsp)
+       call compsp(0,nz,outfile,mass_ssp_zz(:,:,afeidx),lbol_ssp_zz(:,:,afeidx),&
+            spec_ssp_zz(:,:,:,afeidx),pset,ocompsp)
     endif
 
 
@@ -305,40 +321,40 @@ contains
 
   end subroutine
 
-  subroutine interp_ssp(ns,zpos,tpos,spec,mass,lbol)
+!  subroutine interp_ssp(ns,zpos,apos,tpos,spec,mass,lbol)
 
     ! Return the SSPs interpolated to the target metallicity
-    !(zpos) and target age (tpos)
+    !(zpos and apos) and target age (tpos)
 
-    implicit none
+!    implicit none
 
-    integer, intent(in) :: ns
-    double precision, intent(in) :: zpos
-    double precision, intent(in) :: tpos
+!    integer, intent(in) :: ns
+!    double precision, intent(in) :: zpos,apos
+!    double precision, intent(in) :: tpos
 
-    double precision, dimension(ns,1), intent(inout) :: spec
-    double precision, dimension(1), intent(inout) :: mass,lbol
+!    double precision, dimension(ns,1), intent(inout) :: spec
+!    double precision, dimension(1), intent(inout) :: mass,lbol
 
-    double precision, dimension(nt) :: time
+!    double precision, dimension(nt) :: time
 
-    integer :: zlo,zmet,tlo
+!    integer :: zlo,zmet,tlo
 
-    zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
-    time = timestep_isoc(zlo,:)
-    tlo = max(min(locate(time,tpos),nt-1),1)
+!    zlo = max(min(locate(log10(zlegend/0.0190),zpos),nz-1),1)
+!    time = timestep_isoc(zlo,:)
+!    tlo = max(min(locate(time,tpos),nt-1),1)
 
-    do zmet=zlo,zlo+1
-       if ((has_ssp_age(zmet,tlo) .eq. 0) .or. (has_ssp_age(zmet,tlo+1) .eq. 0)) then
-          pset%ssp_gen_age = 0
-          pset%ssp_gen_age(tlo:tlo+1) = 1
-          call ssp(zmet)
-          pset%ssp_gen_age = 1
-       endif
-    enddo
+!    do zmet=zlo,zlo+1
+!       if ((has_ssp_age(zmet,tlo) .eq. 0) .or. (has_ssp_age(zmet,tlo+1) .eq. 0)) then
+!          pset%ssp_gen_age = 0
+!          pset%ssp_gen_age(tlo:tlo+1) = 1
+!          call ssp(zmet)
+!          pset%ssp_gen_age = 1
+!       endif
+!    enddo
 
-    call ztinterp(zpos,spec,lbol,mass,tpos=tpos)
+!   call ztinterp(zpos,apos,spec,lbol,mass,tpos=tpos)
 
-    end subroutine
+!    end subroutine
 
 
     subroutine smooth_spectrum(ns,wave,spec,sigma_broad,minw,maxw)
@@ -392,28 +408,27 @@ contains
 
   end subroutine
 
-
-  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
+  !  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
 
     ! Return the contents of the ssp spectral array,
     ! regenerating the ssps if necessary
 
-    implicit none
-    integer, intent(in) :: ns,n_age,n_z
-    integer :: zi
-    double precision, dimension(ns,n_age,n_z), intent(inout) :: ssp_spec_out
-    double precision, dimension(n_age,n_z), intent(inout) :: ssp_mass_out, ssp_lbol_out
-    do zi=1,nz
-       if (has_ssp(zi) .eq. 0) then
-          call ssp(zi)
-       endif
-    enddo
+!    implicit none
+!    integer, intent(in) :: ns,n_age,n_z
+!    integer :: zi
+!    double precision, dimension(ns,n_age,n_z), intent(inout) :: ssp_spec_out
+!    double precision, dimension(n_age,n_z), intent(inout) :: ssp_mass_out, ssp_lbol_out
+!    do zi=1,nz
+!       if (has_ssp(zi) .eq. 0) then
+!          call ssp(zi)
+!       endif
+!    enddo
 
-    ssp_spec_out = spec_ssp_zz
-    ssp_mass_out = mass_ssp_zz
-    ssp_lbol_out = lbol_ssp_zz
-
-  end subroutine
+!    ssp_spec_out = spec_ssp_zz
+!    ssp_mass_out = mass_ssp_zz
+!    ssp_lbol_out = lbol_ssp_zz
+!
+!  end subroutine
 
   subroutine set_sfh_tab(ntab, age, sfr, met)
 
@@ -477,6 +492,16 @@ contains
     implicit none
     double precision, intent(out) :: z_sol
     z_sol = zsol
+
+  end subroutine
+
+  subroutine get_nafe(n_afe)
+
+    ! get the number of afe grid points
+
+    implicit none
+    integer, intent(out) :: n_afe
+    n_afe = nafe
 
   end subroutine
 
@@ -571,7 +596,7 @@ contains
     implicit none
 
     character(4), intent(out) :: isocname
-    character(5), intent(out) :: specname
+    character(7), intent(out) :: specname
     character(6), intent(out) :: dustname
     isocname = isoc_type
     specname = spec_type
@@ -597,7 +622,7 @@ contains
     ! Get the number of masses included in a specific isochrone.
     integer, intent(in) :: zz,tt
     integer, intent(out) :: nmass
-    nmass = nmass_isoc(zz,tt)
+    nmass = nmass_isoc(zz,1,tt)
 
   end subroutine
 

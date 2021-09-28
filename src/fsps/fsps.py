@@ -179,13 +179,24 @@ class StellarPopulation(object):
         (Z/Z_\odot)`.  Only used if ``zcontinuous > 0``.
 
     :param pmetals: (default: 2.0)
-       The power for the metallicty distribution function.  The MDF is given by
-       :math:`(Z \, e^{-Z})^{\mathrm{pmetals}}` where :math:`Z =
-       z/(z_\odot \, 10^{\mathrm{logzsol}})` and z is the metallicity in
-       linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative value
-       will result in smoothing of the SSPs by a three-point triangular kernel
-       before linear interpolation (in :math:`\log Z`) to the requested
-       metallicity. Only used if ``zcontinuous = 2``.
+        The power for the metallicty distribution function.  The MDF is given by
+        :math:`(Z \, e^{-Z})^{\mathrm{pmetals}}` where :math:`Z =
+        z/(z_\odot \, 10^{\mathrm{logzsol}})` and z is the metallicity in
+        linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative value
+        will result in smoothing of the SSPs by a three-point triangular kernel
+        before linear interpolation (in :math:`\log Z`) to the requested
+        metallicity. Only used if ``zcontinuous = 2``.
+
+    :param afeindx: (default: 1)
+        The alpha enhancement specified as integer ranging from 1 to nafe. If
+        ``zcontinuous > 0`` then this parameter is ignored. Only takes effect if
+        (python-)FSPS was compiled with AFE_FLAG=1 and uses the MIST isochrones
+        and C3K spectra.
+
+    :param afe: (default: 0.0)
+        The value of [alpha/Fe] for the spectra and isochrones.  Only takes
+        effect if (python-)FSPS was compiled with AFE_FLAG=1 and uses the MIST
+        isochrones.  Generally should be -0.2 < afe < 0.6
 
     :param imf_type: (default: 2)
         Common variable defining the IMF type:
@@ -477,6 +488,8 @@ class StellarPopulation(object):
             zmet=1,
             logzsol=0.0,
             pmetals=2.0,
+            afeindx=1,
+            afe=0.0,
             imf_type=2,
             imf_upper_limit=120,
             imf_lower_limit=0.08,
@@ -567,6 +580,7 @@ class StellarPopulation(object):
 
     def _compute_csp(self):
         self._update_params()
+        assert self._zcontinuous < 2, "Cannot use MDF with afe enhancement"
 
         NSPEC = driver.get_nspec()
         NTFULL = driver.get_ntfull()
@@ -709,6 +723,9 @@ class StellarPopulation(object):
         :param zpos:
             The metallicity, in units of :math:`\log(Z/Z_\odot)`
 
+        :param apos:
+            The alpha-enhancement, in units of :math:`[\alpha/Fe]`
+
         :param tpos:
             The desired age, in Gyr.
 
@@ -725,13 +742,14 @@ class StellarPopulation(object):
         :returns lbol:
             The bolometric luminosity of the returned SSP.
         """
+        raise NotImplementedError("Bindings disabled for afe enhancement")
         if self.params.dirtiness == 2:
             self._update_params()
 
         NSPEC = driver.get_nspec()
         spec, mass, lbol = np.zeros(NSPEC), np.zeros(1), np.zeros(1)
         logt_yrs = np.log10(tpos * 1e9)
-        driver.interp_ssp(zpos, logt_yrs, spec, mass, lbol)
+        driver.interp_ssp(zpos, apos, logt_yrs, spec, mass, lbol)
 
         if peraa:
             wavegrid = self.wavelengths
@@ -762,6 +780,8 @@ class StellarPopulation(object):
         :returns lbol:
             The bolometric luminosity of the SSPs, having shape (ntfull, nz).
         """
+
+        raise NotImplementedError("Bindings disabled for afe")
 
         if (self.params.dirtiness == 2) and update:
             self._update_params()
@@ -1114,6 +1134,12 @@ class StellarPopulation(object):
         return self._solar_metallicity
 
     @property
+    def n_afe(self):
+        r"""The number of [a/Fe] gridpoints."""
+        nafe = driver.get_nafe()
+        return nafe
+
+    @property
     def ssp_ages(self):
         r"""The age grid of the SSPs, in log(years), used by FSPS."""
         if self._ssp_ages is None:
@@ -1304,6 +1330,7 @@ class ParameterSet(object):
         "cloudy_dust",
         "add_igm_absorption",
         "zmet",
+        "afeindx",
         "sfh",
         "wgp1",
         "wgp2",
@@ -1317,6 +1344,7 @@ class ParameterSet(object):
         "dust2",
         "dust3",
         "logzsol",
+        "afe",
         "zred",
         "pmetals",
         "dust_clumps",

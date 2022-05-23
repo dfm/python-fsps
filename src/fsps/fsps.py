@@ -534,6 +534,7 @@ class StellarPopulation(object):
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
+        self._resolutions = None
         self._emwavelengths = None
         self._zlegend = None
         self._solar_metallicity = None
@@ -1031,6 +1032,14 @@ class StellarPopulation(object):
             NSPEC = driver.get_nspec()
             self._wavelengths = driver.get_lambda(NSPEC)
         return self._wavelengths.copy()
+
+    @property
+    def resolutions(self):
+        r"""The resolution array (units)"""
+        if self._resolutions is None:
+            NSPEC = driver.get_nspec()
+            self._resolutions = driver.get_res(NSPEC)
+        return self._resolutions.copy()
 
     @property
     def emline_wavelengths(self):

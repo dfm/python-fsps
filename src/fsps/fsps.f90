@@ -529,6 +529,16 @@ contains
 
   end subroutine
 
+  subroutine get_res(ns,res)
+
+    ! Get the grid of wavelength bins.
+    implicit none
+    integer, intent(in) :: ns
+    double precision, dimension(ns), intent(out) :: res
+    res = spec_res
+
+  end subroutine
+
   subroutine get_libraries(isocname,specname,dustname)
 
     implicit none

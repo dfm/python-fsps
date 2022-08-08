@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Installation &#8212; Python FSPS  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
@@ -56,9 +57,9 @@
           <div class="body" role="main">
             
   <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h2>
 <p>Python-FSPS no longer has any compile time prerequisites (besides a working
 Fortran compiler), but (if you’re not installing using git, see the “development
 version” section below) it does require a clone of the <a class="reference external" href="https://github.com/cconroy20/fsps">FSPS</a> project for the data files. To get this
@@ -75,14 +76,14 @@ files, so it is important that you have a recent version of FSPS through git.
 Currently Python-FSPS is built against FSPS v3.2.</p>
 </section>
 <section id="installing-stable-version">
-<h2>Installing stable version<a class="headerlink" href="#installing-stable-version" title="Permalink to this headline">¶</a></h2>
+<h2>Installing stable version<a class="headerlink" href="#installing-stable-version" title="Permalink to this heading">¶</a></h2>
 <p>Python-FSPS is available as a package on <a class="reference external" href="https://pypi.org/project/fsps/">PyPI</a> that you can install using <cite>pip</cite>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install fsps
 </pre></div>
 </div>
 </section>
 <section id="choosing-stellar-libraries">
-<h2>Choosing Stellar Libraries<a class="headerlink" href="#choosing-stellar-libraries" title="Permalink to this headline">¶</a></h2>
+<h2>Choosing Stellar Libraries<a class="headerlink" href="#choosing-stellar-libraries" title="Permalink to this heading">¶</a></h2>
 <p>FSPS can use several different stellar isochrone and spectral libraries, but
 switching between these libraries in python-FSPS requires (re-)installing
 python-FSPS with specific compiler flags. The available libraries are described
@@ -128,7 +129,7 @@ BaSeL low resolution synthetic stellar library by re-installing:</p>
 <p>where the <cite>–no-binary fsps</cite> flag is required to force building from source.</p>
 </section>
 <section id="installing-development-version">
-<h2>Installing development version<a class="headerlink" href="#installing-development-version" title="Permalink to this headline">¶</a></h2>
+<h2>Installing development version<a class="headerlink" href="#installing-development-version" title="Permalink to this heading">¶</a></h2>
 <p>Python-FSPS is being actively developed on GitHub so you can got there to get
 the most recent development version. You can do this by cloning the <a class="reference external" href="https://github.com/dfm/python-fsps">python-fsps
 repository</a> and building:</p>
@@ -199,12 +200,12 @@ python setup.py develop
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

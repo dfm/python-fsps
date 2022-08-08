@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Working with Filters &#8212; Python FSPS  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
@@ -56,12 +57,12 @@
           <div class="body" role="main">
             
   <section id="working-with-filters">
-<h1>Working with Filters<a class="headerlink" href="#working-with-filters" title="Permalink to this headline">¶</a></h1>
+<h1>Working with Filters<a class="headerlink" href="#working-with-filters" title="Permalink to this heading">¶</a></h1>
 <p>Python-FSPS provides simple access to FSPS’s filter set.
 To find what filters are available, use <a class="reference internal" href="#fsps.find_filter" title="fsps.find_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.find_filter()</span></code></a> or <a class="reference internal" href="#fsps.list_filters" title="fsps.list_filters"><code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.list_filters()</span></code></a> (see also <a class="reference internal" href="../filters/"><span class="doc">Table of FSPS Filters</span></a>).
 <a class="reference internal" href="#fsps.get_filter" title="fsps.get_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.get_filter()</span></code></a> is used to get a <a class="reference internal" href="#fsps.filters.Filter" title="fsps.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">fsps.filters.Filter</span></code></a> instance, which in turn provides properties such as the filter’s transmission curve, Solar absolute magnitude, and effective wavelength.</p>
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fsps</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fsps</span><span class="o">.</span><span class="n">find_filter</span><span class="p">(</span><span class="s1">&#39;sdss&#39;</span><span class="p">)</span>
 <span class="go">[&#39;sdss_u&#39;, &#39;sdss_g&#39;, &#39;sdss_i&#39;, &#39;sdss_r&#39;, &#39;sdss_z&#39;]</span>
@@ -74,7 +75,7 @@ To find what filters are available, use <a class="reference internal" href="#fsp
 </div>
 </section>
 <section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="fsps.find_filter">
 <span class="sig-prename descclassname"><span class="pre">fsps.</span></span><span class="sig-name descname"><span class="pre">find_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">band</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.find_filter" title="Permalink to this definition">¶</a></dt>
@@ -86,7 +87,7 @@ To find what filters are available, use <a class="reference internal" href="#fsp
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>band</strong> – Something like the name of the band.</p>
 </dd>
 </dl>
@@ -105,7 +106,7 @@ To find what filters are available, use <a class="reference internal" href="#fsp
 <dd><p>Returns the <a class="reference internal" href="#fsps.filters.Filter" title="fsps.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">fsps.filters.Filter</span></code></a> instance associated with the
 filter name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>name</strong> – Name of the filter, as found with <a class="reference internal" href="#fsps.find_filter" title="fsps.find_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_filter()</span></code></a>.</p>
 </dd>
 </dl>
@@ -113,28 +114,28 @@ filter name.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="fsps.filters.Filter">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">fsps.filters.</span></span><span class="sig-name descname"><span class="pre">Filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.filters.Filter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fsps.filters.</span></span><span class="sig-name descname"><span class="pre">Filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.filters.Filter" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py property">
 <dt class="sig sig-object py" id="fsps.filters.Filter.lambda_eff">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">lambda_eff</span></span><a class="headerlink" href="#fsps.filters.Filter.lambda_eff" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lambda_eff</span></span><a class="headerlink" href="#fsps.filters.Filter.lambda_eff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Effective wavelength of Filter, in Angstroms.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.filters.Filter.msun_ab">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">msun_ab</span></span><a class="headerlink" href="#fsps.filters.Filter.msun_ab" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">msun_ab</span></span><a class="headerlink" href="#fsps.filters.Filter.msun_ab" title="Permalink to this definition">¶</a></dt>
 <dd><p>Solar absolute magnitude in Filter, AB zeropoint.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.filters.Filter.msun_vega">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">msun_vega</span></span><a class="headerlink" href="#fsps.filters.Filter.msun_vega" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">msun_vega</span></span><a class="headerlink" href="#fsps.filters.Filter.msun_vega" title="Permalink to this definition">¶</a></dt>
 <dd><p>Solar absolute magnitude in Filter, VEGAMAG zeropoint.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.filters.Filter.transmission">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">transmission</span></span><a class="headerlink" href="#fsps.filters.Filter.transmission" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transmission</span></span><a class="headerlink" href="#fsps.filters.Filter.transmission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns filter transmission: a tuple of wavelength (Angstroms) and
 an un-normalized transmission arrays.</p>
 </dd></dl>
@@ -180,12 +181,12 @@ an un-normalized transmission arrays.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

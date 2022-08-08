@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Modelling Stellar Populations &#8212; Python FSPS  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex/" />
@@ -57,11 +58,11 @@
           <div class="body" role="main">
             
   <section id="modelling-stellar-populations">
-<h1>Modelling Stellar Populations<a class="headerlink" href="#modelling-stellar-populations" title="Permalink to this headline">¶</a></h1>
+<h1>Modelling Stellar Populations<a class="headerlink" href="#modelling-stellar-populations" title="Permalink to this heading">¶</a></h1>
 <p><a class="reference internal" href="#fsps.StellarPopulation" title="fsps.StellarPopulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">fsps.StellarPopulation</span></code></a> drives FSPS and is generally the only API needed.
 <a class="reference internal" href="../filters_api/#fsps.find_filter" title="fsps.find_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.find_filter()</span></code></a> can also be used interactively to search for a filter (see also <a class="reference internal" href="../filters/"><span class="doc">Table of FSPS Filters</span></a>).</p>
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">¶</a></h2>
 <p>Lets start by initializing a simple stellar population
 with solar metallicity
 and some dust with a Calzetti et al (2000) extinction curve:</p>
@@ -104,7 +105,7 @@ and the surviving stellar mass at 13.7 Gyr (both in units of <span class="math n
 be used in a given program.</p>
 </section>
 <section id="example-using-nebular-emission">
-<h2>Example using nebular emission<a class="headerlink" href="#example-using-nebular-emission" title="Permalink to this headline">¶</a></h2>
+<h2>Example using nebular emission<a class="headerlink" href="#example-using-nebular-emission" title="Permalink to this heading">¶</a></h2>
 <p>We initialize a simple stellar population and set the flag to
 include nebular emission:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sp</span> <span class="o">=</span> <span class="n">fsps</span><span class="o">.</span><span class="n">StellarPopulation</span><span class="p">(</span><span class="n">zcontinuous</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -133,10 +134,10 @@ the stellar population object:</p>
 </div>
 </section>
 <section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="fsps.StellarPopulation">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">fsps.</span></span><span class="sig-name descname"><span class="pre">StellarPopulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compute_vega_mags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vactoair_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zcontinuous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fsps.</span></span><span class="sig-name descname"><span class="pre">StellarPopulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compute_vega_mags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vactoair_flag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zcontinuous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the main interface to use when interacting with FSPS from Python.
 Most of the Fortran API is exposed through Python hooks with various
 features added for user friendliness. It is recommended to only
@@ -153,7 +154,7 @@ property—which is <code class="docutils literal notranslate"><span class="pre"
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>compute_vega_mags</strong> – (default: False)
 A switch that sets the zero points of the magnitude system: <code class="docutils literal notranslate"><span class="pre">True</span></code>
@@ -497,25 +498,25 @@ extrapolation.</p></li>
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.dust_mass">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dust_mass</span></span><a class="headerlink" href="#fsps.StellarPopulation.dust_mass" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dust_mass</span></span><a class="headerlink" href="#fsps.StellarPopulation.dust_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dust mass, in solar masses.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.duste_library">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">duste_library</span></span><a class="headerlink" href="#fsps.StellarPopulation.duste_library" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">duste_library</span></span><a class="headerlink" href="#fsps.StellarPopulation.duste_library" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of the dust emission SED library being used in FSPS.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.emline_luminosity">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">emline_luminosity</span></span><a class="headerlink" href="#fsps.StellarPopulation.emline_luminosity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">emline_luminosity</span></span><a class="headerlink" href="#fsps.StellarPopulation.emline_luminosity" title="Permalink to this definition">¶</a></dt>
 <dd><p>emission line luminosities, in <span class="math notranslate nohighlight">\(L_\odot\)</span>. shape=(ne)</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.emline_wavelengths">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">emline_wavelengths</span></span><a class="headerlink" href="#fsps.StellarPopulation.emline_wavelengths" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">emline_wavelengths</span></span><a class="headerlink" href="#fsps.StellarPopulation.emline_wavelengths" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emission line wavelengths, in Angstroms</p>
 </dd></dl>
 
@@ -525,14 +526,14 @@ extrapolation.</p></li>
 <dd><p>Return effective wavelengths, and vega and solar magnitudes
 of all filters.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns lambda_eff</dt>
+<dt class="field-odd">Returns lambda_eff<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Effective wavelength of each filter.</p>
 </dd>
-<dt class="field-even">Returns magvega</dt>
+<dt class="field-even">Returns magvega<span class="colon">:</span></dt>
 <dd class="field-even"><p>The AB magnitude of Vega (used to convert between AB and Vega
 systems).</p>
 </dd>
-<dt class="field-odd">Returns magsun</dt>
+<dt class="field-odd">Returns magsun<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The AB absolute magnitude of the Sun.</p>
 </dd>
 </dl>
@@ -540,7 +541,7 @@ systems).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.formed_mass">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">formed_mass</span></span><a class="headerlink" href="#fsps.StellarPopulation.formed_mass" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">formed_mass</span></span><a class="headerlink" href="#fsps.StellarPopulation.formed_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Integral of the SFH, in solar masses.</p>
 </dd></dl>
 
@@ -549,7 +550,7 @@ systems).</p>
 <span class="sig-name descname"><span class="pre">get_mags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zmet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redshift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.get_mags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the magnitude of the CSP.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>zmet</strong> – (default: None)
 The (integer) index of the metallicity to use. By default, use the
@@ -569,7 +570,7 @@ magnitude for. This should correspond to the result of
 <a class="reference internal" href="../filters_api/#fsps.find_filter" title="fsps.find_filter"><code class="xref py py-func docutils literal notranslate"><span class="pre">fsps.find_filter()</span></code></a>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns mags</dt>
+<dt class="field-even">Returns mags<span class="colon">:</span></dt>
 <dd class="field-even"><p>The magnitude grid. If an age was was provided by the <code class="docutils literal notranslate"><span class="pre">tage</span></code>
 parameter then the result is a 1D array with <code class="docutils literal notranslate"><span class="pre">NBANDS</span></code> values.
 Otherwise, it is a 2D array with shape <code class="docutils literal notranslate"><span class="pre">(NTFULL,</span> <span class="pre">NBANDS)</span></code>. If a
@@ -587,7 +588,7 @@ apparent observed frame magnitude <span class="math notranslate nohighlight">\(m
 <span class="sig-name descname"><span class="pre">get_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zmet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peraa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fsps.StellarPopulation.get_spectrum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return spectra for the current CSP.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>zmet</strong> – (default: None)
 The (integer) index of the metallicity to use. By default, use
@@ -602,10 +603,10 @@ return the spectrum in the FSPS standard
 <span class="math notranslate nohighlight">\(L_\odot/\mathrm{Hz}\)</span>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns wavelengths</dt>
+<dt class="field-even">Returns wavelengths<span class="colon">:</span></dt>
 <dd class="field-even"><p>The wavelength grid in Angstroms.</p>
 </dd>
-<dt class="field-odd">Returns spectrum</dt>
+<dt class="field-odd">Returns spectrum<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The spectrum in <span class="math notranslate nohighlight">\(L_\odot/\mathrm{Hz}\)</span> or <span class="math notranslate nohighlight">\(L_\odot/A\)</span>.
 If an age was provided by the <code class="docutils literal notranslate"><span class="pre">tage</span></code> parameter then the result
 is a 1D array with <code class="docutils literal notranslate"><span class="pre">NSPEC</span></code> values. Otherwise, it is a 2D array
@@ -616,7 +617,7 @@ with shape <code class="docutils literal notranslate"><span class="pre">(NTFULL,
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.isoc_library">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">isoc_library</span></span><a class="headerlink" href="#fsps.StellarPopulation.isoc_library" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">isoc_library</span></span><a class="headerlink" href="#fsps.StellarPopulation.isoc_library" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of the stellar isochrone library being used in FSPS.</p>
 </dd></dl>
 
@@ -628,12 +629,12 @@ to a .cmd file, then read it into a huge numpy array. Only parameters
 listed in <code class="docutils literal notranslate"><span class="pre">StellarPopulation.params.ssp_params</span></code> affect the output of
 this method.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>outfile</strong> – (default: ‘pyfsps_tmp’)
 The file root name of the .cmd file, which will be placed in the
 $SPS_HOME/OUTPUTS/ directory</p>
 </dd>
-<dt class="field-even">Returns dat</dt>
+<dt class="field-even">Returns dat<span class="colon">:</span></dt>
 <dd class="field-even"><p>A huge numpy structured array containing information about every
 isochrone point for the current metallicity.  In general the
 columns may be isochrone specific, but for Padova they are</p>
@@ -655,13 +656,13 @@ columns may be isochrone specific, but for Padova they are</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.log_age">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">log_age</span></span><a class="headerlink" href="#fsps.StellarPopulation.log_age" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_age</span></span><a class="headerlink" href="#fsps.StellarPopulation.log_age" title="Permalink to this definition">¶</a></dt>
 <dd><p>log10(age/yr).</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.log_lbol">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">log_lbol</span></span><a class="headerlink" href="#fsps.StellarPopulation.log_lbol" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_lbol</span></span><a class="headerlink" href="#fsps.StellarPopulation.log_lbol" title="Permalink to this definition">¶</a></dt>
 <dd><p>log(bolometric luminosity / <span class="math notranslate nohighlight">\(L_\odot\)</span>).</p>
 </dd></dl>
 
@@ -672,7 +673,7 @@ columns may be isochrone specific, but for Padova they are</p>
 applied to the SSPs.  Only takes effect if <code class="docutils literal notranslate"><span class="pre">smooth_lsf</span></code> and
 <code class="docutils literal notranslate"><span class="pre">smooth_velocity</span></code> are True.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>wave</strong> – Wavelength in angstroms, sorted ascending.  If <cite>wmin</cite> or <cite>wmax</cite>
 are not specified they are taken from the minimum and maximum of
@@ -698,7 +699,7 @@ applied. If not given, it is taken from the maximum of <cite>wave</cite>.</p></l
 documentation for information about tabular SFHs.  This SFH will be
 piecewise linearly interpolated.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>age</strong> – Time since the beginning of the universe in Gyr.  Must be
 increasing.  ndarray of shape (ntab,)</p></li>
@@ -715,7 +716,7 @@ stellar library).</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.sfr">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">sfr</span></span><a class="headerlink" href="#fsps.StellarPopulation.sfr" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sfr</span></span><a class="headerlink" href="#fsps.StellarPopulation.sfr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Star formation rate (<span class="math notranslate nohighlight">\(M_\odot/yr\)</span>).</p>
 </dd></dl>
 
@@ -726,7 +727,7 @@ stellar library).</p></li>
 SFH parameters, for <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or <code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>.  Like SFHSTAT in FSPS.
 Requires scipy, as it uses gamma functions.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>times</strong> – (default, None)
 The times (in Gyr of cosmic time) at which the average SFR over the
@@ -737,7 +738,7 @@ The time interval over which the recent SFR is averaged, in Gyr.
 defaults to 100 Myr (i.e. sfr8).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns sfr_avg</dt>
+<dt class="field-even">Returns sfr_avg<span class="colon">:</span></dt>
 <dd class="field-even"><p>The SFR at <code class="docutils literal notranslate"><span class="pre">tage</span></code> averaged over the last <code class="docutils literal notranslate"><span class="pre">dt</span></code> Gyr, in units of
 solar masses per year, such that <span class="math notranslate nohighlight">\(1 M_\odot\)</span> formed by
 <code class="docutils literal notranslate"><span class="pre">tage</span></code>.  Same shape as <code class="docutils literal notranslate"><span class="pre">times</span></code>.  For <code class="docutils literal notranslate"><span class="pre">times</span> <span class="pre">&lt;</span> <span class="pre">sf_start</span> <span class="pre">+</span> <span class="pre">dt</span></code>
@@ -754,7 +755,7 @@ is 0.</p>
 Whether the smoothing is in velocity space or in wavelength space
 depends on the value of the value of smooth_velocity.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>wave</strong> – The input wavelength grid.</p></li>
 <li><p><strong>spec</strong> – The input spectrum.</p></li>
@@ -765,7 +766,7 @@ broadening.</p></li>
 broadening.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns outspec</dt>
+<dt class="field-even">Returns outspec<span class="colon">:</span></dt>
 <dd class="field-even"><p>The smoothed spectrum, on the same wavelength grid as the input.</p>
 </dd>
 </dl>
@@ -773,32 +774,32 @@ broadening.</p></li>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.spec_library">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spec_library</span></span><a class="headerlink" href="#fsps.StellarPopulation.spec_library" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spec_library</span></span><a class="headerlink" href="#fsps.StellarPopulation.spec_library" title="Permalink to this definition">¶</a></dt>
 <dd><p>The name of the stellar spectral library being used in FSPS.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.ssp_ages">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ssp_ages</span></span><a class="headerlink" href="#fsps.StellarPopulation.ssp_ages" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ssp_ages</span></span><a class="headerlink" href="#fsps.StellarPopulation.ssp_ages" title="Permalink to this definition">¶</a></dt>
 <dd><p>The age grid of the SSPs, in log(years), used by FSPS.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.stellar_mass">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">stellar_mass</span></span><a class="headerlink" href="#fsps.StellarPopulation.stellar_mass" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stellar_mass</span></span><a class="headerlink" href="#fsps.StellarPopulation.stellar_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Surviving stellar mass in solar masses (including remnants if the
 FSPS parameter <code class="docutils literal notranslate"><span class="pre">add_stellar_remants=1</span></code>).</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.wavelengths">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">wavelengths</span></span><a class="headerlink" href="#fsps.StellarPopulation.wavelengths" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wavelengths</span></span><a class="headerlink" href="#fsps.StellarPopulation.wavelengths" title="Permalink to this definition">¶</a></dt>
 <dd><p>The wavelength scale for the computed spectra, in Angstroms</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fsps.StellarPopulation.zlegend">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">zlegend</span></span><a class="headerlink" href="#fsps.StellarPopulation.zlegend" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zlegend</span></span><a class="headerlink" href="#fsps.StellarPopulation.zlegend" title="Permalink to this definition">¶</a></dt>
 <dd><p>The available metallicities.</p>
 </dd></dl>
 
@@ -844,12 +845,12 @@ FSPS parameter <code class="docutils literal notranslate"><span class="pre">add_
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search/" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

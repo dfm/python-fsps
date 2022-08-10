@@ -336,7 +336,8 @@ contains
 
     end subroutine
 
-  subroutine smooth_spectrum(ns,wave,spec,sigma_broad,minw,maxw)
+
+    subroutine smooth_spectrum(ns,wave,spec,sigma_broad,minw,maxw)
 
     ! Smooth the spectrum by a gaussian of width sigma_broad
 
@@ -439,6 +440,15 @@ contains
     integer, intent(in) :: n_z
     double precision, dimension(n_z), intent(out) :: z_legend
     z_legend = zlegend
+
+  end subroutine
+
+  subroutine get_zsol(z_sol)
+
+    ! Get the definition of solar metallicity.
+    implicit none
+    double precision, intent(out) :: z_sol
+    z_sol = zsol
 
   end subroutine
 

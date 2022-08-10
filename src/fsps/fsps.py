@@ -283,7 +283,7 @@ class StellarPopulation(object):
 
     :param tau: (default: 1.0)
         Defines e-folding time for the SFH, in Gyr. Only used if ``sfh=1`` or
-        ``sfh=4``. The range is :math:`0.1 < \tau < 10^2`.
+        ``sfh=4``.
 
     :param const: (default: 0.0)
         Defines the constant component of the SFH. This quantity is defined as
@@ -363,9 +363,10 @@ class StellarPopulation(object):
         component (i.e. that is not affected by ``dust2``).
 
     :param frac_obrun: (default: 0.0)
-        Fraction of the young stars (age < dust_tesc) that are not attenuated
-        by ``dust1``, representing runaway OB stars.  These stars are still
-        attenuated by ``dust2``.
+        Fraction of the young stars (age < dust_tesc) that are not attenuated by
+        ``dust1`` and that do not contribute to any nebular emission,
+        representing runaway OB stars or escaping ionizing radiation.  These
+        stars are still attenuated by ``dust2``.
 
     :param dust_index: (default: -0.7)
         Power law index of the attenuation curve. Only used when

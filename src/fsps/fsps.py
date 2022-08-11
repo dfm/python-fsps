@@ -283,7 +283,7 @@ class StellarPopulation(object):
 
     :param tau: (default: 1.0)
         Defines e-folding time for the SFH, in Gyr. Only used if ``sfh=1`` or
-        ``sfh=4``. The range is :math:`0.1 < \tau < 10^2`.
+        ``sfh=4``.
 
     :param const: (default: 0.0)
         Defines the constant component of the SFH. This quantity is defined as
@@ -363,9 +363,10 @@ class StellarPopulation(object):
         component (i.e. that is not affected by ``dust2``).
 
     :param frac_obrun: (default: 0.0)
-        Fraction of the young stars (age < dust_tesc) that are not attenuated
-        by ``dust1``, representing runaway OB stars.  These stars are still
-        attenuated by ``dust2``.
+        Fraction of the young stars (age < dust_tesc) that are not attenuated by
+        ``dust1`` and that do not contribute to any nebular emission,
+        representing runaway OB stars or escaping ionizing radiation.  These
+        stars are still attenuated by ``dust2``.
 
     :param dust_index: (default: -0.7)
         Power law index of the attenuation curve. Only used when
@@ -537,6 +538,7 @@ class StellarPopulation(object):
         self._wavelengths = None
         self._emwavelengths = None
         self._zlegend = None
+        self._solar_metallicity = None
         self._ssp_ages = None
         self._stats = None
         self._libraries = None
@@ -837,7 +839,7 @@ class StellarPopulation(object):
         Write the isochrone data (age, mass, weights, phases, magnitudes, etc.)
         to a .cmd file, then read it into a huge numpy array. Only parameters
         listed in ``StellarPopulation.params.ssp_params`` affect the output of
-        this method.
+        this method.  This method does not work for the BPASS isochrones.
 
         :param outfile: (default: 'pyfsps_tmp')
             The file root name of the .cmd file, which will be placed in the
@@ -859,6 +861,9 @@ class StellarPopulation(object):
             * log(weight): IMF weight corresponding to a total of 1 Msol formed.
             * log(mdot): mass loss rate (Msol/yr)
         """
+        if self.isoc_library.decode("utf-8") == "bpss":
+            raise ValueError("CMDs cannot be generated for the BPASS isochrones.")
+
         if self.params.dirty:
             self._compute_csp()
 
@@ -1045,6 +1050,14 @@ class StellarPopulation(object):
         return self._zlegend
 
     @property
+    def solar_metallicity(self):
+        r"""The definition of solar metallicity, as a mass fraction.
+        E.g. Z_sol \sim 0.014-0.02"""
+        if self._solar_metallicity is None:
+            self._solar_metallicity = driver.get_zsol()
+        return self._solar_metallicity
+
+    @property
     def ssp_ages(self):
         r"""The age grid of the SSPs, in log(years), used by FSPS."""
         if self._ssp_ages is None:
@@ -1183,7 +1196,6 @@ class StellarPopulation(object):
     def duste_library(self):
         r"""The name of the dust emission SED library being used in FSPS."""
         return self.libraries[2]
-
 
     @property
     def libraries(self):

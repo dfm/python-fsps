@@ -369,7 +369,7 @@ Simha et al. 2014 for details.</p></li>
 </p></li>
 <li><p><strong>tau</strong> – (default: 1.0)
 Defines e-folding time for the SFH, in Gyr. Only used if <code class="docutils literal notranslate"><span class="pre">sfh=1</span></code> or
-<code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>. The range is <span class="math notranslate nohighlight">\(0.1 &lt; \tau &lt; 10^2\)</span>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">sfh=4</span></code>.</p></li>
 <li><p><strong>const</strong> – (default: 0.0)
 Defines the constant component of the SFH. This quantity is defined as
 the fraction of mass formed in a constant mode of SF; the range is
@@ -437,9 +437,10 @@ details.  Values other than -99 are no longer supported.</p></li>
 Fraction of starlight that is not attenuated by the diffuse dust
 component (i.e. that is not affected by <code class="docutils literal notranslate"><span class="pre">dust2</span></code>).</p></li>
 <li><p><strong>frac_obrun</strong> – (default: 0.0)
-Fraction of the young stars (age &lt; dust_tesc) that are not attenuated
-by <code class="docutils literal notranslate"><span class="pre">dust1</span></code>, representing runaway OB stars.  These stars are still
-attenuated by <code class="docutils literal notranslate"><span class="pre">dust2</span></code>.</p></li>
+Fraction of the young stars (age &lt; dust_tesc) that are not attenuated by
+<code class="docutils literal notranslate"><span class="pre">dust1</span></code> and that do not contribute to any nebular emission,
+representing runaway OB stars or escaping ionizing radiation.  These
+stars are still attenuated by <code class="docutils literal notranslate"><span class="pre">dust2</span></code>.</p></li>
 <li><p><strong>dust_index</strong> – (default: -0.7)
 Power law index of the attenuation curve. Only used when
 <code class="docutils literal notranslate"><span class="pre">dust_type=0</span></code>.</p></li>
@@ -627,7 +628,7 @@ with shape <code class="docutils literal notranslate"><span class="pre">(NTFULL,
 <dd><p>Write the isochrone data (age, mass, weights, phases, magnitudes, etc.)
 to a .cmd file, then read it into a huge numpy array. Only parameters
 listed in <code class="docutils literal notranslate"><span class="pre">StellarPopulation.params.ssp_params</span></code> affect the output of
-this method.</p>
+this method.  This method does not work for the BPASS isochrones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>outfile</strong> – (default: ‘pyfsps_tmp’)
@@ -770,6 +771,13 @@ broadening.</p></li>
 <dd class="field-even"><p>The smoothed spectrum, on the same wavelength grid as the input.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="fsps.StellarPopulation.solar_metallicity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solar_metallicity</span></span><a class="headerlink" href="#fsps.StellarPopulation.solar_metallicity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The definition of solar metallicity, as a mass fraction.
+E.g. Z_sol sim 0.014-0.02</p>
 </dd></dl>
 
 <dl class="py property">

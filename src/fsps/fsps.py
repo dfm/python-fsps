@@ -544,6 +544,7 @@ class StellarPopulation(object):
         self._libraries = None
 
     def _update_params(self):
+        self.params.check_params()
         if self.params.dirtiness == 2:
             driver.set_ssp_params(*[self.params[k] for k in self.params.ssp_params])
         if self.params.dirtiness >= 1:
@@ -1334,4 +1335,3 @@ class ParameterSet(object):
                 self.dirtiness = max(1, self.dirtiness)
 
             self._params[k] = v
-            self.check_params()

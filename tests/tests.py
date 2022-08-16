@@ -61,6 +61,32 @@ def test_libraries(pop_and_params):
     assert dlib == pop.duste_library
 
 
+def test_param_checks(pop_and_params):
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    pop.params["sfh"] = 1
+    pop.params["tage"] = 2
+    pop.params["sf_start"] = 0.5
+    # this should never raise an error:
+    w, s = pop.get_spectrum(tage=pop.params["tage"])
+    # this used to raise an assertion error in the setter:
+    pop.params["sf_start"] = 2.1
+    # this also used to raise an assertion error in the setter:
+    pop.params["imf_type"] = 8
+    # fix the IMF issue but leave the sf_start error
+    pop.params["imf_type"] = 1
+    try:
+        # This *should* still raise an AssertionError
+        w, s = pop.get_spectrum(tage=pop.params["tage"])
+        # Hacky way to make sure the AssertionError still got thrown
+        raise ValueError("Did not throw exception for invalid sf_start > tage")
+    except(AssertionError):
+        pass
+    pop.params["tage"] = 1.0
+    pop.params["sf_start"] = 0.1
+    w, s = pop.get_spectrum(tage=pop.params["tage"])
+
+
 def test_filters():
     """Test all the filters got transmission data loaded."""
     flist = filters.list_filters()

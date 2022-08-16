@@ -75,13 +75,8 @@ def test_param_checks(pop_and_params):
     pop.params["imf_type"] = 8
     # fix the invalid IMF but leave the invalid sf_start > tage
     pop.params["imf_type"] = 1
-    try:
-        # This *should* still raise an AssertionError
+    with pytest.raises(AssertionError):
         w, s = pop.get_spectrum(tage=pop.params["tage"])
-        # Hacky way to make sure the AssertionError still got thrown
-        raise ValueError("Did not throw exception for invalid sf_start > tage")
-    except(AssertionError):
-        pass
     pop.params["tage"] = 1.0
     pop.params["sf_start"] = 0.1
     w, s = pop.get_spectrum(tage=pop.params["tage"])

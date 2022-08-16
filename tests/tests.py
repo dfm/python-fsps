@@ -70,10 +70,10 @@ def test_param_checks(pop_and_params):
     # this should never raise an error:
     w, s = pop.get_spectrum(tage=pop.params["tage"])
     # this used to raise an assertion error in the setter:
-    pop.params["sf_start"] = 2.1
+    pop.params["sf_start"] = pop.params["tage"] + 0.1
     # this also used to raise an assertion error in the setter:
     pop.params["imf_type"] = 8
-    # fix the IMF issue but leave the sf_start error
+    # fix the invalid IMF but leave the invalid sf_start > tage
     pop.params["imf_type"] = 1
     try:
         # This *should* still raise an AssertionError
@@ -99,10 +99,11 @@ def test_filters():
 def test_get_mags(pop_and_params):
     """Basic test for supplying filter names to get_mags"""
     pop, params = pop_and_params
+    _reset_default_params(pop, params)
     fuv1 = pop.get_mags(bands=["galex_fuv"])[:, 0]
     mags = pop.get_mags()
-    fuv2 = mags[:, 61]
-    fuv3 = mags[:, 62]
+    fuv2 = mags[:, 61]  # this should be galex_FUV
+    fuv3 = mags[:, 62]  # this should *not* be galex_FUV
     assert np.all(fuv1 == fuv2)
     assert np.all(fuv1 != fuv3)
 

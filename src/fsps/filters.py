@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tools for working with the FSPS filter set.
 

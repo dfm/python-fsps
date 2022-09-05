@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 __all__ = ["check_sps_home"]
 
 import os

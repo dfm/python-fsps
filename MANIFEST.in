@@ -1,7 +1,0 @@
-include *.rst
-
-graft src/fsps/libfsps/src
-
-exclude .*
-prune .github
-prune docs

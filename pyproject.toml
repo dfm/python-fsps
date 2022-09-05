@@ -1,6 +1,38 @@
+[project]
+name = "fsps"
+description = "Python bindings for Charlie Conroy's FSPS"
+authors = [
+    { name="Dan Foreman-Mackey", email="foreman.mackey@gmail.com" },
+]
+readme = "README.rst"
+requires-python = ">=3.7"
+license = { text = "MIT License" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+]
+dynamic = ["version"]
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.urls]
+"Homepage" = "https://dfm.io/python-fsps"
+"Source" = "https://github.com/dfm/python-fsps"
+"Bug Tracker" = "https://github.com/dfm/python-fsps/issues"
+
 [build-system]
-requires = ["setuptools>=42,<60", "wheel", "setuptools_scm[toml]>=3.4", "numpy"]
-build-backend = "setuptools.build_meta"
+build-backend = 'mesonpy'
+requires = ["meson-python>=0.8.1", "wheel", "oldest-supported-numpy", "setuptools_scm"]
 
 [tool.setuptools_scm]
 write_to = "src/fsps/fsps_version.py"
+
+[tool.cibuildwheel]
+skip = "cp36-* *-win32 *-manylinux_i686 pp*"
+test-command = "python {project}/tests/simple.py"

@@ -11,18 +11,6 @@ from numpy.testing import assert_allclose
 from fsps import StellarPopulation, filters
 
 
-def test_fortran_error():
-    output = subprocess.check_output(
-        [
-            sys.executable,
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "simple_test_script.py"
-            ),
-        ]
-    )
-    assert output.decode("ascii").strip() == "success"
-
-
 @pytest.fixture(scope="module")
 def pop_and_params():
     pop = StellarPopulation(zcontinuous=1)

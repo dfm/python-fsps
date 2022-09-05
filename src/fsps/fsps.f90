@@ -1,6 +1,7 @@
 module driver
 
-  use sps_vars; use sps_utils
+  use sps_vars
+  use sps_utils
   implicit none
   save
 

@@ -14,28 +14,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-10.15]
+        os: [ubuntu-20.04, windows-2019, macos-12]
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
           fetch-depth: 0
 
-      - name: Set up windows compilers
-        uses: ilammy/msvc-dev-cmd@v1
-        if: runner.os == 'Windows'
+      - name: Set up Windows
+        run: |
+          choco install rtools --no-progress
+          echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
+        if: ${{ runner.os == 'Windows' }}
 
       - name: Link gfortran on macos
         if: runner.os == 'macOS'
         run: brew unlink gfortran && brew link --overwrite gfortran
 
-      - uses: joerick/cibuildwheel@v1.9.0
+      - uses: pypa/cibuildwheel@v2.10.1
         env:
           CIBW_BUILD: "cp3?-*"
           CIBW_SKIP: "cp35-* *-win32 *-manylinux_i686"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-          DISTUTILS_USE_SDK: 1
-          MSSdk: 1
 
       - uses: actions/upload-artifact@v2
         with:

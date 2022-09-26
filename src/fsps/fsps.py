@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-
 __all__ = ["StellarPopulation"]
 
 import os
 import numpy as np
 
-from ._fsps import driver
-from .filters import FILTERS
+from fsps._fsps import driver
+from fsps.filters import FILTERS
 
 
 class StellarPopulation(object):
@@ -411,17 +409,17 @@ class StellarPopulation(object):
         Parameter of the Draine & Li (2007) dust emission model. Specifies the
         relative contribution of dust heated at a radiation field strength of
         :math:`U_\mathrm{min}` and dust heated at :math:`U_\mathrm{min} < U \le
-        U_\mathrm{max}`. Allowable range is 0.0 – 1.0.
+        U_\mathrm{max}`. Allowable range is 0.0 - 1.0.
 
     :param duste_umin: (default: 1.0)
         Parameter of the Draine & Li (2007) dust emission model. Specifies the
         minimum radiation field strength in units of the MW value. Valid range
-        is 0.1 – 25.0.
+        is 0.1 - 25.0.
 
     :param duste_qpah: (default: 3.5)
         Parameter of the Draine & Li (2007) dust emission model. Specifies the
         grain size distribution through the fraction of grain mass in
-        PAHs. This parameter has units of % and a valid range of 0.0 − 10.0.
+        PAHs. This parameter has units of % and a valid range of 0.0 - 10.0.
 
     :param fagn: (default: 0.0)
         The total luminosity of the AGN, expressed as a fraction of the
@@ -880,7 +878,7 @@ class StellarPopulation(object):
         cmd_data = np.loadtxt(
             absfile,
             comments="#",
-            dtype=np.dtype([(n, np.float) for n in header]),
+            dtype=np.dtype([(n, float) for n in header]),
         )
         return cmd_data
 

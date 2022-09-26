@@ -1,26 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-import subprocess
-
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose
-
 from fsps import StellarPopulation, filters
-
-
-def test_fortran_error():
-    output = subprocess.check_output(
-        [
-            sys.executable,
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), "simple_test_script.py"
-            ),
-        ]
-    )
-    assert output.decode("ascii").strip() == "success"
+from numpy.testing import assert_allclose
 
 
 @pytest.fixture(scope="module")
@@ -36,29 +19,76 @@ def _reset_default_params(pop, params):
         pop.params[k] = params[k]
 
 
-def _get_model(pop, theta):
-    pop.params["imf3"] = theta
-    assert pop.params.dirtiness == 2
-    return pop.get_spectrum(tage=0.2)[1]
-
-
-# def test_imf3_multiprocessing():
-#     from multiprocessing import Pool
-#     pool = Pool()
-#     thetas = np.linspace(2.3, 8.3, 4)
-#     single = map(_get_model, thetas)
-#     multi = pool.map(_get_model, thetas)
-#     assert_allclose(single, multi)
-
-
-def test_libraries(pop_and_params):
-    """This does not require or build clean SSPs"""
+def test_isochrones(pop_and_params):
+    # Just test that `isochrones()` method runs
     pop, params = pop_and_params
     _reset_default_params(pop, params)
-    ilib, splib, dlib = pop.libraries
-    assert ilib == pop.isoc_library
-    assert splib == pop.spec_library
-    assert dlib == pop.duste_library
+    pop.params["imf_type"] = 0
+    iso = pop.isochrones()
+
+
+def test_tabular(pop_and_params):
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+
+    import os
+
+    fn = os.path.join(os.environ["SPS_HOME"], "data/sfh.dat")
+    age, sfr, z = np.genfromtxt(fn, unpack=True, skip_header=0)
+
+    # Mono-metallicity
+    pop.params["sfh"] = 3
+    pop.set_tabular_sfh(age, sfr)
+    w, spec = pop.get_spectrum(tage=0)
+    pop.set_tabular_sfh(age, sfr)
+    assert pop.params.dirty
+    w, spec = pop.get_spectrum(tage=0)
+    assert spec.shape[0] == len(pop.ssp_ages)
+    assert pop.params["sfh"] == 3
+    w, spec_last = pop.get_spectrum(tage=-99)
+    assert spec_last.ndim == 1
+    w, spec = pop.get_spectrum(tage=age.max())
+    assert np.allclose(spec / spec_last - 1.0, 0.0)
+    pop.params["logzsol"] = -1
+    w, spec_lowz = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec / spec_lowz - 1.0, 0.0)
+
+    # Multi-metallicity
+    pop._zcontinuous = 3
+    pop.set_tabular_sfh(age, sfr, z)
+    w, spec_multiz = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec_lowz / spec_multiz - 1.0, 0.0)
+
+    pop._zcontinuous = 1
+    pop.set_tabular_sfh(age, sfr)
+    # get mass weighted metallicity
+    mbin = np.gradient(age) * sfr
+    mwz = (z * mbin).sum() / mbin.sum()
+    pop.params["logzsol"] = np.log10(mwz / 0.019)
+    w, spec_onez = pop.get_spectrum(tage=age.max())
+    assert not np.allclose(spec_onez / spec_multiz - 1.0, 0.0)
+
+
+def test_imf3(pop_and_params):
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    pop.params["imf_type"] = 2
+    pop.params["imf3"] = 2.3
+    w, model1 = pop.get_spectrum(tage=0.2)
+
+    # check that changing the IMF does something
+    pop.params["imf3"] = 8.3
+    assert pop.params.dirtiness == 2
+    w, model2 = pop.get_spectrum(tage=0.2)
+    assert not np.allclose(model1 / model2 - 1.0, 0.0)
+
+    # Do we *really* need to do this second check?
+    pop.params["imf3"] = 2.3
+    assert pop.params.dirtiness == 2
+    w, model1b = pop.get_spectrum(tage=0.2)
+    assert pop.params.dirtiness == 0
+
+    assert_allclose(model1 / model1b - 1.0, 0.0)
 
 
 def test_param_checks(pop_and_params):
@@ -82,13 +112,25 @@ def test_param_checks(pop_and_params):
     w, s = pop.get_spectrum(tage=pop.params["tage"])
 
 
-def test_filters():
-    """Test all the filters got transmission data loaded."""
-    flist = filters.list_filters()
-    # force trans cache to load
-    filters.FILTERS[flist[0]]._load_transmission_cache()
-    for f in flist:
-        assert f in filters.TRANS_CACHE, "transmission not loaded for {}".format(f)
+def test_smooth_lsf(pop_and_params):
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    tmax = 1.0
+    wave_lsf = np.arange(4000, 7000.0, 10)
+    x = (wave_lsf - 5500) / 1500.0
+    # a quadratic lsf dependence that goes from ~50 to ~100 km/s
+    sigma_lsf = 50 * (1.0 + 0.4 * x + 0.6 * x**2)
+    w, spec = pop.get_spectrum(tage=tmax)
+    pop.params["smooth_lsf"] = True
+    assert pop.params.dirtiness == 2
+    pop.set_lsf(wave_lsf, sigma_lsf)
+    w, smspec = pop.get_spectrum(tage=tmax)
+    hi = w > 7100
+    sm = (w < 7000) & (w > 3000)
+    assert np.allclose(spec[hi] / smspec[hi] - 1.0, 0.0)
+    assert not np.allclose(spec[sm] / smspec[sm] - 1.0, 0.0)
+    pop.set_lsf(wave_lsf, sigma_lsf * 2)
+    assert pop.params.dirtiness == 2
 
 
 def test_get_mags(pop_and_params):
@@ -116,6 +158,25 @@ def test_ssp(pop_and_params):
     assert np.all(abs(mag - Mv) < 1.0)
     assert np.all((pop.stellar_mass < 1.0) & (pop.stellar_mass > 0))
     assert pop.params.dirtiness == 0
+
+
+def test_libraries(pop_and_params):
+    """This does not require or build clean SSPs"""
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    ilib, splib, dlib = pop.libraries
+    assert ilib == pop.isoc_library
+    assert splib == pop.spec_library
+    assert dlib == pop.duste_library
+
+
+def test_filters():
+    """Test all the filters got transmission data loaded."""
+    flist = filters.list_filters()
+    # force trans cache to load
+    filters.FILTERS[flist[0]]._load_transmission_cache()
+    for f in flist:
+        assert f in filters.TRANS_CACHE, "transmission not loaded for {}".format(f)
 
 
 def test_csp_dirtiness(pop_and_params):
@@ -216,99 +277,6 @@ def test_smoothspec(pop_and_params):
     assert (spec - spec2 == 0.0).sum() > 0
 
 
-def test_imf3(pop_and_params):
-    pop, params = pop_and_params
-    _reset_default_params(pop, params)
-    pop.params["imf_type"] = 2
-    pop.params["imf3"] = 2.3
-    w, model1 = pop.get_spectrum(tage=0.2)
-
-    # check that changing the IMF does something
-    pop.params["imf3"] = 8.3
-    assert pop.params.dirtiness == 2
-    w, model2 = pop.get_spectrum(tage=0.2)
-    assert not np.allclose(model1 / model2 - 1.0, 0.0)
-
-    # Do we *really* need to do this second check?
-    pop.params["imf3"] = 2.3
-    assert pop.params.dirtiness == 2
-    w, model1b = pop.get_spectrum(tage=0.2)
-    assert pop.params.dirtiness == 0
-
-    assert_allclose(model1 / model1b - 1.0, 0.0)
-
-
-def test_tabular(pop_and_params):
-    pop, params = pop_and_params
-    _reset_default_params(pop, params)
-
-    import os
-
-    fn = os.path.join(os.environ["SPS_HOME"], "data/sfh.dat")
-    age, sfr, z = np.genfromtxt(fn, unpack=True, skip_header=0)
-
-    # Mono-metallicity
-    pop.params["sfh"] = 3
-    pop.set_tabular_sfh(age, sfr)
-    w, spec = pop.get_spectrum(tage=0)
-    pop.set_tabular_sfh(age, sfr)
-    assert pop.params.dirty
-    w, spec = pop.get_spectrum(tage=0)
-    assert spec.shape[0] == len(pop.ssp_ages)
-    assert pop.params["sfh"] == 3
-    w, spec_last = pop.get_spectrum(tage=-99)
-    assert spec_last.ndim == 1
-    w, spec = pop.get_spectrum(tage=age.max())
-    assert np.allclose(spec / spec_last - 1.0, 0.0)
-    pop.params["logzsol"] = -1
-    w, spec_lowz = pop.get_spectrum(tage=age.max())
-    assert not np.allclose(spec / spec_lowz - 1.0, 0.0)
-
-    # Multi-metallicity
-    pop._zcontinuous = 3
-    pop.set_tabular_sfh(age, sfr, z)
-    w, spec_multiz = pop.get_spectrum(tage=age.max())
-    assert not np.allclose(spec_lowz / spec_multiz - 1.0, 0.0)
-
-    pop._zcontinuous = 1
-    pop.set_tabular_sfh(age, sfr)
-    # get mass weighted metallicity
-    mbin = np.gradient(age) * sfr
-    mwz = (z * mbin).sum() / mbin.sum()
-    pop.params["logzsol"] = np.log10(mwz / 0.019)
-    w, spec_onez = pop.get_spectrum(tage=age.max())
-    assert not np.allclose(spec_onez / spec_multiz - 1.0, 0.0)
-
-
-def test_isochrones(pop_and_params):
-    # Just test that `isochrones()` method runs
-    pop, params = pop_and_params
-    _reset_default_params(pop, params)
-    pop.params["imf_type"] = 0
-    iso = pop.isochrones()
-
-
-def test_smooth_lsf(pop_and_params):
-    pop, params = pop_and_params
-    _reset_default_params(pop, params)
-    tmax = 1.0
-    wave_lsf = np.arange(4000, 7000.0, 10)
-    x = (wave_lsf - 5500) / 1500.0
-    # a quadratic lsf dependence that goes from ~50 to ~100 km/s
-    sigma_lsf = 50 * (1.0 + 0.4 * x + 0.6 * x ** 2)
-    w, spec = pop.get_spectrum(tage=tmax)
-    pop.params["smooth_lsf"] = True
-    assert pop.params.dirtiness == 2
-    pop.set_lsf(wave_lsf, sigma_lsf)
-    w, smspec = pop.get_spectrum(tage=tmax)
-    hi = w > 7100
-    sm = (w < 7000) & (w > 3000)
-    assert np.allclose(spec[hi] / smspec[hi] - 1.0, 0.0)
-    assert not np.allclose(spec[sm] / smspec[sm] - 1.0, 0.0)
-    pop.set_lsf(wave_lsf, sigma_lsf * 2)
-    assert pop.params.dirtiness == 2
-
-
 # Requires scipy
 # def test_sfr_avg():
 
@@ -320,3 +288,12 @@ def test_smooth_lsf(pop_and_params):
 #    dsfr = np.log10(pop.sfr/pop.sfr6)
 #    good = pop.ssp_age > 6
 #    assert np.all(np.abs(dsfr[good]) < 1e-2)
+
+
+# def test_imf3_multiprocessing():
+#     from multiprocessing import Pool
+#     pool = Pool()
+#     thetas = np.linspace(2.3, 8.3, 4)
+#     single = map(_get_model, thetas)
+#     multi = pool.map(_get_model, thetas)
+#     assert_allclose(single, multi)

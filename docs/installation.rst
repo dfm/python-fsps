@@ -102,12 +102,35 @@ FSPS clone and you can just set the `SPS_HOME` variable as:
 
     export SPS_HOME=$(pwd)/src/fsps/libfsps
 
-It is recommended that you install using `pip` (even for a local clone), and you
-can use `pip install -e .` to install an "editable" version (like you would get
-with `setup.py develop`). But if you want to use the `setup.py` script directly,
-you'll need to install some prerequisites in advance:
+It is recommended that you install using `pip` even for a local clone. In the
+root directory of the repository, run:
 
 .. code-block:: bash
 
-    python -m pip install numpy "setuptools_scm[toml]"
-    python setup.py develop
+    python -m pip install .
+
+Starting with version 0.5.0, Python-FSPS no longer supports "development" or
+"editable" builds, but the builds should be cached and re-used if you run `pip
+install` multiple times.
+
+Running the unit tests
+----------------------
+
+The unit tests are implemented in the `tests` subdirectory, and can be executed
+using `nox <https://nox.thea.codes>`_:
+
+.. code-block:: bash
+
+    python -m pip install nox
+    python -m nox
+
+or `pytest <https://docs.pytest.org>`_ directly:
+
+.. code-block:: bash
+
+    python -m pip install ".[test]"
+    python -m pytest -n 2 -v tests/tests.py
+
+where `-n 2` specifies the number of parallel processes to use. The tests can be
+quite slow, but also memory intensive, so it can be useful to run them in
+parallel, but don't overdo it and run out of memory!

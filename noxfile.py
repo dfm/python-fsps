@@ -18,7 +18,9 @@ def _run_with_sps_home(session, *args, **kwargs):
 def tests(session):
     session.install(".[test]")
     _run_with_sps_home(session, "python", "tests/simple.py")
-    _run_with_sps_home(session, "python", "-m", "pytest", "-v", "tests/tests.py")
+    _run_with_sps_home(
+        session, "python", "-m", "pytest", "-n", "2", "-v", "tests/tests.py"
+    )
 
 
 @nox.session(python=ALL_PYTHON_VS)

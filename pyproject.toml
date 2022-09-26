@@ -19,7 +19,7 @@ dynamic = ["version"]
 dependencies = ["numpy"]
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = ["pytest", "pytest-xdist"]
 
 [project.urls]
 "Homepage" = "https://dfm.io/python-fsps"

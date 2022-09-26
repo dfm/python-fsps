@@ -152,14 +152,31 @@ FSPS clone and you can just set the <cite>SPS_HOME</cite> variable as:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SPS_HOME</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/src/fsps/libfsps
 </pre></div>
 </div>
-<p>It is recommended that you install using <cite>pip</cite> (even for a local clone), and you
-can use <cite>pip install -e .</cite> to install an “editable” version (like you would get
-with <cite>setup.py develop</cite>). But if you want to use the <cite>setup.py</cite> script directly,
-you’ll need to install some prerequisites in advance:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install numpy <span class="s2">&quot;setuptools_scm[toml]&quot;</span>
-python setup.py develop
+<p>It is recommended that you install using <cite>pip</cite> even for a local clone. In the
+root directory of the repository, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install .
 </pre></div>
 </div>
+<p>Starting with version 0.5.0, Python-FSPS no longer supports “development” or
+“editable” builds, but the builds should be cached and re-used if you run <cite>pip
+install</cite> multiple times.</p>
+</section>
+<section id="running-the-unit-tests">
+<h2>Running the unit tests<a class="headerlink" href="#running-the-unit-tests" title="Permalink to this heading">¶</a></h2>
+<p>The unit tests are implemented in the <cite>tests</cite> subdirectory, and can be executed
+using <a class="reference external" href="https://nox.thea.codes">nox</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install nox
+python -m nox
+</pre></div>
+</div>
+<p>or <a class="reference external" href="https://docs.pytest.org">pytest</a> directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pip install <span class="s2">&quot;.[test]&quot;</span>
+python -m pytest -n <span class="m">2</span> -v tests/tests.py
+</pre></div>
+</div>
+<p>where <cite>-n 2</cite> specifies the number of parallel processes to use. The tests can be
+quite slow, but also memory intensive, so it can be useful to run them in
+parallel, but don’t overdo it and run out of memory!</p>
 </section>
 </section>
 
@@ -187,6 +204,7 @@ python setup.py develop
 <li><a class="reference internal" href="#installing-stable-version">Installing stable version</a></li>
 <li><a class="reference internal" href="#choosing-stellar-libraries">Choosing Stellar Libraries</a></li>
 <li><a class="reference internal" href="#installing-development-version">Installing development version</a></li>
+<li><a class="reference internal" href="#running-the-unit-tests">Running the unit tests</a></li>
 </ul>
 </li>
 </ul>

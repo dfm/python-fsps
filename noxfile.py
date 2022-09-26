@@ -19,7 +19,15 @@ def tests(session):
     session.install(".[test]")
     _run_with_sps_home(session, "python", "tests/simple.py")
     _run_with_sps_home(
-        session, "python", "-m", "pytest", "-n", "2", "-v", "tests/tests.py"
+        session,
+        "python",
+        "-m",
+        "pytest",
+        "-n",
+        "2",
+        "--durations=0",
+        "-v",
+        "tests/tests.py",
     )
 
 

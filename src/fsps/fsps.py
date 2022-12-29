@@ -767,6 +767,21 @@ class StellarPopulation(object):
 
         return spec, mass, lbol
 
+    def _ssp_weights(self):
+         """Get the weights of the SSPs for the CSP
+
+         :returns weights:
+             The weights ``w`` of each SSP s.t. the total spectrum is the sum
+             :math:`L_{\lambda} = \sum_i,j w_i,j \, S_{i,j,\lambda}` where
+             math:`i,j` run over age and metallicity.
+         """
+
+         NTFULL = driver.get_ntfull()
+         NZ = driver.get_nz()
+         weights = np.zeros([NTFULL, NZ], order="F")
+         driver.get_ssp_weights(weights)
+         return weights
+
     def _get_stellar_spectrum(
         self,
         mact,

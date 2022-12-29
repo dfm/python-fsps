@@ -20,14 +20,98 @@ def _reset_default_params(pop, params):
 
 
 def test_isochrones(pop_and_params):
-    # Just test that `isochrones()` method runs
+    """Just test that `isochrones()` method runs"""
+
+    # recomputes SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["imf_type"] = 0
     iso = pop.isochrones()
 
 
+def test_imf3(pop_and_params):
+    """Make sure that changing the (upper) imf changes the parameter dirtiness
+    and also the SSP spectrum"""
+
+    # recomputes SSPs
+
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    pop.params["imf_type"] = 2
+    pop.params["imf3"] = 2.3
+    w, model1 = pop.get_spectrum(tage=0.2)
+
+    # check that changing the IMF does something
+    pop.params["imf3"] = 8.3
+    assert pop.params.dirtiness == 2
+    w, model2 = pop.get_spectrum(tage=0.2)
+    assert not np.allclose(model1 / model2 - 1.0, 0.0)
+
+    # Do we *really* need to do this second check?
+    pop.params["imf3"] = 2.3
+    assert pop.params.dirtiness == 2
+    w, model1b = pop.get_spectrum(tage=0.2)
+    assert pop.params.dirtiness == 0
+
+    assert_allclose(model1 / model1b - 1.0, 0.0)
+
+
+def test_param_checks(pop_and_params):
+
+    # recomputes SSPs
+
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    pop.params["sfh"] = 1
+    pop.params["tage"] = 2
+    pop.params["sf_start"] = 0.5
+    # this should never raise an error:
+    w, s = pop.get_spectrum(tage=pop.params["tage"])
+    # this used to raise an assertion error in the setter:
+    pop.params["sf_start"] = pop.params["tage"] + 0.1
+    # this also used to raise an assertion error in the setter:
+    pop.params["imf_type"] = 8
+    # fix the invalid IMF but leave the invalid sf_start > tage
+    pop.params["imf_type"] = 1
+    with pytest.raises(AssertionError):
+        w, s = pop.get_spectrum(tage=pop.params["tage"])
+    pop.params["tage"] = 1.0
+    pop.params["sf_start"] = 0.1
+    w, s = pop.get_spectrum(tage=pop.params["tage"])
+
+
+def test_smooth_lsf(pop_and_params):
+
+    # recomputes SSPs
+
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    tmax = 1.0
+    wave_lsf = np.arange(4000, 7000.0, 10)
+    x = (wave_lsf - 5500) / 1500.0
+    # a quadratic lsf dependence that goes from ~50 to ~100 km/s
+    sigma_lsf = 50 * (1.0 + 0.4 * x + 0.6 * x**2)
+    w, spec = pop.get_spectrum(tage=tmax)
+    pop.params["smooth_lsf"] = True
+    assert pop.params.dirtiness == 2
+    pop.set_lsf(wave_lsf, sigma_lsf)
+    w, smspec = pop.get_spectrum(tage=tmax)
+    hi = w > 7100
+    sm = (w < 7000) & (w > 3000)
+    assert np.allclose(spec[hi] / smspec[hi] - 1.0, 0.0)
+    assert not np.allclose(spec[sm] / smspec[sm] - 1.0, 0.0)
+    pop.set_lsf(wave_lsf, sigma_lsf * 2)
+    assert pop.params.dirtiness == 2
+
+
 def test_tabular(pop_and_params):
+    """Test that you get the right shape spectral arrays for tabular SFHs, that
+    the parameter dirtiness is appropriately managed for changing tabular SFH,
+    and that multi-metallicity SFH work."""
+
+    # uses default SSPs, but makes them for every metallicity
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
 
@@ -53,6 +137,9 @@ def test_tabular(pop_and_params):
     w, spec_lowz = pop.get_spectrum(tage=age.max())
     assert not np.allclose(spec / spec_lowz - 1.0, 0.0)
 
+    # test the formed mass for single age
+    assert np.allclose(np.trapz(sfr, age) * 1e9, pop.formed_mass)
+
     # Multi-metallicity
     pop._zcontinuous = 3
     pop.set_tabular_sfh(age, sfr, z)
@@ -64,77 +151,16 @@ def test_tabular(pop_and_params):
     # get mass weighted metallicity
     mbin = np.gradient(age) * sfr
     mwz = (z * mbin).sum() / mbin.sum()
-    pop.params["logzsol"] = np.log10(mwz / 0.019)
+    pop.params["logzsol"] = np.log10(mwz / pop.solar_metallicity)
     w, spec_onez = pop.get_spectrum(tage=age.max())
     assert not np.allclose(spec_onez / spec_multiz - 1.0, 0.0)
 
 
-def test_imf3(pop_and_params):
-    pop, params = pop_and_params
-    _reset_default_params(pop, params)
-    pop.params["imf_type"] = 2
-    pop.params["imf3"] = 2.3
-    w, model1 = pop.get_spectrum(tage=0.2)
-
-    # check that changing the IMF does something
-    pop.params["imf3"] = 8.3
-    assert pop.params.dirtiness == 2
-    w, model2 = pop.get_spectrum(tage=0.2)
-    assert not np.allclose(model1 / model2 - 1.0, 0.0)
-
-    # Do we *really* need to do this second check?
-    pop.params["imf3"] = 2.3
-    assert pop.params.dirtiness == 2
-    w, model1b = pop.get_spectrum(tage=0.2)
-    assert pop.params.dirtiness == 0
-
-    assert_allclose(model1 / model1b - 1.0, 0.0)
-
-
-def test_param_checks(pop_and_params):
-    pop, params = pop_and_params
-    _reset_default_params(pop, params)
-    pop.params["sfh"] = 1
-    pop.params["tage"] = 2
-    pop.params["sf_start"] = 0.5
-    # this should never raise an error:
-    w, s = pop.get_spectrum(tage=pop.params["tage"])
-    # this used to raise an assertion error in the setter:
-    pop.params["sf_start"] = pop.params["tage"] + 0.1
-    # this also used to raise an assertion error in the setter:
-    pop.params["imf_type"] = 8
-    # fix the invalid IMF but leave the invalid sf_start > tage
-    pop.params["imf_type"] = 1
-    with pytest.raises(AssertionError):
-        w, s = pop.get_spectrum(tage=pop.params["tage"])
-    pop.params["tage"] = 1.0
-    pop.params["sf_start"] = 0.1
-    w, s = pop.get_spectrum(tage=pop.params["tage"])
-
-
-def test_smooth_lsf(pop_and_params):
-    pop, params = pop_and_params
-    _reset_default_params(pop, params)
-    tmax = 1.0
-    wave_lsf = np.arange(4000, 7000.0, 10)
-    x = (wave_lsf - 5500) / 1500.0
-    # a quadratic lsf dependence that goes from ~50 to ~100 km/s
-    sigma_lsf = 50 * (1.0 + 0.4 * x + 0.6 * x**2)
-    w, spec = pop.get_spectrum(tage=tmax)
-    pop.params["smooth_lsf"] = True
-    assert pop.params.dirtiness == 2
-    pop.set_lsf(wave_lsf, sigma_lsf)
-    w, smspec = pop.get_spectrum(tage=tmax)
-    hi = w > 7100
-    sm = (w < 7000) & (w > 3000)
-    assert np.allclose(spec[hi] / smspec[hi] - 1.0, 0.0)
-    assert not np.allclose(spec[sm] / smspec[sm] - 1.0, 0.0)
-    pop.set_lsf(wave_lsf, sigma_lsf * 2)
-    assert pop.params.dirtiness == 2
-
-
 def test_get_mags(pop_and_params):
     """Basic test for supplying filter names to get_mags"""
+
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     fuv1 = pop.get_mags(bands=["galex_fuv"])[:, 0]
@@ -146,6 +172,11 @@ def test_get_mags(pop_and_params):
 
 
 def test_ssp(pop_and_params):
+    """Test that you get a sensible wavelength array, and that you get a
+    sensible V-band magnitude for a 1-Gyr SSP"""
+
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["sfh"] = 0
@@ -162,6 +193,9 @@ def test_ssp(pop_and_params):
 
 def test_libraries(pop_and_params):
     """This does not require or build clean SSPs"""
+
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     ilib, splib, dlib = pop.libraries
@@ -172,6 +206,9 @@ def test_libraries(pop_and_params):
 
 def test_filters():
     """Test all the filters got transmission data loaded."""
+
+    # uses default SSPs
+
     flist = filters.list_filters()
     # force trans cache to load
     filters.FILTERS[flist[0]]._load_transmission_cache()
@@ -180,6 +217,9 @@ def test_filters():
 
 
 def test_csp_dirtiness(pop_and_params):
+    """Make sure that changing CSP parameters increases dirtiness to 1"""
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["sfh"] = 1
@@ -195,6 +235,9 @@ def test_redshift(pop_and_params):
     1. redshifting does not persist in cached arrays
     2. specifying redshift via get_mags keyword or param key are consistent
     """
+
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["sfh"] = 0
@@ -216,6 +259,9 @@ def test_redshift(pop_and_params):
 
 def test_nebemlineinspec(pop_and_params):
     """Make sure nebular lines are actually added."""
+
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["sfh"] = 4
@@ -233,6 +279,9 @@ def test_nebemlineinspec(pop_and_params):
 
 
 def test_mformed(pop_and_params):
+    """Make sure formed mass integrates to 1 for parameteric SFH"""
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["sfh"] = 1
@@ -246,6 +295,11 @@ def test_mformed(pop_and_params):
 
 
 def test_light_ages(pop_and_params):
+    """Make sure light weighting works, and gives sensible answers for the
+    light-weighted age in the FUV and mass-weighted age stored in
+    `stellar_mass`"""
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     tmax = 5.0
@@ -270,11 +324,39 @@ def test_light_ages(pop_and_params):
 
 def test_smoothspec(pop_and_params):
     # FIXME: This is not very stringent
+
+    # uses default SSPs
+
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     wave, spec = pop.get_spectrum(tage=1, peraa=True)
     spec2 = pop.smoothspec(wave, spec, 160.0, minw=1e3, maxw=1e4)
     assert (spec - spec2 == 0.0).sum() > 0
+
+
+def test_ssp_weights(pop_and_params):
+    """Check that weights dotted into ssp is the same as the returned spectrum
+    when there's no dust or emission lines and zcontinuous=0"""
+
+    # uses default SSPs
+
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+
+    import os
+    fn = os.path.join(os.environ["SPS_HOME"], "data/sfh.dat")
+    age, sfr, z = np.genfromtxt(fn, unpack=True, skip_header=0)
+    pop.params["sfh"] = 3
+    pop.set_tabular_sfh(age, sfr)
+    zind = -3
+    pop.params["logzsol"] = np.log10(pop.zlegend[zind]/pop.solar_metallicity)
+
+    wave, spec = pop.get_spectrum(tage=age.max())
+    mstar = pop.stellar_mass
+    wght = pop._ssp_weights()
+    ssp, smass, slbol = pop._all_ssp_spec()
+
+    assert np.allclose((smass[:, zind] * wght[:, 0]).sum(), mstar)
 
 
 # Requires scipy

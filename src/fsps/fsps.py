@@ -1050,7 +1050,9 @@ class StellarPopulation(object):
 
     @property
     def resolutions(self):
-        r"""The resolution array (units)"""
+        r"""The resolution array, in km/s dispersion. Negative numbers indicate
+         poorly defined, approximate, resolution (based on coarse opacity
+         binning in theoretical spectra)"""
         if self._resolutions is None:
             NSPEC = driver.get_nspec()
             self._resolutions = driver.get_res(NSPEC)

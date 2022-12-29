@@ -366,6 +366,17 @@ contains
 
   end subroutine
 
+  subroutine get_ssp_weights(n_age, n_z, ssp_wghts_out)
+
+    ! Return the weights of each SSP in the CSP
+
+    implicit none
+    integer, intent(in) :: n_age,n_z
+    double precision, dimension(n_age,n_z), intent(inout) :: ssp_wghts_out
+    ssp_wghts_out = weight_ssp
+
+  end subroutine
+
   subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
 
     ! Return the contents of the ssp spectral array,
@@ -400,7 +411,7 @@ contains
     sfh_tab(2, 1:ntabsfh) = sfr
     sfh_tab(3, 1:ntabsfh) = met
 
-  end subroutine set_sfh_tab
+  end subroutine
 
   subroutine set_ssp_lsf(nsv, sigma, wlo, whi)
 
@@ -414,7 +425,7 @@ contains
     lsfinfo%maxlam = whi
     lsfinfo%lsf = sigma
 
-  end subroutine set_ssp_lsf
+  end subroutine
 
   subroutine get_setup_vars(cvms, vta_flag)
 
@@ -526,6 +537,16 @@ contains
     else
        lambda = spec_lambda
     endif
+
+  end subroutine
+
+  subroutine get_res(ns,res)
+
+    ! Get the resolution array of the spectral library
+    implicit none
+    integer, intent(in) :: ns
+    double precision, dimension(ns), intent(out) :: res
+    res = spec_res
 
   end subroutine
 

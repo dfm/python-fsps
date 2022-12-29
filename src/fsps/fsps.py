@@ -534,6 +534,7 @@ class StellarPopulation(object):
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
+        self._resolutions = None
         self._emwavelengths = None
         self._zlegend = None
         self._solar_metallicity = None
@@ -765,6 +766,21 @@ class StellarPopulation(object):
             spec *= factor[:, None, None]
 
         return spec, mass, lbol
+
+    def _ssp_weights(self):
+         """Get the weights of the SSPs for the CSP
+
+         :returns weights:
+             The weights ``w`` of each SSP s.t. the total spectrum is the sum
+             :math:`L_{\lambda} = \sum_i,j w_i,j \, S_{i,j,\lambda}` where
+             math:`i,j` run over age and metallicity.
+         """
+
+         NTFULL = driver.get_ntfull()
+         NZ = driver.get_nz()
+         weights = np.zeros([NTFULL, NZ], order="F")
+         driver.get_ssp_weights(weights)
+         return weights
 
     def _get_stellar_spectrum(
         self,
@@ -1031,6 +1047,16 @@ class StellarPopulation(object):
             NSPEC = driver.get_nspec()
             self._wavelengths = driver.get_lambda(NSPEC)
         return self._wavelengths.copy()
+
+    @property
+    def resolutions(self):
+        r"""The resolution array, in km/s dispersion. Negative numbers indicate
+         poorly defined, approximate, resolution (based on coarse opacity
+         binning in theoretical spectra)"""
+        if self._resolutions is None:
+            NSPEC = driver.get_nspec()
+            self._resolutions = driver.get_res(NSPEC)
+        return self._resolutions.copy()
 
     @property
     def emline_wavelengths(self):

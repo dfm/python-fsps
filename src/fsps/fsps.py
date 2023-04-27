@@ -161,6 +161,9 @@ class StellarPopulation(object):
         stars; a value of 1.0 implies that the Vassiliadis & Wood (1994) tracks
         are implemented as–is.
 
+    :param frac_xrb: (default: 1.0)
+        Scaling factor for the X-ray source spectrum to be added to the SSPs.
+
     :param zred: (default: 0.0)
         Redshift. If this value is non-zero and if ``redshift_colors=1``, the
         magnitudes will be computed for the spectrum placed at redshift
@@ -236,6 +239,9 @@ class StellarPopulation(object):
     :param logt_wmb_hot: (default: 0.0)
         Use the Eldridge (2017) WMBasic hot star library above this value of
         :math:`\log T_\mathrm{eff}` or 25,000K, whichever is larger.
+
+    :param add_xrb_emission: (default: 0)
+        Turn on/off the x-ray binary population spectra from Garofali et al.
 
     :param masscut: (default: 150.0)
         Truncate the IMF above this value.
@@ -350,6 +356,11 @@ class StellarPopulation(object):
         Dust parameter describing the attenuation of old stellar light,
         i.e. where ``t > dust_tesc`` (for details, see Conroy et al. 2009a).
 
+    :param dust3: (default: 0.0)
+        Dust parameter describing extra attenuation of old stellar light that
+        does _not_ afect the young (``t < dust_tesc`` ) star light.  The
+        attenuation curve will be the one specified by ``dust_type``
+
     :param dust_clumps: (default: -99.)
         Dust parameter describing the dispersion of a Gaussian PDF density
         distribution for the old dust. Setting this value to -99.0 sets the
@@ -460,6 +471,7 @@ class StellarPopulation(object):
             fbhb=0.0,
             sbss=0.0,
             pagb=1.0,
+            frac_xrb=1.0,
             zred=0.0,
             zmet=1,
             logzsol=0.0,
@@ -475,6 +487,7 @@ class StellarPopulation(object):
             evtype=-1,
             use_wr_spectra=1,
             logt_wmb_hot=0.0,
+            add_xrb_emission=0,
             masscut=150.0,
             sigma_smooth=0.0,
             min_wave_smooth=1e3,
@@ -495,6 +508,7 @@ class StellarPopulation(object):
             dust_type=0,
             dust1=0.0,
             dust2=0.0,
+            dust3=0.0,
             dust_clumps=-99.0,
             frac_nodust=0.0,
             frac_obrun=0.0,
@@ -1256,6 +1270,8 @@ class ParameterSet(object):
         "evtype",
         "use_wr_spectra",
         "logt_wmb_hot",
+        "add_xrb_emission",
+        "frac_xrb",
         "smooth_lsf",
     ]
 
@@ -1282,6 +1298,7 @@ class ParameterSet(object):
         "tburst",
         "dust1",
         "dust2",
+        "dust3",
         "logzsol",
         "zred",
         "pmetals",

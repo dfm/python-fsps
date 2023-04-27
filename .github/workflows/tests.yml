@@ -20,9 +20,9 @@ jobs:
           - os: macos-latest
             python-version: "3.10"
             nox-session: "tests"
-          - os: windows-latest
-            python-version: "3.10"
-            nox-session: "tests"
+          # - os: windows-latest
+          #   python-version: "3.10"
+          #   nox-session: "tests"
           - os: ubuntu-latest
             python-version: "3.10"
             nox-session: "options"

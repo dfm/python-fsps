@@ -28,7 +28,7 @@ test = ["pytest", "pytest-xdist"]
 
 [build-system]
 build-backend = 'mesonpy'
-requires = ["meson-python>=0.8.1,<0.13.0", "wheel", "oldest-supported-numpy", "setuptools_scm"]
+requires = ["meson-python>=0.8.1", "wheel", "oldest-supported-numpy", "setuptools_scm"]
 
 [tool.setuptools_scm]
 write_to = "src/fsps/fsps_version.py"

@@ -20,6 +20,7 @@ lib_source = [
     'libfsps/src/add_dust.f90',
     'libfsps/src/add_nebular.f90',
     'libfsps/src/add_remnants.f90',
+    'libfsps/src/add_xrb.f90',
     'libfsps/src/agn_dust.f90',
     'libfsps/src/attn_curve.f90',
     'libfsps/src/compsp.f90',

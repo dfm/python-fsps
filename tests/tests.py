@@ -257,6 +257,35 @@ def test_redshift(pop_and_params):
     assert np.all(v5 != v4)
 
 
+def test_dust3(pop_and_params):
+    """Make sure nebular lines are actually added."""
+
+    # uses default SSPs
+
+    pop, params = pop_and_params
+    _reset_default_params(pop, params)
+    pop.params["sfh"] = 4
+    pop.params["dust_type"] = 4
+    pop.params["tau"] = 5.0
+    pop.params["dust1"] = 0
+    pop.params["dust2"] = 0.5
+
+    # make sure dust3 affects the population when there are old stars
+    pop.params["dust3"] = 0.0
+    mag1 = pop.get_mags(tage=1.0, bands=["u", "b"])
+    pop.params["dust3"] = 1.0
+    mag2 = pop.get_mags(tage=1.0, bands=["u", "b"])
+    assert np.all(mag2 > mag1)
+
+    # make sure the dust3 isn't affecting young populations
+    pop.params["dust_tesc"] = 8
+    pop.params["dust3"] = 0.0
+    mag3 = pop.get_mags(tage=0.05, bands=["u", "b"])
+    pop.params["dust3"] = 1.0
+    mag4 = pop.get_mags(tage=0.05, bands=["u", "b"])
+    assert_allclose(mag3, mag4)
+
+
 def test_nebemlineinspec(pop_and_params):
     """Make sure nebular lines are actually added."""
 

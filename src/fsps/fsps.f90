@@ -46,19 +46,19 @@ contains
                             delt,sbss,fbhb,pagb,add_stellar_remnants0,&
                             tpagb_norm_type0,add_agb_dust_model0,agb_dust,&
                             redgb,agb,masscut,fcstar,evtype,use_wr_spectra0,&
-                            logt_wmb_hot0,smooth_lsf0)
+                            logt_wmb_hot0,add_xrb_emission0,frac_xrb,smooth_lsf0)
 
     ! Set the parameters that affect the SSP computation.
 
     implicit none
 
     integer, intent(in) :: imf_type0,add_stellar_remnants0,tpagb_norm_type0,&
-                           add_agb_dust_model0,use_wr_spectra0,smooth_lsf0
+                           add_agb_dust_model0,use_wr_spectra0,add_xrb_emission0,smooth_lsf0
     double precision, intent(in) :: imf_upper_limit0, imf_lower_limit0,&
                                     imf1,imf2,imf3,vdmc,mdave,dell,&
                                     delt,sbss,fbhb,pagb,agb_dust,&
                                     redgb,agb,masscut,fcstar,evtype,&
-                                    logt_wmb_hot0
+                                    logt_wmb_hot0,frac_xrb
 
     imf_type=imf_type0
     imf_upper_limit=imf_upper_limit0
@@ -69,6 +69,7 @@ contains
     use_wr_spectra=use_wr_spectra0
     logt_wmb_hot=logt_wmb_hot0
     smooth_lsf=smooth_lsf0
+    add_xrb_emission=add_xrb_emission0
     pset%imf1=imf1
     pset%imf2=imf2
     pset%imf3=imf3
@@ -85,6 +86,7 @@ contains
     pset%masscut=masscut
     pset%fcstar=fcstar
     pset%evtype=evtype
+    pset%frac_xrb=frac_xrb
 
     has_ssp(:) = 0
     has_ssp_age(:,:) = 0
@@ -96,7 +98,7 @@ contains
                             dust_type0,add_dust_emission0,add_neb_emission0,&
                             add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                             zmet,sfh,wgp1,wgp2,wgp3,tau,&
-                            const,tage,fburst,tburst,dust1,dust2,&
+                            const,tage,fburst,tburst,dust1,dust2,dust3,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             dust1_index,sf_start,sf_trunc,sf_slope,&
@@ -114,7 +116,7 @@ contains
                            add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
                            zmet,sfh,wgp1,wgp2,wgp3
     double precision, intent(in) :: tau,&
-                            const,tage,fburst,tburst,dust1,dust2,&
+                            const,tage,fburst,tburst,dust1,dust2,dust3,&
                             logzsol,zred,pmetals,dust_clumps,frac_nodust,&
                             dust_index,dust_tesc,frac_obrun,uvb,mwr,&
                             dust1_index,sf_start,sf_trunc,sf_slope,&
@@ -146,6 +148,7 @@ contains
     pset%tburst=tburst
     pset%dust1=dust1
     pset%dust2=dust2
+    pset%dust3=dust3
     pset%logzsol=logzsol
     pset%zred=zred
     pset%pmetals=pmetals

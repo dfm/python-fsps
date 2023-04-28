@@ -266,6 +266,8 @@ K. See Conroy et al. (2009a) for details and a plausible range.</p></li>
 Weight given to the post–AGB phase. A value of 0.0 turns off post-AGB
 stars; a value of 1.0 implies that the Vassiliadis &amp; Wood (1994) tracks
 are implemented as–is.</p></li>
+<li><p><strong>frac_xrb</strong> – (default: 1.0)
+Scaling factor for the X-ray source spectrum to be added to the SSPs.</p></li>
 <li><p><strong>zred</strong> – (default: 0.0)
 Redshift. If this value is non-zero and if <code class="docutils literal notranslate"><span class="pre">redshift_colors=1</span></code>, the
 magnitudes will be computed for the spectrum placed at redshift
@@ -329,6 +331,8 @@ default library instead</p></li>
 <li><p><strong>logt_wmb_hot</strong> – (default: 0.0)
 Use the Eldridge (2017) WMBasic hot star library above this value of
 <span class="math notranslate nohighlight">\(\log T_\mathrm{eff}\)</span> or 25,000K, whichever is larger.</p></li>
+<li><p><strong>add_xrb_emission</strong> – (default: 0)
+Turn on/off the x-ray binary population spectra from Garofali et al.</p></li>
 <li><p><strong>masscut</strong> – (default: 150.0)
 Truncate the IMF above this value.</p></li>
 <li><p><strong>sigma_smooth</strong> – (default: 0.0)
@@ -426,6 +430,10 @@ i.e. where <code class="docutils literal notranslate"><span class="pre">t</span>
 <li><p><strong>dust2</strong> – (default: 0.0)
 Dust parameter describing the attenuation of old stellar light,
 i.e. where <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">&gt;</span> <span class="pre">dust_tesc</span></code> (for details, see Conroy et al. 2009a).</p></li>
+<li><p><strong>dust3</strong> – (default: 0.0)
+Dust parameter describing extra attenuation of old stellar light that
+does _not_ afect the young (<code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">&lt;</span> <span class="pre">dust_tesc</span></code> ) star light.  The
+attenuation curve will be the one specified by <code class="docutils literal notranslate"><span class="pre">dust_type</span></code></p></li>
 <li><p><strong>dust_clumps</strong> – (default: -99.)
 Dust parameter describing the dispersion of a Gaussian PDF density
 distribution for the old dust. Setting this value to -99.0 sets the

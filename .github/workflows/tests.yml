@@ -20,9 +20,9 @@ jobs:
           - os: macos-latest
             python-version: "3.10"
             nox-session: "tests"
-          # - os: windows-latest
-          #   python-version: "3.10"
-          #   nox-session: "tests"
+          - os: windows-latest
+            python-version: "3.10"
+            nox-session: "tests"
           - os: ubuntu-latest
             python-version: "3.10"
             nox-session: "options"
@@ -47,7 +47,7 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
       - name: Set up Windows
         run: |
-          choco install rtools --no-progress
+          choco install rtools -y --no-progress --force --version=4.0.0.20220206
           echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
         if: ${{ runner.os == 'Windows' }}
       - name: Cache pip packages

@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import os
+import sys
 import numpy as np
 import pytest
 from fsps import StellarPopulation, filters
 from numpy.testing import assert_allclose
+
+skip_slow_tests = pytest.mark.skipif(
+    (sys.platform.startswith("win") or sys.platform.startswith("darwin"))
+    and "CI" in os.environ,
+    reason="Slow tests only run on Linux CI",
+)
 
 
 @pytest.fixture(scope="module")
@@ -19,6 +27,7 @@ def _reset_default_params(pop, params):
         pop.params[k] = params[k]
 
 
+@skip_slow_tests
 def test_isochrones(pop_and_params):
     """Just test that `isochrones()` method runs"""
 
@@ -30,6 +39,7 @@ def test_isochrones(pop_and_params):
     iso = pop.isochrones()
 
 
+@skip_slow_tests
 def test_imf3(pop_and_params):
     """Make sure that changing the (upper) imf changes the parameter dirtiness
     and also the SSP spectrum"""
@@ -105,6 +115,7 @@ def test_smooth_lsf(pop_and_params):
     assert pop.params.dirtiness == 2
 
 
+@skip_slow_tests
 def test_tabular(pop_and_params):
     """Test that you get the right shape spectral arrays for tabular SFHs, that
     the parameter dirtiness is appropriately managed for changing tabular SFH,
@@ -363,6 +374,7 @@ def test_smoothspec(pop_and_params):
     assert (spec - spec2 == 0.0).sum() > 0
 
 
+@skip_slow_tests
 def test_ssp_weights(pop_and_params):
     """Check that weights dotted into ssp is the same as the returned spectrum
     when there's no dust or emission lines and zcontinuous=0"""

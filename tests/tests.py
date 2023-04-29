@@ -9,7 +9,7 @@ from numpy.testing import assert_allclose
 
 skip_slow_tests = pytest.mark.skipif(
     (sys.platform.startswith("win") or sys.platform.startswith("darwin"))
-    and "CI" not in os.environ,
+    and "CI" in os.environ,
     reason="Slow tests only run on Linux CI",
 )
 

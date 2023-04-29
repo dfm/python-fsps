@@ -39,6 +39,7 @@ def test_isochrones(pop_and_params):
     iso = pop.isochrones()
 
 
+@skip_slow_tests
 def test_imf3(pop_and_params):
     """Make sure that changing the (upper) imf changes the parameter dirtiness
     and also the SSP spectrum"""

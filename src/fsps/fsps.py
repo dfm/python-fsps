@@ -781,6 +781,23 @@ class StellarPopulation(object):
 
         return spec, mass, lbol
 
+    @property
+    def _csp_young_old(self):
+        """Get the (unattenuated) young and old component spectra of the CSP
+
+        :returns young:
+            The young stellar spectrum
+
+        :returns old:
+            The old stellar spectrum
+        """
+
+        NS = driver.get_nspec()
+        young, old = np.zeros(NS), np.zeros(NS)
+        driver.get_csp_components(young, old)
+        return young, old
+
+    @property
     def _ssp_weights(self):
          """Get the weights of the SSPs for the CSP
 

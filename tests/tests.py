@@ -394,7 +394,7 @@ def test_ssp_weights(pop_and_params):
 
     wave, spec = pop.get_spectrum(tage=age.max())
     mstar = pop.stellar_mass
-    wght = pop._ssp_weights()
+    wght = pop._ssp_weights
     ssp, smass, slbol = pop._all_ssp_spec()
 
     assert np.allclose((smass[:, zind] * wght[:, 0]).sum(), mstar)

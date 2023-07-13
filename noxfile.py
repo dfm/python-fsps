@@ -6,12 +6,12 @@ import nox
 ALL_PYTHON_VS = ["3.8", "3.9", "3.10", "3.11"]
 
 
-def _run_with_sps_home(session, *args, **kwargs):
+def _run_with_sps_home(session: nox.Session, *args, **kwargs):
     sps_home = os.environ.get(
         "SPS_HOME", Path(__file__).parent / "src" / "fsps" / "libfsps"
     )
     kwargs["env"] = dict(kwargs.get("env", {}), SPS_HOME=str(sps_home))
-    return session.run(*args, **kwargs)
+    return session.run(*args, **kwargs, external=True)
 
 
 @nox.session(python=ALL_PYTHON_VS)

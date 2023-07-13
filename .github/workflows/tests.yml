@@ -10,22 +10,29 @@ jobs:
   tests:
     name: "py${{ matrix.python-version }} / ${{ matrix.os }} / ${{ matrix.nox-session }}"
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }} {0}
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         os: [ubuntu-latest]
         nox-session: ["tests"]
+        shell: [bash]
         include:
           - os: macos-latest
             python-version: "3.10"
             nox-session: "tests"
+            shell: bash
           - os: windows-latest
             python-version: "3.10"
             nox-session: "tests"
+            shell: msys2
           - os: ubuntu-latest
             python-version: "3.10"
             nox-session: "options"
+            shell: bash
     steps:
       - name: Clone the repo
         uses: actions/checkout@v3
@@ -76,17 +83,10 @@ jobs:
         run: |
           python -m pip install -U pip
           python -m pip install -U nox
-      - name: Run tests (not Windows)
+      - name: Run tests
         run: python -m nox --non-interactive --no-error-on-missing-interpreters -s ${{ matrix.nox-session }}-${{ matrix.python-version }}
         env:
           SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
-        if: ${{ runner.os != 'Windows' }}
-      - name: Run tests (Windows)
-        run: python -m nox --non-interactive --no-error-on-missing-interpreters -s ${{ matrix.nox-session }}-${{ matrix.python-version }}
-        env:
-          SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
-        shell: msys2 {0}
-        if: ${{ runner.os == 'Windows' }}
   
   docs:
     if: github.event_name != 'pull_request'

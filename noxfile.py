@@ -26,7 +26,6 @@ def tests(session):
         "-n",
         "2",
         "--durations=0",
-        "-v",
         "tests/tests.py",
     )
 

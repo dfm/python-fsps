@@ -3,7 +3,7 @@ from pathlib import Path
 
 import nox
 
-ALL_PYTHON_VS = ["3.8", "3.9", "3.10"]
+ALL_PYTHON_VS = ["3.8", "3.9", "3.10", "3.11"]
 
 
 def _run_with_sps_home(session, *args, **kwargs):

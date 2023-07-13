@@ -45,11 +45,11 @@ jobs:
       - name: Set up macOS
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ runner.os == 'macOS' }}
-      - name: Set up Windows
-        run: |
-          choco install rtools -y --no-progress --force --version=4.0.0.20220206
-          echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
-        if: ${{ runner.os == 'Windows' }}
+      # - name: Set up Windows
+      #   run: |
+      #     choco install rtools -y --no-progress --force --version=4.0.0.20220206
+      #     echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
+      #   if: ${{ runner.os == 'Windows' }}
       - name: Cache pip packages
         uses: actions/cache@v3
         with:

@@ -1,10 +1,3 @@
-# Find the f2py headers
-execute_process(
-  COMMAND "${PYTHON_EXECUTABLE}" -c
-          "import numpy.f2py; print(numpy.f2py.get_include())"
-  OUTPUT_VARIABLE F2PY_INCLUDE_DIR
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
 # Generate the f2py wrappers
 set(F2PY_SOURCES
     "${CMAKE_CURRENT_BINARY_DIR}/_fspsmodule.c"

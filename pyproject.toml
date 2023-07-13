@@ -5,7 +5,7 @@ authors = [
     { name="Dan Foreman-Mackey", email="foreman.mackey@gmail.com" },
 ]
 readme = "README.rst"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = { text = "MIT License" }
 classifiers = [
     "Development Status :: 5 - Production/Stable",

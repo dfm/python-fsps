@@ -45,6 +45,13 @@ jobs:
       - name: Set up macOS
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ runner.os == 'macOS' }}
+      - name: Set up Windows
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git mingw-w64-ucrt-x86_64-gcc
+        if: ${{ runner.os == 'Windows' }}
       # - name: Set up Windows
       #   run: |
       #     choco install rtools -y --no-progress --force --version=4.0.0.20220206
@@ -69,11 +76,18 @@ jobs:
         run: |
           python -m pip install -U pip
           python -m pip install -U nox
-      - name: Run tests
+      - name: Run tests (not Windows)
         run: python -m nox --non-interactive --no-error-on-missing-interpreters -s ${{ matrix.nox-session }}-${{ matrix.python-version }}
         env:
           SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
-
+        if: ${{ runner.os != 'Windows' }}
+      - name: Run tests (Windows)
+        run: python -m nox --non-interactive --no-error-on-missing-interpreters -s ${{ matrix.nox-session }}-${{ matrix.python-version }}
+        env:
+          SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
+        shell: msys2 {0}
+        if: ${{ runner.os == 'Windows' }}
+  
   docs:
     if: github.event_name != 'pull_request'
     name: "docs"

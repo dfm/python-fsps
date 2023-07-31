@@ -10,29 +10,19 @@ jobs:
   tests:
     name: "py${{ matrix.python-version }} / ${{ matrix.os }} / ${{ matrix.nox-session }}"
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: ${{ matrix.shell }} {0}
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         os: [ubuntu-latest]
         nox-session: ["tests"]
-        shell: [bash]
         include:
           - os: macos-latest
             python-version: "3.10"
             nox-session: "tests"
-            shell: bash
-          # - os: windows-latest
-          #   python-version: "3.10"
-          #   nox-session: "tests"
-          #   shell: msys2
           - os: ubuntu-latest
             python-version: "3.10"
             nox-session: "options"
-            shell: bash
     steps:
       - name: Clone the repo
         uses: actions/checkout@v3
@@ -43,7 +33,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-        if: ${{ runner.os != 'Windows' }}
+        # if: ${{ runner.os != 'Windows' }}
       - name: Set up Linux
         run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -53,9 +43,6 @@ jobs:
       - name: Set up macOS
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ runner.os == 'macOS' }}
-      - name: Set up Windows
-        uses: msys2/setup-msys2@v2
-        if: ${{ runner.os == 'Windows' }}
       - name: Cache pip packages
         uses: actions/cache@v3
         with:

@@ -6,10 +6,13 @@ check_sps_home()
 del check_sps_home
 # End check
 
-from fsps.fsps_version import version as __version__
-from fsps.fsps import StellarPopulation as StellarPopulation
 from fsps.filters import (
     find_filter as find_filter,
+)
+from fsps.filters import (
     get_filter as get_filter,
+)
+from fsps.filters import (
     list_filters as list_filters,
 )
+from fsps.fsps import StellarPopulation as StellarPopulation

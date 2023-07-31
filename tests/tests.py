@@ -2,10 +2,12 @@
 
 import os
 import sys
+
 import numpy as np
 import pytest
-from fsps import StellarPopulation, filters
 from numpy.testing import assert_allclose
+
+from fsps import StellarPopulation, filters
 
 skip_slow_tests = pytest.mark.skipif(
     (sys.platform.startswith("win") or sys.platform.startswith("darwin"))
@@ -36,7 +38,7 @@ def test_isochrones(pop_and_params):
     pop, params = pop_and_params
     _reset_default_params(pop, params)
     pop.params["imf_type"] = 0
-    iso = pop.isochrones()
+    pop.isochrones()
 
 
 @skip_slow_tests
@@ -68,7 +70,6 @@ def test_imf3(pop_and_params):
 
 
 def test_param_checks(pop_and_params):
-
     # recomputes SSPs
 
     pop, params = pop_and_params
@@ -92,7 +93,6 @@ def test_param_checks(pop_and_params):
 
 
 def test_smooth_lsf(pop_and_params):
-
     # recomputes SSPs
 
     pop, params = pop_and_params
@@ -385,12 +385,13 @@ def test_ssp_weights(pop_and_params):
     _reset_default_params(pop, params)
 
     import os
+
     fn = os.path.join(os.environ["SPS_HOME"], "data/sfh.dat")
     age, sfr, z = np.genfromtxt(fn, unpack=True, skip_header=0)
     pop.params["sfh"] = 3
     pop.set_tabular_sfh(age, sfr)
     zind = -3
-    pop.params["logzsol"] = np.log10(pop.zlegend[zind]/pop.solar_metallicity)
+    pop.params["logzsol"] = np.log10(pop.zlegend[zind] / pop.solar_metallicity)
 
     wave, spec = pop.get_spectrum(tage=age.max())
     mstar = pop.stellar_mass

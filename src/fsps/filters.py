@@ -8,6 +8,7 @@ This module uses filter information shipped with FSPS itself in
 __all__ = ["find_filter", "FILTERS", "get_filter", "list_filters"]
 
 import os
+
 import numpy as np
 
 # Cache for $SPS_HOME/data/magsun.dat parsed by numpy
@@ -117,7 +118,7 @@ class Filter(object):
                         l, t = line.split()
                         lambdas.append(float(l))
                         trans.append(float(t))
-                    except (ValueError):
+                    except ValueError:
                         pass
         # Close out the last filter
         TRANS_CACHE[names[filter_index]] = (np.array(lambdas), np.array(trans))

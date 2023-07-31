@@ -55,21 +55,7 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
       - name: Set up Windows
         uses: msys2/setup-msys2@v2
-        with:
-          msystem: UCRT64
-          update: true
-          install: >-
-            git
-            mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-gcc-fortran
-            mingw-w64-ucrt-x86_64-python-pip
-            mingw-w64-ucrt-x86_64-python-numpy
         if: ${{ runner.os == 'Windows' }}
-      # - name: Set up Windows
-      #   run: |
-      #     choco install rtools -y --no-progress --force --version=4.0.0.20220206
-      #     echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
-      #   if: ${{ runner.os == 'Windows' }}
       - name: Cache pip packages
         uses: actions/cache@v3
         with:

@@ -6,6 +6,10 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: "py${{ matrix.python-version }} / ${{ matrix.os }} / ${{ matrix.nox-session }}"

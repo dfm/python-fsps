@@ -15,7 +15,8 @@ jobs:
       matrix:
         buildplat:
         - [ubuntu-22.04, manylinux, x86_64]
-        - [macos-latest, macosx, universal2]
+        - [macos-latest, macosx, x86_64]
+        - [macos-latest, macosx, arm64]
         - [windows-2019, win, AMD64]
         python: [["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
     steps:
@@ -26,11 +27,6 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python[1]}}
-      # - name: Set up Windows
-      #   run: |
-      #     choco install rtools -y --no-progress --force --version=4.0.0.20220206
-      #     echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
-      #   if: ${{ runner.os == 'Windows' }}
       - name: Set up macOS
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ runner.os == 'macOS' }}

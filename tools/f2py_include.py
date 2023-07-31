@@ -7,4 +7,4 @@ try:
 except AttributeError:
     import os
 
-    print(os.path.join(os.path.dirname(numpy.f2py.__file__), 'src'))
+    print(os.path.join(os.path.dirname(numpy.f2py.__file__), "src"))

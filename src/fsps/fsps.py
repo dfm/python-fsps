@@ -1,6 +1,7 @@
 __all__ = ["StellarPopulation"]
 
 import os
+
 import numpy as np
 
 from fsps._fsps import driver
@@ -97,8 +98,8 @@ class StellarPopulation(object):
 
     :param nebemlineinspec: (default: True)
         Flag to include the emission line fluxes in the spectrum. Turning this off
-        is a significant speedup in model calculation time. If not set, the line luminosities
-        are still computed.
+        is a significant speedup in model calculation time. If not set, the line
+        luminosities are still computed.
 
     :param smooth_velocity: (default: True)
         Switch to choose smoothing in velocity space (``True``) or wavelength
@@ -218,8 +219,9 @@ class StellarPopulation(object):
         M_\odot`. Only used if ``imf_type=2``.
 
     :param imf3: (default: 2.3)
-        Logarithmic slope of the IMF over the range :math:`1.0 < M < \mathrm{imf\_upper\_limit}
-        M_\odot`. Only used if ``imf_type=2``.
+        Logarithmic slope of the IMF over the range
+        :math:`1.0 < M < \mathrm{imf\_upper\_limit} M_\odot`.
+        Only used if ``imf_type=2``.
 
     :param vdmc: (default: 0.08)
         IMF parameter defined in van Dokkum (2008). Only used if
@@ -446,7 +448,6 @@ class StellarPopulation(object):
     def __init__(
         self, compute_vega_mags=False, vactoair_flag=False, zcontinuous=0, **kwargs
     ):
-
         # Set up the parameters to their default values.
         self.params = ParameterSet(
             add_agb_dust_model=True,
@@ -609,7 +610,7 @@ class StellarPopulation(object):
 
         wavegrid = self.wavelengths
         if peraa:
-            factor = 3e18 / wavegrid ** 2
+            factor = 3e18 / wavegrid**2
 
         else:
             factor = np.ones_like(wavegrid)
@@ -693,11 +694,10 @@ class StellarPopulation(object):
                 return mags[0, user_sorted_inds]
             else:
                 return mags[0, :]
+        elif bands is not None:
+            return mags[:, user_sorted_inds]
         else:
-            if bands is not None:
-                return mags[:, user_sorted_inds]
-            else:
-                return mags
+            return mags
 
     def _ztinterp(self, zpos, tpos, peraa=False):
         r"""
@@ -735,7 +735,7 @@ class StellarPopulation(object):
 
         if peraa:
             wavegrid = self.wavelengths
-            factor = 3e18 / wavegrid ** 2
+            factor = 3e18 / wavegrid**2
             spec *= factor
 
         return spec, mass, lbol
@@ -776,7 +776,7 @@ class StellarPopulation(object):
 
         if peraa:
             wavegrid = self.wavelengths
-            factor = 3e18 / wavegrid ** 2
+            factor = 3e18 / wavegrid**2
             spec *= factor[:, None, None]
 
         return spec, mass, lbol
@@ -799,19 +799,19 @@ class StellarPopulation(object):
 
     @property
     def _ssp_weights(self):
-         """Get the weights of the SSPs for the CSP
+        r"""Get the weights of the SSPs for the CSP
 
-         :returns weights:
-             The weights ``w`` of each SSP s.t. the total spectrum is the sum
-             :math:`L_{\lambda} = \sum_i,j w_i,j \, S_{i,j,\lambda}` where
-             math:`i,j` run over age and metallicity.
-         """
+        :returns weights:
+            The weights ``w`` of each SSP s.t. the total spectrum is the sum
+            :math:`L_{\lambda} = \sum_i,j w_i,j \, S_{i,j,\lambda}` where
+            math:`i,j` run over age and metallicity.
+        """
 
-         NTFULL = driver.get_ntfull()
-         NZ = driver.get_nz()
-         weights = np.zeros([NTFULL, NZ], order="F")
-         driver.get_ssp_weights(weights)
-         return weights
+        NTFULL = driver.get_ntfull()
+        NZ = driver.get_nz()
+        weights = np.zeros([NTFULL, NZ], order="F")
+        driver.get_ssp_weights(weights)
+        return weights
 
     def _get_stellar_spectrum(
         self,
@@ -875,7 +875,7 @@ class StellarPopulation(object):
         )
         if peraa:
             wavegrid = self.wavelengths
-            factor = 3e18 / wavegrid ** 2
+            factor = 3e18 / wavegrid**2
             outspec *= factor
 
         return outspec
@@ -1082,8 +1082,8 @@ class StellarPopulation(object):
     @property
     def resolutions(self):
         r"""The resolution array, in km/s dispersion. Negative numbers indicate
-         poorly defined, approximate, resolution (based on coarse opacity
-         binning in theoretical spectra)"""
+        poorly defined, approximate, resolution (based on coarse opacity
+        binning in theoretical spectra)"""
         if self._resolutions is None:
             NSPEC = driver.get_nspec()
             self._resolutions = driver.get_res(NSPEC)
@@ -1231,7 +1231,8 @@ class StellarPopulation(object):
 
         avsfr = (mass[..., 0] - mass[..., 1]) / dt / 1e9  # Msun/yr
 
-        # These lines change behavior when you request sfrs outside the range (sf_start + dt, tage)
+        # These lines change behavior when you request sfrs outside the range
+        # (sf_start + dt, tage)
         # avsfr[times > tage] = np.nan  # does not work for scalars
         avsfr *= times <= tage
         # avsfr[np.isfinite(avsfr)] = 0.0 # does not work for scalars
@@ -1261,7 +1262,6 @@ class StellarPopulation(object):
 
 
 class ParameterSet(object):
-
     ssp_params = [
         "imf_type",
         "imf_upper_limit",

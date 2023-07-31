@@ -1,19 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import (
-    division,
-    print_function,
-    absolute_import,
-    unicode_literals,
-)
-
 import os
 import sys
+from importlib.metadata import version as get_version
+from pathlib import Path
 
-# Patch the path to get the local version.
-d = os.path.dirname
-sys.path.insert(0, d(d(os.path.abspath(__file__))))
+if "SPS_HOME" not in os.environ:
+    path = Path(__file__).absolute()
+    sps_home = path.parent.parent / "src" / "fsps" / "libfsps"
+    os.environ["SPS_HOME"] = str(sps_home)
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -30,9 +26,8 @@ templates_path = ["_templates"]
 
 # General information about the project.
 project = "Python FSPS"
-copyright = "2013-2021 Python-FSPS developers"
-# version =
-# release =
+copyright = "2013-2023 Python-FSPS developers"
+version = get_version("fsps")
 
 html_show_sphinx = True
 html_show_sourcelink = False

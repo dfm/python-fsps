@@ -70,5 +70,5 @@ python_add_library(
     "${F2PY_INCLUDE_DIR}/fortranobject.c"
     WITH_SOABI)
 target_link_libraries(_fsps PUBLIC Python::NumPy)
-target_include_directories(_fsps PUBLIC "${F2PY_INCLUDE_DIR}")    
+target_include_directories(_fsps PUBLIC "${F2PY_INCLUDE_DIR}")
 install(TARGETS _fsps DESTINATION ${SKBUILD_PROJECT_NAME})

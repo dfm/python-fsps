@@ -12,10 +12,10 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-      
+
       - name: Update the submodule
         run: git submodule foreach git pull origin master
-      
+
       - name: Create a PR
         uses: peter-evans/create-pull-request@v5
         with:
@@ -25,5 +25,5 @@ jobs:
           title: Updating FSPS
           body: |
             Automatically updating the FSPS submodule
-            
+
             **Maintainers should close and then re-open this PR to get the tests to run.**

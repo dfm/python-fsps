@@ -3,14 +3,13 @@
 
 import os
 import sys
+from importlib.metadata import version as get_version
 from pathlib import Path
 
 if "SPS_HOME" not in os.environ:
     path = Path(__file__).absolute()
     sps_home = path.parent.parent / "src" / "fsps" / "libfsps"
     os.environ["SPS_HOME"] = str(sps_home)
-
-import fsps  # noqa
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -28,7 +27,7 @@ templates_path = ["_templates"]
 # General information about the project.
 project = "Python FSPS"
 copyright = "2013-2023 Python-FSPS developers"
-version = fsps.__version__
+version = get_version("fsps")
 
 html_show_sphinx = True
 html_show_sourcelink = False

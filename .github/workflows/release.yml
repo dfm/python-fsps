@@ -16,7 +16,6 @@ jobs:
         buildplat:
         - [ubuntu-22.04, manylinux, x86_64]
         - [macos-latest, macosx, x86_64]
-        - [macos-latest, macosx, arm64]
         - [windows-2019, win, AMD64]
         python: [["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
     steps:
@@ -34,9 +33,6 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}*
           CIBW_ARCHS: ${{ matrix.buildplat[2] }}
-          CIBW_ENVIRONMENT_PASS_LINUX: RUNNER_OS
-          CIBW_TEST_COMMAND_LINUX: "SPS_HOME={project}/src/fsps/libfsps python {project}/tests/simple.py"
-          SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl

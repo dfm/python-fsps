@@ -1,6 +1,7 @@
 cirrus_wheels_macos_arm64_task:
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-monterey-xcode:14
+    image: ghcr.io/cirruslabs/macos-monterey-xcode:latest
+
   matrix:
     - env:
        CIBW_BUILD: cp39-* cp310-*

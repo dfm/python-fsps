@@ -43,3 +43,4 @@ write_to = "src/fsps/fsps_version.py"
 [tool.cibuildwheel]
 skip = "cp36-* *-win32 *-manylinux_i686 pp*"
 test-command = "python {project}/tests/simple.py"
+environment = {SPS_HOME = "$(pwd)/src/fsps/libfsps"}

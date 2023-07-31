@@ -56,6 +56,17 @@ jobs:
         with:
           path: dist/*.tar.gz
 
+  wait_for_cirrus:
+    name: Wait for Cirrus CI to finish building macOS arm64 wheels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: getsentry/action-wait-for-cirrus@v1.0.0
+        with:
+          task: cirrus_wheels_macos_arm64
+          commit: ${{ github.event.pull_request.head.sha || github.sha }}
+        timeout-minutes: 15  
+      - run: ls dist
+
   upload_pypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest

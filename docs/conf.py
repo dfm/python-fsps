@@ -10,6 +10,8 @@ if "SPS_HOME" not in os.environ:
     sps_home = path.parent.parent / "src" / "fsps" / "libfsps"
     os.environ["SPS_HOME"] = str(sps_home)
 
+import fsps  # noqa
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
@@ -26,8 +28,7 @@ templates_path = ["_templates"]
 # General information about the project.
 project = "Python FSPS"
 copyright = "2013-2023 Python-FSPS developers"
-# version =
-# release =
+version = fsps.__version__
 
 html_show_sphinx = True
 html_show_sourcelink = False

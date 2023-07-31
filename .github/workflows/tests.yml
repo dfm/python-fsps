@@ -6,6 +6,10 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: "py${{ matrix.python-version }} / ${{ matrix.os }} / ${{ matrix.nox-session }}"
@@ -13,18 +17,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.9", "3.11"]
         os: [ubuntu-latest]
         nox-session: ["tests"]
         include:
           - os: macos-latest
-            python-version: "3.10"
-            nox-session: "tests"
-          - os: windows-latest
-            python-version: "3.10"
+            python-version: "3.11"
             nox-session: "tests"
           - os: ubuntu-latest
-            python-version: "3.10"
+            python-version: "3.11"
             nox-session: "options"
     steps:
       - name: Clone the repo
@@ -36,6 +37,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+        # if: ${{ runner.os != 'Windows' }}
       - name: Set up Linux
         run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -45,11 +47,6 @@ jobs:
       - name: Set up macOS
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ runner.os == 'macOS' }}
-      - name: Set up Windows
-        run: |
-          choco install rtools -y --no-progress --force --version=4.0.0.20220206
-          echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
-        if: ${{ runner.os == 'Windows' }}
       - name: Cache pip packages
         uses: actions/cache@v3
         with:
@@ -73,7 +70,7 @@ jobs:
         run: python -m nox --non-interactive --no-error-on-missing-interpreters -s ${{ matrix.nox-session }}-${{ matrix.python-version }}
         env:
           SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
-
+  
   docs:
     if: github.event_name != 'pull_request'
     name: "docs"

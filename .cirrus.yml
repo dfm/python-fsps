@@ -39,5 +39,5 @@ cirrus_wheels_macos_arm64_task:
   cibuildwheel_script:
     - cibuildwheel
 
-  wheels_artifacts:
+  artifacts:
     path: "wheelhouse/*"

@@ -31,7 +31,6 @@ cirrus_wheels_macos_arm64_task:
     - git submodule update --init
     - uname -m
     - python -c "import platform;print(platform.python_version());print(platform.system());print(platform.machine())"
-    - clang --version
 
   install_cibuildwheel_script:
     - python -m pip install cibuildwheel==2.14.1

@@ -31,7 +31,7 @@ Contributors
 License
 -------
 
-*Copyright 2013-2021 Python-FSPS developers.*
+*Copyright 2013-2023 Python-FSPS developers.*
 
 These bindings are available under the `MIT License
 <https://raw.github.com/dfm/python-fsps/main/LICENSE.rst>`_.

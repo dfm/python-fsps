@@ -2,7 +2,7 @@
   :target: https://github.com/dfm/python-fsps/actions?query=workflow%3ATests
 
 **Read the documentation:**
-`dfm.io/python-fsps <https://dfm.io/python-fsps>`_
+`python-fsps.readthedocs.io <https://python-fsps.readthedocs.io>`_
 
 If you use this code, follow the citation requirements `on the FSPS
 homepage <https://github.com/cconroy20/fsps>`_ and reference

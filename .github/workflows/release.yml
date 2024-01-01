@@ -38,7 +38,7 @@ jobs:
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ runner.os == 'macOS' }}
       - uses: pypa/cibuildwheel@v2.16.2
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./wheelhouse/*.whl
 
@@ -61,7 +61,7 @@ jobs:
         run: python -m build --sdist .
       - name: Check the sdist
         run: python -m twine check dist/*.tar.gz
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: dist/*.tar.gz
 

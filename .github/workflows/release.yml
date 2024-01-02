@@ -40,6 +40,7 @@ jobs:
       - uses: pypa/cibuildwheel@v2.16.2
       - uses: actions/upload-artifact@v4
         with:
+          name: binary-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -63,6 +64,7 @@ jobs:
         run: python -m twine check dist/*.tar.gz
       - uses: actions/upload-artifact@v4
         with:
+          name: sdist
           path: dist/*.tar.gz
 
   publish:
@@ -82,6 +84,6 @@ jobs:
         timeout-minutes: 15
       - uses: actions/download-artifact@v4
         with:
-          name: artifact
           path: dist
+          merge-multiple: true
       - uses: pypa/gh-action-pypi-publish@v1.8.11

@@ -46,7 +46,7 @@ jobs:
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ runner.os == 'macOS' }}
       - name: Cache pip packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/noxfile.py') }}
@@ -54,7 +54,7 @@ jobs:
             ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/pyproject.toml') }}-
             ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-
       - name: Cache nox session files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .nox
           key: ${{ runner.os }}-nox-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/noxfile.py') }}

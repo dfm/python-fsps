@@ -5,7 +5,7 @@ on:
       - main
     tags:
       - "*"
-  # pull_request:
+  pull_request:
   workflow_dispatch:
     inputs:
       prerelease:
@@ -26,8 +26,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "ubuntu-latest"
-          - "macos-latest"
+          - "ubuntu-22.04"
+          - "macos-12"
+          - "macos-14"
           # - "windows-latest"
     steps:
       - uses: actions/checkout@v4

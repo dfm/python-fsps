@@ -19,7 +19,10 @@ jobs:
         os: [ubuntu-latest]
         nox-session: ["tests"]
         include:
-          - os: macos-latest
+          - os: macos-12
+            python-version: "3.11"
+            nox-session: "tests"
+          - os: macos-14
             python-version: "3.11"
             nox-session: "tests"
           - os: ubuntu-latest
@@ -49,17 +52,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/noxfile.py') }}
+          key: ${{ matrix.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/pyproject.toml') }}-${{ hashFiles('**/noxfile.py') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/pyproject.toml') }}-
-            ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-
+            ${{ matrix.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/pyproject.toml') }}-
+            ${{ matrix.os }}-pip-${{ matrix.python-version }}-${{ matrix.nox-session }}-
       - name: Cache nox session files
         uses: actions/cache@v4
         with:
           path: .nox
-          key: ${{ runner.os }}-nox-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/noxfile.py') }}
+          key: ${{ matrix.os }}-nox-${{ matrix.python-version }}-${{ matrix.nox-session }}-${{ hashFiles('**/noxfile.py') }}
           restore-keys: |
-            ${{ runner.os }}-nox-${{ matrix.python-version }}-${{ matrix.nox-session }}-
+            ${{ matrix.os }}-nox-${{ matrix.python-version }}-${{ matrix.nox-session }}-
       - name: Install dependencies
         run: |
           python -m pip install -U pip

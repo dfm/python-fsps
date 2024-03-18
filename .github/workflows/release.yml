@@ -26,8 +26,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - "ubuntu-latest"
-          - "macos-latest"
+          - "ubuntu-22.04"
+          - "macos-12"
+          - "macos-14"
           # - "windows-latest"
     steps:
       - uses: actions/checkout@v4
@@ -77,11 +78,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
-      - name: Get macOS arm64 wheels from Cirrus CI
-        uses: getsentry/action-wait-for-cirrus@v1.0.0
-        with:
-          task: cirrus_wheels_macos_arm64
-        timeout-minutes: 15
       - uses: actions/download-artifact@v4
         with:
           path: dist

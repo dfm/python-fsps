@@ -19,7 +19,10 @@ jobs:
         os: [ubuntu-latest]
         nox-session: ["tests"]
         include:
-          - os: macos-latest
+          - os: macos-12
+            python-version: "3.11"
+            nox-session: "tests"
+          - os: macos-14
             python-version: "3.11"
             nox-session: "tests"
           - os: ubuntu-latest

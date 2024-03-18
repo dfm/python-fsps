@@ -5,7 +5,7 @@ on:
       - main
     tags:
       - "*"
-  pull_request:
+  # pull_request:
   workflow_dispatch:
     inputs:
       prerelease:
@@ -78,11 +78,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
-      - name: Get macOS arm64 wheels from Cirrus CI
-        uses: getsentry/action-wait-for-cirrus@v1.0.0
-        with:
-          task: cirrus_wheels_macos_arm64
-        timeout-minutes: 15
       - uses: actions/download-artifact@v4
         with:
           path: dist

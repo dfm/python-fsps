@@ -38,7 +38,7 @@ jobs:
       - name: Set up macOS
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ runner.os == 'macOS' }}
-      - uses: pypa/cibuildwheel@v2.17.0
+      - uses: pypa/cibuildwheel@v2.18.1
       - uses: actions/upload-artifact@v4
         with:
           name: binary-${{ matrix.os }}

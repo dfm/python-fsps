@@ -50,7 +50,7 @@ environment = { SPS_HOME = "$(pwd)/src/fsps/libfsps" }
 
 # Needed for full C++17 support
 [tool.cibuildwheel.macos.environment]
-MACOSX_DEPLOYMENT_TARGET = "10.14"
+MACOSX_DEPLOYMENT_TARGET = "14.0"
 
 [tool.black]
 target-version = ["py38", "py39"]

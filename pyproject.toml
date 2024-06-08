@@ -48,10 +48,6 @@ skip = "pp* *-win32 *-musllinux_* *-manylinux_i686"
 test-command = "SPS_HOME={project}/src/fsps/libfsps python {project}/tests/simple.py"
 environment = { SPS_HOME = "$(pwd)/src/fsps/libfsps" }
 
-# Needed for full C++17 support
-[tool.cibuildwheel.macos.environment]
-MACOSX_DEPLOYMENT_TARGET = "14.0"
-
 [tool.black]
 target-version = ["py38", "py39"]
 line-length = 88

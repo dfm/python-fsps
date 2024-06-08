@@ -44,7 +44,7 @@ jobs:
         if: ${{ matrix.os == 'macos-14' }}
       - uses: pypa/cibuildwheel@v2.18.1
         env:
-          MACOSX_DEPLOYMENT_TARGET: "${{ matrix.os == 'macos-12' && '10.14' || '14.0' }}"
+          MACOSX_DEPLOYMENT_TARGET: "${{ matrix.os == 'macos-12' && '12.0' || '14.0' }}"
       - uses: actions/upload-artifact@v4
         with:
           name: binary-${{ matrix.os }}

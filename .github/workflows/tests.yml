@@ -45,9 +45,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc g++ gfortran
         if: ${{ runner.os == 'Linux' }}
-      - name: Set up macOS
+      - name: Set up macOS-12
         run: brew unlink gfortran && brew link --overwrite gfortran
-        if: ${{ runner.os == 'macOS' }}
+        if: ${{ matrix.os == 'macos-12' }}
+      - name: Set up macOS-14
+        run: brew install gfortran
+        if: ${{ matrix.os == 'macos-14' }}
       - name: Cache pip packages
         uses: actions/cache@v4
         with:

@@ -45,7 +45,7 @@ write_to = "src/fsps/fsps_version.py"
 
 [tool.cibuildwheel]
 skip = "pp* *-win32 *-musllinux_* *-manylinux_i686"
-test-command = "python {project}/tests/simple.py"
+test-command = "SPS_HOME={project}/src/fsps/libfsps python {project}/tests/simple.py"
 environment = { SPS_HOME = "$(pwd)/src/fsps/libfsps" }
 
 # Needed for full C++17 support

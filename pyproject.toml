@@ -25,7 +25,7 @@ test = ["pytest", "pytest-xdist"]
 "Bug Tracker" = "https://github.com/dfm/python-fsps/issues"
 
 [build-system]
-requires = ["scikit-build-core", "oldest-supported-numpy"]
+requires = ["scikit-build-core", "numpy"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]

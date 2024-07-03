@@ -39,7 +39,7 @@ jobs:
         run: brew unlink gfortran && brew link --overwrite gfortran
         if: ${{ matrix.os == 'macos-12' }}
       - name: Set up macOS-14
-        run: brew install gfortran
+        run: echo "FC=gfortran-13" >> "$GITHUB_ENV"
         if: ${{ matrix.os == 'macos-14' }}
       - uses: pypa/cibuildwheel@v2.18.1
         env:
@@ -87,4 +87,4 @@ jobs:
         with:
           path: dist
           merge-multiple: true
-      - uses: pypa/gh-action-pypi-publish@v1.8.14
+      - uses: pypa/gh-action-pypi-publish@v1.9.0

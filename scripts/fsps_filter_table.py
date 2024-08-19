@@ -60,8 +60,7 @@ def make_table(data, col_names):
     assert n_cols == len(col_names)
     col_sizes = [max(len(r[i]) for r in data) for i in range(n_cols)]
     for i, cname in enumerate(col_names):
-        if col_sizes[i] < len(cname):
-            col_sizes[i] = len(cname)
+        col_sizes[i] = max(col_sizes[i], len(cname))
     formatter = " ".join("{:<%d}" % c for c in col_sizes)
     rows = "\n".join([formatter.format(*row) for row in data])
     header = formatter.format(*col_names)

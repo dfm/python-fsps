@@ -19,7 +19,7 @@ jobs:
         os: [ubuntu-latest]
         nox-session: ["tests"]
         include:
-          - os: macos-12
+          - os: macos-13
             python-version: "3.11"
             nox-session: "tests"
           - os: macos-14
@@ -45,9 +45,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc g++ gfortran
         if: ${{ runner.os == 'Linux' }}
-      - name: Set up macOS-12
+      - name: Set up macOS-13
         run: brew unlink gfortran && brew link --overwrite gfortran
-        if: ${{ matrix.os == 'macos-12' }}
+        if: ${{ matrix.os == 'macos-13' }}
       - name: Set up macOS-14
         run: echo "FC=gfortran-13" >> "$GITHUB_ENV"
         if: ${{ matrix.os == 'macos-14' }}

@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   tests:
-    name: "py${{ matrix.python-version }} / ${{ matrix.os }} / ${{ matrix.nox-session }}"
+    name: "py${{ matrix.python-version }} / ${{ matrix.os }}${{ matrix.with-options && ' / options' || '' }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

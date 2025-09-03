@@ -27,7 +27,7 @@ jobs:
             with-options: true
     steps:
       - name: Clone the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive

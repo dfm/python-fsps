@@ -39,7 +39,7 @@ jobs:
       - uses: pypa/cibuildwheel@v3.2.0
         env:
           MACOSX_DEPLOYMENT_TARGET: "15.0"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: binary-${{ matrix.os }}
           path: ./wheelhouse/*.whl
@@ -58,7 +58,7 @@ jobs:
         run: uv build --sdist
       - name: Check the sdist
         run: uv run --with twine twine check dist/*.tar.gz
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: sdist
           path: dist/*.tar.gz

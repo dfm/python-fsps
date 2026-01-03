@@ -149,7 +149,7 @@ def test_tabular(pop_and_params):
     assert not np.allclose(spec / spec_lowz - 1.0, 0.0)
 
     # test the formed mass for single age
-    assert np.allclose(np.trapz(sfr, age) * 1e9, pop.formed_mass)
+    assert np.allclose(np.trapezoid(sfr, age) * 1e9, pop.formed_mass)
 
     # Multi-metallicity
     pop._zcontinuous = 3

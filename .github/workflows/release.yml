@@ -36,7 +36,7 @@ jobs:
       - name: Set up macOS
         run: echo "FC=gfortran-13" >> "$GITHUB_ENV"
         if: ${{ matrix.os == 'macos-latest' }}
-      - uses: pypa/cibuildwheel@v3.3.0
+      - uses: pypa/cibuildwheel@v3.3.1
         env:
           MACOSX_DEPLOYMENT_TARGET: "15.0"
       - uses: actions/upload-artifact@v6

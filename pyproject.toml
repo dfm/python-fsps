@@ -29,8 +29,8 @@ requires = ["scikit-build-core", "numpy"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
-ninja.minimum-version = "1.10"
-cmake.minimum-version = "3.17.2"
+ninja.version = ">=1.10"
+cmake.version = ">=3.17.2"
 sdist.exclude = ["src/fsps/libfsps"]
 sdist.include = [
     "src/fsps/libfsps/src/*.f90",

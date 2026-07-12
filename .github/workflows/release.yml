@@ -27,7 +27,7 @@ jobs:
       matrix:
         os:
           - "ubuntu-latest"
-          - "macos-latest"
+          - "macos-14"
     steps:
       - uses: actions/checkout@v6
         with:
@@ -35,10 +35,10 @@ jobs:
           fetch-depth: 0
       - name: Set up macOS
         run: echo "FC=gfortran-13" >> "$GITHUB_ENV"
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos-14' }}
       - uses: pypa/cibuildwheel@v3.4.0
         env:
-          MACOSX_DEPLOYMENT_TARGET: "15.0"
+          MACOSX_DEPLOYMENT_TARGET: "14.0"
       - uses: actions/upload-artifact@v7
         with:
           name: binary-${{ matrix.os }}

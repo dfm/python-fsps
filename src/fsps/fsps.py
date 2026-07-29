@@ -249,6 +249,10 @@ class StellarPopulation(object):
         Turn on/off the WR spectral library.  If off (0), will use the main
         default library instead
 
+    :param use_lw_tpagb: (default: 0)
+        Turn on/off the use of the Lancon & Wood (2002) O-type TP-AGB library.
+        If off (0), will use the main default library instead.
+
     :param logt_wmb_hot: (default: 0.0)
         Use the Eldridge (2017) WMBasic hot star library above this value of
         :math:`\log T_\mathrm{eff}` or 25,000K, whichever is larger.
@@ -500,6 +504,7 @@ class StellarPopulation(object):
             mdave=0.5,
             evtype=-1,
             use_wr_spectra=1,
+            use_lw_tpagb=0,
             logt_wmb_hot=0.0,
             add_xrb_emission=0,
             masscut=150.0,
@@ -1312,6 +1317,7 @@ class ParameterSet(object):
         "fcstar",
         "evtype",
         "use_wr_spectra",
+        "use_lw_tpagb",
         "logt_wmb_hot",
         "add_xrb_emission",
         "frac_xrb",

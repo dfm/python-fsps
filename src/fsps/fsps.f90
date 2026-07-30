@@ -22,17 +22,19 @@ module driver
 
 contains
 
-  subroutine setup(compute_vega_mags0, vactoair_flag0)
+  subroutine setup(compute_vega_mags0, vactoair_flag0, cloudy_dust0)
 
     ! Load all the data files/templates into memory.
 
     implicit none
 
-    integer, intent(in) :: compute_vega_mags0, vactoair_flag0
+    integer, intent(in) :: compute_vega_mags0, vactoair_flag0, cloudy_dust0
 
 
     compute_vega_mags = compute_vega_mags0
     vactoair_flag = vactoair_flag0
+    cloudy_dust = cloudy_dust0
+
     call sps_setup(-1)
     is_setup = 1
 
@@ -97,7 +99,7 @@ contains
   subroutine set_csp_params(smooth_velocity0,redshift_colors0,&
                             compute_light_ages0,nebemlineinspec0,&
                             dust_type0,add_dust_emission0,add_neb_emission0,&
-                            add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
+                            add_neb_continuum0,add_igm_absorption0,&
                             zmet,afeindx,sfh,wgp1,wgp2,wgp3,&
                             tau,const,tage,fburst,tburst,&
                             dust1,dust2,dust3,&
@@ -115,7 +117,7 @@ contains
     integer, intent(in) :: smooth_velocity0,redshift_colors0,&
                            compute_light_ages0,nebemlineinspec0,&
                            dust_type0,add_dust_emission0,add_neb_emission0,&
-                           add_neb_continuum0,cloudy_dust0,add_igm_absorption0,&
+                           add_neb_continuum0,add_igm_absorption0,&
                            zmet,afeindx,sfh,wgp1,wgp2,wgp3
     double precision, intent(in) :: tau,&
                             const,tage,fburst,tburst,dust1,dust2,dust3,&
@@ -134,7 +136,6 @@ contains
     add_dust_emission=add_dust_emission0
     add_neb_emission=add_neb_emission0
     add_neb_continuum=add_neb_continuum0
-    cloudy_dust=cloudy_dust0
     add_igm_absorption=add_igm_absorption0
 
     pset%zmet=zmet
@@ -459,12 +460,13 @@ contains
 
   end subroutine
 
-  subroutine get_setup_vars(cvms, vta_flag)
+  subroutine get_setup_vars(cvms, vta_flag, cd_flag)
 
     implicit none
-    integer, intent(out) :: cvms, vta_flag
+    integer, intent(out) :: cvms, vta_flag, cd_flag
     cvms = compute_vega_mags
     vta_flag = vactoair_flag
+    cd_flag = cloudy_dust
 
   end subroutine
 

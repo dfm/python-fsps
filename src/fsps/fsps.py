@@ -37,6 +37,10 @@ class StellarPopulation(object):
         If ``True``, output wavelengths in air (rather than vac). Can only be
         changed during initialization.
 
+    :param cloudy_dust: (default: False)
+        Switch to include dust in the Cloudy tables. Can only be changed during
+        initialization. 
+
     :param zcontinuous: (default: 0)
         Flag specifying how interpolation in metallicity of the simple stellar
         populations (SSPs) is performed before computing composite stellar
@@ -109,9 +113,6 @@ class StellarPopulation(object):
         Switch to apply smoothing of the SSPs by a wavelength dependent line
         spread function. See the ``set_lsf()`` method for details.  Only takes
         effect if ``smooth_velocity`` is True.
-
-    :param cloudy_dust: (default: False)
-        Switch to include dust in the Cloudy tables.
 
     :param agb_dust: (default: 1.0)
         Scales the circumstellar AGB dust emission.
@@ -461,7 +462,11 @@ class StellarPopulation(object):
     """
 
     def __init__(
-        self, compute_vega_mags=False, vactoair_flag=False, zcontinuous=0, **kwargs
+        self, compute_vega_mags=False,
+        vactoair_flag=False,
+        zcontinuous=0,
+        cloudy_dust=False,
+        **kwargs
     ):
         # Set up the parameters to their default values.
         self.params = ParameterSet(
@@ -476,7 +481,6 @@ class StellarPopulation(object):
             nebemlineinspec=True,
             smooth_velocity=True,
             smooth_lsf=False,
-            cloudy_dust=False,
             agb_dust=1.0,
             tpagb_norm_type=2,
             dell=0.0,
@@ -559,11 +563,12 @@ class StellarPopulation(object):
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
         if not driver.is_setup:
-            driver.setup(compute_vega_mags, vactoair_flag)
+            driver.setup(compute_vega_mags, vactoair_flag, cloudy_dust)
         else:
-            cvms, vtaflag = driver.get_setup_vars()
+            cvms, vtaflag, cd_flag = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
             assert vactoair_flag == bool(vtaflag)
+            assert cloudy_dust == bool(cd_flag)
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
@@ -1333,7 +1338,6 @@ class ParameterSet(object):
         "add_dust_emission",
         "add_neb_emission",
         "add_neb_continuum",
-        "cloudy_dust",
         "add_igm_absorption",
         "zmet",
         "afeindx",

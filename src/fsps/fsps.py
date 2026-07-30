@@ -124,23 +124,23 @@ class StellarPopulation(object):
         * 2: Villaume, Conroy, Johnson 2015 normalization
 
     :param dell: (default: 0.0)
-        Shift in :math:`\log L_\mathrm{bol}` of the TP-AGB isochrones. Note
-        that the meaning of this parameter and the one below has changed to
-        reflect the updated calibrations presented in Conroy & Gunn (2009).
-        That is, these parameters now refer to a modification about the
-        calibrations presented in that paper.  Only has effect if
-        ``tpagb_norm_type=1``.
+        Shift in :math:`\log L_\mathrm{bol}` of the TP-AGB isochrones for Padova
+        models. Note that the meaning of this parameter and the one below
+        has changed to reflect the updated calibrations presented in Conroy &
+        Gunn (2009). That is, these parameters now refer to a modification about
+        the calibrations presented in that paper.  Only has effect if
+        ``tpagb_norm_type=1`` and the PDVA isochrones are used.
 
     :param delt: (default: 0.0)
-        Shift in :math:`\log T_\mathrm{eff}` of the TP-AGB isochrones.  Only
-        has effect if ``tpagb_norm_type=1``.
+        Shift in :math:`\log T_\mathrm{eff}` of the TP-AGB isochrones for Padova
+        models.  Only has effect if ``tpagb_norm_type=1`` and the PDVA
+        isochrones are used.
 
     :param redgb: (default: 1.0)
-        Modify weight given to RGB.  Only available with BaSTI isochrone set.
+        Modify weight given to RGB.  Does not have effect for the Padova isochrones.
 
     :param agb: (default: 1.0)
-        Modify weight given to TP-AGB.  This only has effect for FSPS v3.1 or
-        higher.
+        Modify weight given to TP-AGB (for all isochrones with a TP-AGB phase).
 
     :param fcstar: (default: 1.0)
         Fraction of stars that the Padova isochrones identify as Carbon stars

@@ -52,8 +52,9 @@ in more detail in the FSPS documentation, but their names are:
 
 * Stellar spectral libraries
 
-   - `MILES` (default)
-   - `BASEL`
+   - `C3K_LR`  (default)
+   - `MILES`
+   - `C3K_HR`
 
 * Dust emission libraries
 
@@ -63,12 +64,12 @@ in more detail in the FSPS documentation, but their names are:
 Changing any of these libraries requires switching off the relevant default,
 which for isochrones is `MIST` and for spectra is `MILES`, and switching on the
 desired library. As an example, you can change to Padova isochrones and the
-BaSeL low resolution synthetic stellar library by re-installing:
+MILES empirical stellar library by re-installing:
 
 .. code-block:: bash
 
     pip uninstall fsps
-    FFLAGS="-DMIST=0 -DPADOVA=1 -DMILES=0 -DBASEL=1" python -m pip install fsps --no-binary fsps
+    FFLAGS="-DMIST=0 -DPADOVA=1 -DC3K_LR=0 -DMILES=1" python -m pip install fsps --no-binary fsps
 
 where the `--no-binary fsps` flag is required to force building from source.
 

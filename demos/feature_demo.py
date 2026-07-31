@@ -43,6 +43,7 @@ def get_githash(dir):
     Get the current git hash for a repo
     """
     import subprocess
+
     cmd = ["git", "rev-parse", "HEAD"]
     hash = subprocess.check_output(cmd, cwd=dir).decode("utf-8").strip()
     return hash
@@ -58,7 +59,6 @@ if __name__ == "__main__":
     pl.rcParams["grid.alpha"] = 0.5
     pl.rcParams["xtick.direction"] = "in"
     pl.rcParams["ytick.direction"] = "in"
-
 
     pyfsps_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     fsps_hash = get_githash(os.environ["SPS_HOME"])
@@ -83,7 +83,9 @@ if __name__ == "__main__":
     sps.params["imf_type"] = 2  # kroupa
     sps.params["imf3"] = 2.3
     fig, ax, spec = makefig(sps)
-    fig, ax = prettify(fig, ax, label=r"$\tau=5$, Age$=13.7$,"+"\n" + r"$\log Z/Z_\odot=0.0$")
+    fig, ax = prettify(
+        fig, ax, label=r"$\tau=5$, Age$=13.7$," + "\n" + r"$\log Z/Z_\odot=0.0$"
+    )
     pdf.savefig(fig)
     pl.close(fig)
 

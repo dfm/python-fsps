@@ -1,4 +1,4 @@
-# We want to run a few basic tests.  These should check that 
+# We want to run a few basic tests.  These should check that
 #   x1. The code is importable
 #   x2. The SP object instantiates and the libraries attrbute is correct
 #   x3. The returned spectrum has the right shape
@@ -15,18 +15,26 @@ import numpy as np
 from astropy.table import Table
 from sedpy.observate import load_filters, getSED
 
-
-filternames = ['bessell_U', 'bessell_B', 'bessell_V', 'bessell_R', 'twomass_J', 'twomass_Ks']
-filternames += ['sdss_u0', 'sdss_g0', 'sdss_r0', 'sdss_i0', 'sdss_z0']
+filternames = [
+    "bessell_U",
+    "bessell_B",
+    "bessell_V",
+    "bessell_R",
+    "twomass_J",
+    "twomass_Ks",
+]
+filternames += ["sdss_u0", "sdss_g0", "sdss_r0", "sdss_i0", "sdss_z0"]
 
 FILTERS = load_filters(filternames)
-#FILTERS = load_filters(['sdss_u0', 'sdss_g0', 'sdss_r0', 'sdss_i0', 'sdss_z0'])
+# FILTERS = load_filters(['sdss_u0', 'sdss_g0', 'sdss_r0', 'sdss_i0', 'sdss_z0'])
+
 
 def get_githash(dir):
     """
     Get the current git hash for a repo
     """
     import subprocess
+
     cmd = ["git", "rev-parse", "HEAD"]
     hash = subprocess.check_output(cmd, cwd=dir).decode("utf-8").strip()
     return hash
@@ -35,6 +43,7 @@ def get_githash(dir):
 def test_import_and_instantiate(zcontinuous=1):
     import fsps
     from fsps import StellarPopulation
+
     sp = StellarPopulation(zcontinuous=zcontinuous)
     print(sp.libraries)
     assert "afeindx" in sp.params.csp_params
@@ -60,8 +69,11 @@ def test_spectrum_shape(sp):
     assert spec.shape == (len(wave),)
     assert not np.all(spec == 0)
     wave, spec = sp.get_spectrum(peraa=True)
-    assert spec.shape == (len(sp.ssp_ages), len(wave),)
-    assert spec.shape[0]  > 1
+    assert spec.shape == (
+        len(sp.ssp_ages),
+        len(wave),
+    )
+    assert spec.shape[0] > 1
     return None
 
 
@@ -69,8 +81,7 @@ def test_attributes(sp, sfh=3):
 
     sp.params["sfh"] = sfh
     if sfh == 3:
-        sp.set_tabular_sfh(np.linspace(0, 10, 10),
-                            np.random.uniform(0, 1, 10))
+        sp.set_tabular_sfh(np.linspace(0, 10, 10), np.random.uniform(0, 1, 10))
     wave, spec = sp.get_spectrum(tage=1.0, peraa=True)
     young, old = sp._csp_young_old
     assert young.shape == old.shape
@@ -105,7 +116,7 @@ def test_attributes(sp, sfh=3):
     assert mstar > 0
     assert mform > 0
     assert lbol > -33
-    assert mstar/mform < 1
+    assert mstar / mform < 1
 
     ewave = sp.emline_wavelengths
     elum = sp.emline_luminosity
@@ -143,16 +154,16 @@ def test_neb(sp, tage=0.003, gas_logz=-0.5, gas_logu=-2.0):
 
 
 def color_evol(sp, afe=0, plot=False, filterlist=FILTERS):
-    fn = (1, 2) # B-V
+    fn = (1, 2)  # B-V
     sp.params["sfh"] = 0
     sp.params["afe"] = afe
     ssp_ages = sp.ssp_ages.copy() + 0.02
     mags = np.zeros((len(ssp_ages), len(filterlist)))
     for it, log_age in enumerate(ssp_ages):
-        age = 10**(log_age-9)
+        age = 10 ** (log_age - 9)
         wave, spec = sp.get_spectrum(tage=age, peraa=True)
         mags[it] = getSED(wave, spec, filterlist=filterlist, linear_flux=False)
-        #print(f"Age: {age:.2f} Gyr, AFE: {afe}, mags: {mags}")
+        # print(f"Age: {age:.2f} Gyr, AFE: {afe}, mags: {mags}")
 
     # make an astropy table of the mangitudes and ages
     colnames = [f"{filt.name}" for filt in filterlist]
@@ -161,6 +172,7 @@ def color_evol(sp, afe=0, plot=False, filterlist=FILTERS):
 
     if plot:
         import matplotlib.pyplot as pl
+
         fig, ax = pl.subplots()
         ax.plot(ssp_ages, mags[:, fn[0]] - mags[:, fn[1]], "-o")
         ax.set_xlabel("SSP Age (log yr)")
@@ -174,16 +186,26 @@ def color_evol(sp, afe=0, plot=False, filterlist=FILTERS):
 
 def get_parser():
     parser = argparse.ArgumentParser(description="Run pyFSPS AFE tests")
-    parser.add_argument("--outdir", type=str, default="./lib_tests",
-                        help="Output directory for test results")
-    parser.add_argument("--show_hashes", action="store_true",
-                        help="Only show git hashes for FSPS and pyFSPS")
-    parser.add_argument("--logzsol", type=float, default=0.0,
-                        help="Metallicity for the tests")
-    parser.add_argument("--plot", type=int, default=1,
-                        help="Plot the color evolution (1) or not (0)")
-    parser.add_argument("--write", type=int, default=1,
-                        help="Write the results to disk (1) or not (0)")
+    parser.add_argument(
+        "--outdir",
+        type=str,
+        default="./lib_tests",
+        help="Output directory for test results",
+    )
+    parser.add_argument(
+        "--show_hashes",
+        action="store_true",
+        help="Only show git hashes for FSPS and pyFSPS",
+    )
+    parser.add_argument(
+        "--logzsol", type=float, default=0.0, help="Metallicity for the tests"
+    )
+    parser.add_argument(
+        "--plot", type=int, default=1, help="Plot the color evolution (1) or not (0)"
+    )
+    parser.add_argument(
+        "--write", type=int, default=1, help="Write the results to disk (1) or not (0)"
+    )
     return parser
 
 
@@ -228,7 +250,9 @@ if __name__ == "__main__":
     table, fig = color_evol(sp, afe=0, plot=True)
 
     if args.write:
-        table.write(f"{outdir}/{hashtag}/color_evol_{tag}.csv", format="csv", overwrite=True)
+        table.write(
+            f"{outdir}/{hashtag}/color_evol_{tag}.csv", format="csv", overwrite=True
+        )
     if args.plot:
         fig.axes[0].grid(True)
         fig.axes[0].set_title(f"{tag}")
@@ -237,11 +261,21 @@ if __name__ == "__main__":
         # just run one alpha_enhancement
         t3, fig3 = color_evol(sp, afe=0.3, plot=args.plot)
         if args.write:
-            t3.write(f"{outdir}/{hashtag}/color_evol_{tag}_afe0.3.csv", format="csv", overwrite=True)
+            t3.write(
+                f"{outdir}/{hashtag}/color_evol_{tag}_afe0.3.csv",
+                format="csv",
+                overwrite=True,
+            )
         if args.plot:
             fig3.axes[0].set_title(f"{tag}, afe=0.3")
             fig3.axes[0].grid(True)
-            fig3.axes[0].plot(table["log_age"], table["bessell_B"] - table["bessell_V"], "-o", alpha=0.5, label="[a/Fe]=0.0")
+            fig3.axes[0].plot(
+                table["log_age"],
+                table["bessell_B"] - table["bessell_V"],
+                "-o",
+                alpha=0.5,
+                label="[a/Fe]=0.0",
+            )
             fig3.axes[0].legend()
             fig3.savefig(f"{outdir}/{hashtag}/color_evol_{tag}_afe0.3.png", dpi=300)
     _reset_default_params(sp, defaults, zcontinuous=1)
@@ -253,7 +287,9 @@ if __name__ == "__main__":
     wave, spec = sp.get_spectrum(tage=1, peraa=True)
     tbl = Table(data=np.column_stack((wave, spec)), names=["wave", "spec"])
     if args.write:
-        tbl.write(f"{outdir}/{hashtag}/spectrum_{tag}_const.csv", format="csv", overwrite=True)
+        tbl.write(
+            f"{outdir}/{hashtag}/spectrum_{tag}_const.csv", format="csv", overwrite=True
+        )
     _reset_default_params(sp, defaults, zcontinuous=1)
 
     sp.params["logzsol"] = args.logzsol
@@ -263,7 +299,11 @@ if __name__ == "__main__":
     wave, spec = sp.get_spectrum(tage=1, peraa=True)
     tbl = Table(data=np.column_stack((wave, spec)), names=["wave", "spec"])
     if args.write:
-        tbl.write(f"{outdir}/{hashtag}/spectrum_{tag}_constneb.csv", format="csv", overwrite=True)
+        tbl.write(
+            f"{outdir}/{hashtag}/spectrum_{tag}_constneb.csv",
+            format="csv",
+            overwrite=True,
+        )
     _reset_default_params(sp, defaults, zcontinuous=1)
 
     sp.params["logzsol"] = args.logzsol
@@ -273,6 +313,7 @@ if __name__ == "__main__":
     wave, spec = sp.get_spectrum(tage=1, peraa=True)
     tbl = Table(data=np.column_stack((wave, spec)), names=["wave", "spec"])
     if args.write:
-        tbl.write(f"{outdir}/{hashtag}/spectrum_{tag}_tau1.csv", format="csv", overwrite=True)
+        tbl.write(
+            f"{outdir}/{hashtag}/spectrum_{tag}_tau1.csv", format="csv", overwrite=True
+        )
     _reset_default_params(sp, defaults, zcontinuous=1)
-

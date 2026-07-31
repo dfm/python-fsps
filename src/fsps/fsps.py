@@ -39,7 +39,7 @@ class StellarPopulation(object):
 
     :param cloudy_dust: (default: False)
         Switch to include dust in the Cloudy tables. Can only be changed during
-        initialization. 
+        initialization.
 
     :param zcontinuous: (default: 0)
         Flag specifying how interpolation in metallicity of the simple stellar
@@ -462,11 +462,12 @@ class StellarPopulation(object):
     """
 
     def __init__(
-        self, compute_vega_mags=False,
+        self,
+        compute_vega_mags=False,
         vactoair_flag=False,
         zcontinuous=0,
         cloudy_dust=False,
-        **kwargs
+        **kwargs,
     ):
         # Set up the parameters to their default values.
         self.params = ParameterSet(

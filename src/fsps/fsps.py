@@ -793,7 +793,7 @@ class StellarPopulation(object):
             The bolometric luminosity of the SSPs, having shape (ntfull, nz [, nafe]).
         """
 
-        #raise NotImplementedError("Bindings disabled for afe")
+        # raise NotImplementedError("Bindings disabled for afe")
 
         if (self.params.dirtiness == 2) and update:
             self._update_params()

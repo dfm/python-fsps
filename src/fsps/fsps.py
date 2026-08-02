@@ -772,6 +772,7 @@ class StellarPopulation(object):
     def _all_ssp_spec(self, update=True, peraa=False):
         r"""
         Return the contents of the ssp_spec_zz array.
+        If N_AFE=1, this last dimension is squeezed out.
 
         :param update: (default: True)
             If True, forces an update of the SSPs if the ssp parameters have
@@ -783,16 +784,16 @@ class StellarPopulation(object):
             :math:`L_\odot/\mathrm{Hz}`
 
         :returns spec:
-            The spectra of the SSPs, having shape (nspec, ntfull, nz).
+            The spectra of the SSPs, having shape (nspec, ntfull, nz [, nafe]).
 
         :returns mass:
-            The mass of the SSPs, having shape (ntfull, nz).
+            The mass of the SSPs, having shape (ntfull, nz [, nafe]).
 
         :returns lbol:
-            The bolometric luminosity of the SSPs, having shape (ntfull, nz).
+            The bolometric luminosity of the SSPs, having shape (ntfull, nz [, nafe]).
         """
 
-        raise NotImplementedError("Bindings disabled for afe")
+        #raise NotImplementedError("Bindings disabled for afe")
 
         if (self.params.dirtiness == 2) and update:
             self._update_params()
@@ -800,15 +801,21 @@ class StellarPopulation(object):
         NSPEC = driver.get_nspec()
         NTFULL = driver.get_ntfull()
         NZ = driver.get_nz()
-        spec = np.zeros([NSPEC, NTFULL, NZ], order="F")
-        mass = np.zeros([NTFULL, NZ], order="F")
-        lbol = np.zeros([NTFULL, NZ], order="F")
+        NAFE = driver.get_nafe()
+        spec = np.zeros([NSPEC, NTFULL, NZ, NAFE], order="F")
+        mass = np.zeros([NTFULL, NZ, NAFE], order="F")
+        lbol = np.zeros([NTFULL, NZ, NAFE], order="F")
         driver.get_ssp_spec(spec, mass, lbol)
 
         if peraa:
             wavegrid = self.wavelengths
             factor = 3e18 / wavegrid**2
-            spec *= factor[:, None, None]
+            spec *= factor[:, None, None, None]
+
+        if NAFE == 1:
+            spec = spec[:, :, :, 0]
+            mass = mass[:, :, 0]
+            lbol = lbol[:, :, 0]
 
         return spec, mass, lbol
 

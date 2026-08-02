@@ -410,27 +410,30 @@ contains
 
   end subroutine
 
-  !  subroutine get_ssp_spec(ns,n_age,n_z,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
+  subroutine get_ssp_spec(ns,n_age,n_z,n_afe,ssp_spec_out,ssp_mass_out,ssp_lbol_out)
 
     ! Return the contents of the ssp spectral array,
     ! regenerating the ssps if necessary
 
-!    implicit none
-!    integer, intent(in) :: ns,n_age,n_z
-!    integer :: zi
-!    double precision, dimension(ns,n_age,n_z), intent(inout) :: ssp_spec_out
-!    double precision, dimension(n_age,n_z), intent(inout) :: ssp_mass_out, ssp_lbol_out
-!    do zi=1,nz
-!       if (has_ssp(zi) .eq. 0) then
-!          call ssp(zi)
-!       endif
-!    enddo
+   implicit none
+   integer, intent(in) :: ns,n_age,n_z,n_afe
+   integer :: zi, ai
+   double precision, dimension(ns,n_age,n_z,n_afe), intent(inout) :: ssp_spec_out
+   double precision, dimension(n_age,n_z,n_afe), intent(inout) :: ssp_mass_out, ssp_lbol_out
 
-!    ssp_spec_out = spec_ssp_zz
-!    ssp_mass_out = mass_ssp_zz
-!    ssp_lbol_out = lbol_ssp_zz
-!
-!  end subroutine
+   do zi=1,nz
+      do ai=1,nafe
+        if (has_ssp(zi, ai) .eq. 0) then
+            call ssp(zi, ai)
+        endif
+      enddo
+   enddo
+
+   ssp_spec_out = spec_ssp_zz
+   ssp_mass_out = mass_ssp_zz
+   ssp_lbol_out = lbol_ssp_zz
+
+ end subroutine
 
   subroutine set_sfh_tab(ntab, age, sfr, met)
 

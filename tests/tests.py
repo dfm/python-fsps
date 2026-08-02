@@ -383,8 +383,8 @@ def test_smoothspec(pop_and_params):
     assert (spec - spec2 == 0.0).sum() > 0
 
 
-# @skip_slow_tests
-@pytest.mark.skip(reason="_all_ssp_spec is currently disabled for FSPS>=4.0 (afe)")
+@skip_slow_tests
+# @pytest.mark.skip(reason="_all_ssp_spec is currently disabled for FSPS>=4.0 (afe)")
 def test_ssp_weights(pop_and_params):
     """Check that weights dotted into ssp is the same as the returned spectrum
     when there's no dust or emission lines and zcontinuous=0.
@@ -396,6 +396,7 @@ def test_ssp_weights(pop_and_params):
 
     import os
 
+    assert pop.n_afe == 1, "This test only works for N_AFE=1"
     fn = os.path.join(os.environ["SPS_HOME"], "data/sfh.dat")
     age, sfr, z = np.genfromtxt(fn, unpack=True, skip_header=0)
     pop.params["sfh"] = 3

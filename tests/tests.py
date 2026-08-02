@@ -337,8 +337,8 @@ def test_mformed(pop_and_params):
     w, s = pop.get_spectrum(tage=0)
     nssp = len(pop.ssp_ages)
     assert pop.formed_mass[-1] == 1
-    assert pop.formed_mass[nssp//2] < 1.0
-    assert pop.formed_mass[nssp//2] > 0.0
+    assert pop.formed_mass[nssp // 2] < 1.0
+    assert pop.formed_mass[nssp // 2] > 0.0
     w, s = pop.get_spectrum(tage=0)
     assert pop.formed_mass[-1] == 1.0
 
@@ -383,7 +383,7 @@ def test_smoothspec(pop_and_params):
     assert (spec - spec2 == 0.0).sum() > 0
 
 
-#@skip_slow_tests
+# @skip_slow_tests
 @pytest.mark.skip(reason="_all_ssp_spec is currently disabled for FSPS>=4.0 (afe)")
 def test_ssp_weights(pop_and_params):
     """Check that weights dotted into ssp is the same as the returned spectrum

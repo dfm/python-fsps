@@ -724,7 +724,7 @@ class StellarPopulation(object):
         else:
             return mags
 
-    def _ztinterp(self, zpos, tpos, peraa=False):
+    def _ztinterp(self, zpos, apos, tpos, peraa=False):
         r"""
         Return an SSP spectrum, mass, and luminosity interpolated to a target
         metallicity and age.  This effectively wraps the ZTINTERP subroutine.

@@ -37,6 +37,10 @@ class StellarPopulation(object):
         If ``True``, output wavelengths in air (rather than vac). Can only be
         changed during initialization.
 
+    :param cloudy_dust: (default: False)
+        Switch to include dust in the Cloudy tables. Can only be changed during
+        initialization.
+
     :param zcontinuous: (default: 0)
         Flag specifying how interpolation in metallicity of the simple stellar
         populations (SSPs) is performed before computing composite stellar
@@ -110,9 +114,6 @@ class StellarPopulation(object):
         spread function. See the ``set_lsf()`` method for details.  Only takes
         effect if ``smooth_velocity`` is True.
 
-    :param cloudy_dust: (default: False)
-        Switch to include dust in the Cloudy tables.
-
     :param agb_dust: (default: 1.0)
         Scales the circumstellar AGB dust emission.
 
@@ -124,23 +125,23 @@ class StellarPopulation(object):
         * 2: Villaume, Conroy, Johnson 2015 normalization
 
     :param dell: (default: 0.0)
-        Shift in :math:`\log L_\mathrm{bol}` of the TP-AGB isochrones. Note
-        that the meaning of this parameter and the one below has changed to
-        reflect the updated calibrations presented in Conroy & Gunn (2009).
-        That is, these parameters now refer to a modification about the
-        calibrations presented in that paper.  Only has effect if
-        ``tpagb_norm_type=1``.
+        Shift in :math:`\log L_\mathrm{bol}` of the TP-AGB isochrones for Padova
+        models. Note that the meaning of this parameter and the one below
+        has changed to reflect the updated calibrations presented in Conroy &
+        Gunn (2009). That is, these parameters now refer to a modification about
+        the calibrations presented in that paper.  Only has effect if
+        ``tpagb_norm_type=1`` and the PDVA isochrones are used.
 
     :param delt: (default: 0.0)
-        Shift in :math:`\log T_\mathrm{eff}` of the TP-AGB isochrones.  Only
-        has effect if ``tpagb_norm_type=1``.
+        Shift in :math:`\log T_\mathrm{eff}` of the TP-AGB isochrones for Padova
+        models.  Only has effect if ``tpagb_norm_type=1`` and the PDVA
+        isochrones are used.
 
     :param redgb: (default: 1.0)
-        Modify weight given to RGB.  Only available with BaSTI isochrone set.
+        Modify weight given to RGB.  Does not have effect for the Padova isochrones.
 
     :param agb: (default: 1.0)
-        Modify weight given to TP-AGB.  This only has effect for FSPS v3.1 or
-        higher.
+        Modify weight given to TP-AGB (for all isochrones with a TP-AGB phase).
 
     :param fcstar: (default: 1.0)
         Fraction of stars that the Padova isochrones identify as Carbon stars
@@ -179,13 +180,24 @@ class StellarPopulation(object):
         (Z/Z_\odot)`.  Only used if ``zcontinuous > 0``.
 
     :param pmetals: (default: 2.0)
-       The power for the metallicty distribution function.  The MDF is given by
-       :math:`(Z \, e^{-Z})^{\mathrm{pmetals}}` where :math:`Z =
-       z/(z_\odot \, 10^{\mathrm{logzsol}})` and z is the metallicity in
-       linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative value
-       will result in smoothing of the SSPs by a three-point triangular kernel
-       before linear interpolation (in :math:`\log Z`) to the requested
-       metallicity. Only used if ``zcontinuous = 2``.
+        The power for the metallicty distribution function.  The MDF is given by
+        :math:`(Z \, e^{-Z})^{\mathrm{pmetals}}` where :math:`Z =
+        z/(z_\odot \, 10^{\mathrm{logzsol}})` and z is the metallicity in
+        linear units (i.e., :math:`z_\odot = 0.019`).  Using a negative value
+        will result in smoothing of the SSPs by a three-point triangular kernel
+        before linear interpolation (in :math:`\log Z`) to the requested
+        metallicity. Only used if ``zcontinuous = 2``.
+
+    :param afeindx: (default: 1)
+        The alpha enhancement specified as integer ranging from 1 to nafe. If
+        ``zcontinuous > 0`` then this parameter is ignored. Only takes effect if
+        (python-)FSPS was compiled with AFE_FLAG=1 and uses the MIST isochrones
+        and C3K spectra.
+
+    :param afe: (default: 0.0)
+        The value of [alpha/Fe] for the spectra and isochrones.  Only takes
+        effect if (python-)FSPS was compiled with AFE_FLAG=1 and uses the MIST
+        isochrones.  Generally should be -0.2 < afe < 0.6
 
     :param imf_type: (default: 2)
         Common variable defining the IMF type:
@@ -237,6 +249,10 @@ class StellarPopulation(object):
     :param use_wr_spectra: (default: 1)
         Turn on/off the WR spectral library.  If off (0), will use the main
         default library instead
+
+    :param use_lw_tpagb: (default: 0)
+        Turn on/off the use of the Lancon & Wood (2002) O-type TP-AGB library.
+        If off (0), will use the main default library instead.
 
     :param logt_wmb_hot: (default: 0.0)
         Use the Eldridge (2017) WMBasic hot star library above this value of
@@ -446,7 +462,12 @@ class StellarPopulation(object):
     """
 
     def __init__(
-        self, compute_vega_mags=False, vactoair_flag=False, zcontinuous=0, **kwargs
+        self,
+        compute_vega_mags=False,
+        vactoair_flag=False,
+        zcontinuous=0,
+        cloudy_dust=False,
+        **kwargs,
     ):
         # Set up the parameters to their default values.
         self.params = ParameterSet(
@@ -461,7 +482,6 @@ class StellarPopulation(object):
             nebemlineinspec=True,
             smooth_velocity=True,
             smooth_lsf=False,
-            cloudy_dust=False,
             agb_dust=1.0,
             tpagb_norm_type=2,
             dell=0.0,
@@ -477,6 +497,8 @@ class StellarPopulation(object):
             zmet=1,
             logzsol=0.0,
             pmetals=2.0,
+            afeindx=1,
+            afe=0.0,
             imf_type=2,
             imf_upper_limit=120,
             imf_lower_limit=0.08,
@@ -487,6 +509,7 @@ class StellarPopulation(object):
             mdave=0.5,
             evtype=-1,
             use_wr_spectra=1,
+            use_lw_tpagb=0,
             logt_wmb_hot=0.0,
             add_xrb_emission=0,
             masscut=150.0,
@@ -541,11 +564,12 @@ class StellarPopulation(object):
         # Before the first time we interact with the FSPS driver, we need to
         # run the ``setup`` method.
         if not driver.is_setup:
-            driver.setup(compute_vega_mags, vactoair_flag)
+            driver.setup(compute_vega_mags, vactoair_flag, cloudy_dust)
         else:
-            cvms, vtaflag = driver.get_setup_vars()
+            cvms, vtaflag, cd_flag = driver.get_setup_vars()
             assert compute_vega_mags == bool(cvms)
             assert vactoair_flag == bool(vtaflag)
+            assert cloudy_dust == bool(cd_flag)
         self._zcontinuous = zcontinuous
         # Caching.
         self._wavelengths = None
@@ -567,6 +591,7 @@ class StellarPopulation(object):
 
     def _compute_csp(self):
         self._update_params()
+        assert self._zcontinuous < 2, "Cannot use MDF with afe enhancement"
 
         NSPEC = driver.get_nspec()
         NTFULL = driver.get_ntfull()
@@ -699,7 +724,7 @@ class StellarPopulation(object):
         else:
             return mags
 
-    def _ztinterp(self, zpos, tpos, peraa=False):
+    def _ztinterp(self, zpos, apos, tpos, peraa=False):
         r"""
         Return an SSP spectrum, mass, and luminosity interpolated to a target
         metallicity and age.  This effectively wraps the ZTINTERP subroutine.
@@ -708,6 +733,9 @@ class StellarPopulation(object):
 
         :param zpos:
             The metallicity, in units of :math:`\log(Z/Z_\odot)`
+
+        :param apos:
+            The alpha-enhancement, in units of :math:`[\alpha/Fe]`
 
         :param tpos:
             The desired age, in Gyr.
@@ -725,13 +753,14 @@ class StellarPopulation(object):
         :returns lbol:
             The bolometric luminosity of the returned SSP.
         """
+        raise NotImplementedError("Bindings disabled for afe enhancement")
         if self.params.dirtiness == 2:
             self._update_params()
 
         NSPEC = driver.get_nspec()
         spec, mass, lbol = np.zeros(NSPEC), np.zeros(1), np.zeros(1)
         logt_yrs = np.log10(tpos * 1e9)
-        driver.interp_ssp(zpos, logt_yrs, spec, mass, lbol)
+        driver.interp_ssp(zpos, apos, logt_yrs, spec, mass, lbol)
 
         if peraa:
             wavegrid = self.wavelengths
@@ -743,6 +772,7 @@ class StellarPopulation(object):
     def _all_ssp_spec(self, update=True, peraa=False):
         r"""
         Return the contents of the ssp_spec_zz array.
+        If N_AFE=1, this last dimension is squeezed out.
 
         :param update: (default: True)
             If True, forces an update of the SSPs if the ssp parameters have
@@ -754,14 +784,16 @@ class StellarPopulation(object):
             :math:`L_\odot/\mathrm{Hz}`
 
         :returns spec:
-            The spectra of the SSPs, having shape (nspec, ntfull, nz).
+            The spectra of the SSPs, having shape (nspec, ntfull, nz [, nafe]).
 
         :returns mass:
-            The mass of the SSPs, having shape (ntfull, nz).
+            The mass of the SSPs, having shape (ntfull, nz [, nafe]).
 
         :returns lbol:
-            The bolometric luminosity of the SSPs, having shape (ntfull, nz).
+            The bolometric luminosity of the SSPs, having shape (ntfull, nz [, nafe]).
         """
+
+        # raise NotImplementedError("Bindings disabled for afe")
 
         if (self.params.dirtiness == 2) and update:
             self._update_params()
@@ -769,15 +801,21 @@ class StellarPopulation(object):
         NSPEC = driver.get_nspec()
         NTFULL = driver.get_ntfull()
         NZ = driver.get_nz()
-        spec = np.zeros([NSPEC, NTFULL, NZ], order="F")
-        mass = np.zeros([NTFULL, NZ], order="F")
-        lbol = np.zeros([NTFULL, NZ], order="F")
+        NAFE = driver.get_nafe()
+        spec = np.zeros([NSPEC, NTFULL, NZ, NAFE], order="F")
+        mass = np.zeros([NTFULL, NZ, NAFE], order="F")
+        lbol = np.zeros([NTFULL, NZ, NAFE], order="F")
         driver.get_ssp_spec(spec, mass, lbol)
 
         if peraa:
             wavegrid = self.wavelengths
             factor = 3e18 / wavegrid**2
-            spec *= factor[:, None, None]
+            spec *= factor[:, None, None, None]
+
+        if NAFE == 1:
+            spec = spec[:, :, :, 0]
+            mass = mass[:, :, 0]
+            lbol = lbol[:, :, 0]
 
         return spec, mass, lbol
 
@@ -1114,6 +1152,12 @@ class StellarPopulation(object):
         return self._solar_metallicity
 
     @property
+    def n_afe(self):
+        r"""The number of [a/Fe] gridpoints."""
+        nafe = driver.get_nafe()
+        return nafe
+
+    @property
     def ssp_ages(self):
         r"""The age grid of the SSPs, in log(years), used by FSPS."""
         if self._ssp_ages is None:
@@ -1286,6 +1330,7 @@ class ParameterSet(object):
         "fcstar",
         "evtype",
         "use_wr_spectra",
+        "use_lw_tpagb",
         "logt_wmb_hot",
         "add_xrb_emission",
         "frac_xrb",
@@ -1301,9 +1346,9 @@ class ParameterSet(object):
         "add_dust_emission",
         "add_neb_emission",
         "add_neb_continuum",
-        "cloudy_dust",
         "add_igm_absorption",
         "zmet",
+        "afeindx",
         "sfh",
         "wgp1",
         "wgp2",
@@ -1317,6 +1362,7 @@ class ParameterSet(object):
         "dust2",
         "dust3",
         "logzsol",
+        "afe",
         "zred",
         "pmetals",
         "dust_clumps",

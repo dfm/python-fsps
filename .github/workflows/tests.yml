@@ -56,5 +56,5 @@ jobs:
         run: uv run --extra test --python ${{ matrix.python-version }} tests/options.py
         env:
           SPS_HOME: ${{ github.workspace }}/src/fsps/libfsps
-          FFLAGS: "-DMIST=0 -DPADOVA=1 -DMILES=0 -DBASEL=1"
+          FFLAGS: "-DMIST=0 -DPADOVA=1 -DC3K_LR=0 -DMILES=1"
         if: ${{ matrix.with-options }}

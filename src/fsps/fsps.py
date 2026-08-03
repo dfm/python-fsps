@@ -46,20 +46,11 @@ class StellarPopulation(object):
         populations (SSPs) is performed before computing composite stellar
         population (CSP) models:
 
-        * 0: No interpolation, use the metallicity index specified by ``zmet``.
-        * 1: The SSPs are interpolated to the value of ``logzsol`` before the
-          spectra and magnitudes are computed, and the value of ``zmet`` is
-          ignored.
-        * 2: The SSPs are convolved with a metallicity distribution function
-          specified by the ``logzsol`` and ``pmetals`` parameters. The value of
-          ``zmet`` is ignored.
-        * 3: Use all available SSP metallicities when computing the composite
-          model, for use exclusively with tabular SFHs where the metallicity
-          evolution as function of age is given (see `set_tabular_sfh()`).  The
-          values of ``zmet`` and ``logzsol`` are ignored.  Furthermore
-          ``add_neb_emission`` must be set to False.
-
-        Can only be changed during initialization.
+        * 0: No interpolation, use the metallicity index specified by ``zmet``
+          (and ``afeindx``).
+        * 1: The SSPs are interpolated to the value of ``logzsol`` and ``afe``
+          before the spectra and magnitudes are computed, and the values of
+          ``zmet`` and ``afeindx`` are ignored.
 
     :param add_agb_dust_model: (default: True)
         Switch to turn on/off the AGB circumstellar dust model presented in
@@ -1409,17 +1400,22 @@ class ParameterSet(object):
         NZ = driver.get_nz()
         assert self._params["zmet"] in range(
             1, NZ + 1
-        ), "zmet={0} out of range [1, {1}]".format(self._params["zmet"], NZ)
+        ), f"zmet={self._params['zmet']} out of range [1, {NZ}]"
+        NAFE = driver.get_nafe()
+        assert self._params["afeindx"] in range(
+            1, NAFE + 1
+        ), f"afeindx={self._params['afeindx']} out of range [1, {NAFE}]"
         assert self._params["dust_type"] in range(
             7
-        ), "dust_type={0} out of range [0, 6]".format(self._params["dust_type"])
+        ), f"dust_type={self._params['dust_type']} out of range [0, 6]"
         assert self._params["imf_type"] in range(
             6
-        ), "imf_type={0} out of range [0, 5]".format(self._params["imf_type"])
+        ), f"imf_type={self._params['imf_type']} out of range [0, 5]"
         assert (self._params["tage"] <= 0) | (
             self._params["tage"] > self._params["sf_start"]
-        ), "sf_start={0} is greater than tage={1}".format(
-            self._params["sf_start"], self._params["tage"]
+        ), (
+            f"sf_start={self._params['sf_start']} is greater than "
+            f"tage={self._params['tage']}"
         )
         assert (
             self._params["const"] + self._params["fburst"]

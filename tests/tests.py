@@ -91,6 +91,18 @@ def test_param_checks(pop_and_params):
     pop.params["sf_start"] = 0.1
     w, s = pop.get_spectrum(tage=pop.params["tage"])
 
+    pop.params["zmet"] = 100
+    with pytest.raises(AssertionError):
+        w, s = pop.get_spectrum(tage=pop.params["tage"])
+    pop.params["zmet"] = 1
+    w, s = pop.get_spectrum(tage=pop.params["tage"])
+
+    pop.params["afeindx"] = pop.n_afe + 1
+    with pytest.raises(AssertionError):
+        w, s = pop.get_spectrum(tage=pop.params["tage"])
+    pop.params["afeindx"] = 1
+    w, s = pop.get_spectrum(tage=pop.params["tage"])
+
 
 def test_smooth_lsf(pop_and_params):
     # recomputes SSPs

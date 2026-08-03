@@ -1409,17 +1409,22 @@ class ParameterSet(object):
         NZ = driver.get_nz()
         assert self._params["zmet"] in range(
             1, NZ + 1
-        ), "zmet={0} out of range [1, {1}]".format(self._params["zmet"], NZ)
+        ), f"zmet={self._params['zmet']} out of range [1, {NZ}]"
+        NAFE = driver.get_nafe()
+        assert self._params["afeindx"] in range(
+            1, NAFE + 1
+        ), f"afeindx={self._params['afeindx']} out of range [1, {NAFE}]"
         assert self._params["dust_type"] in range(
             7
-        ), "dust_type={0} out of range [0, 6]".format(self._params["dust_type"])
+        ), f"dust_type={self._params['dust_type']} out of range [0, 6]"
         assert self._params["imf_type"] in range(
             6
-        ), "imf_type={0} out of range [0, 5]".format(self._params["imf_type"])
+        ), f"imf_type={self._params['imf_type']} out of range [0, 5]"
         assert (self._params["tage"] <= 0) | (
             self._params["tage"] > self._params["sf_start"]
-        ), "sf_start={0} is greater than tage={1}".format(
-            self._params["sf_start"], self._params["tage"]
+        ), (
+            f"sf_start={self._params['sf_start']} is greater than "
+            f"tage={self._params['tage']}"
         )
         assert (
             self._params["const"] + self._params["fburst"]

@@ -46,20 +46,11 @@ class StellarPopulation(object):
         populations (SSPs) is performed before computing composite stellar
         population (CSP) models:
 
-        * 0: No interpolation, use the metallicity index specified by ``zmet``.
-        * 1: The SSPs are interpolated to the value of ``logzsol`` before the
-          spectra and magnitudes are computed, and the value of ``zmet`` is
-          ignored.
-        * 2: The SSPs are convolved with a metallicity distribution function
-          specified by the ``logzsol`` and ``pmetals`` parameters. The value of
-          ``zmet`` is ignored.
-        * 3: Use all available SSP metallicities when computing the composite
-          model, for use exclusively with tabular SFHs where the metallicity
-          evolution as function of age is given (see `set_tabular_sfh()`).  The
-          values of ``zmet`` and ``logzsol`` are ignored.  Furthermore
-          ``add_neb_emission`` must be set to False.
-
-        Can only be changed during initialization.
+        * 0: No interpolation, use the metallicity index specified by ``zmet``
+          (and ``afeindx``).
+        * 1: The SSPs are interpolated to the value of ``logzsol`` and ``afe``
+          before the spectra and magnitudes are computed, and the values of
+          ``zmet`` and ``afeindx`` are ignored.
 
     :param add_agb_dust_model: (default: True)
         Switch to turn on/off the AGB circumstellar dust model presented in

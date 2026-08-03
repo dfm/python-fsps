@@ -21,7 +21,7 @@ fail to import if it is set incorrectly.
 
 Python-FSPS is built against specific versions of the FSPS Fortran API and data
 files, so it is important that you have a recent version of FSPS through git.
-Currently Python-FSPS is built against FSPS v3.2.
+Currently Python-FSPS is built against FSPS v4.0.
 
 Installing stable version
 -------------------------

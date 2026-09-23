@@ -57,6 +57,9 @@ line-length = 88
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+exclude = ["demos/*"]
+
+[tool.ruff.lint]
 select = ["F", "I", "E", "W", "YTT", "B", "Q", "PLE", "PLR", "PLW"]
 ignore = [
     "E402",    # Allow module level imports below top of file
@@ -66,7 +69,6 @@ ignore = [
     "PLR0913", # Allow many arguments to function calls
     "PLR2004", # Allow magic numbers
 ]
-exclude = ["demos/*"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["fsps"]

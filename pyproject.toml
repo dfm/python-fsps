@@ -67,7 +67,6 @@ ignore = [
     "PLW0603", # Allow global statements
     "PLR0912", # Allow many branches
     "PLR0913", # Allow many arguments to function calls
-    "PLR0917", # Allow many positional arguments to function calls
     "PLR2004", # Allow magic numbers
 ]
 

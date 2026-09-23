@@ -842,7 +842,7 @@ class StellarPopulation(object):
         driver.get_ssp_weights(weights)
         return weights
 
-    def _get_stellar_spectrum(
+    def _get_stellar_spectrum(  # noqa: PLR0917
         self,
         mact,
         logt,

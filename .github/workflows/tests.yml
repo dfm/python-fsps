@@ -19,7 +19,7 @@ jobs:
         os: [ubuntu-latest]
         with-options: [false]
         include:
-          - os: macos-14
+          - os: macos-latest
             python-version: "3.13"
             with-options: false
           - os: ubuntu-latest
@@ -39,9 +39,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc g++ gfortran
         if: ${{ runner.os == 'Linux' }}
-      - name: Set up macOS-14
+      - name: Set up macOS
         run: echo "FC=gfortran-13" >> "$GITHUB_ENV"
-        if: ${{ matrix.os == 'macos-14' }}
+        if: ${{ matrix.os == 'macos-latest' }}
       - name: Run simple test
         run: uv run --extra test --python ${{ matrix.python-version }} tests/simple.py
         env:

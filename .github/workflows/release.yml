@@ -33,9 +33,23 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
+      # Homebrew's gfortran on the current macOS runners links against a
+      # libgfortran built for the runner's OS version, which delocate rejects
+      # for our deployment target. conda-forge's gfortran targets older macOS.
+      - name: Install gfortran from conda-forge
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-name: gfortran
+          create-args: gfortran
+          condarc: |
+            channels:
+              - conda-forge
+        if: ${{ runner.os == 'macOS' }}
       - name: Set up macOS
-        run: echo "FC=gfortran-13" >> "$GITHUB_ENV"
-        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          echo "FC=${MAMBA_ROOT_PREFIX}/envs/gfortran/bin/gfortran" >> "$GITHUB_ENV"
+          echo "DYLD_FALLBACK_LIBRARY_PATH=${MAMBA_ROOT_PREFIX}/envs/gfortran/lib" >> "$GITHUB_ENV"
+        if: ${{ runner.os == 'macOS' }}
       - uses: pypa/cibuildwheel@v4.3.5
         env:
           MACOSX_DEPLOYMENT_TARGET: "14.0"
